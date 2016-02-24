@@ -8,8 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
+import com.androiddev.thirtyseven.studybuddy.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         GoogleSignInOptions gso = new GoogleSignInOptions.
                 Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
 
+
         mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
@@ -63,8 +64,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onStart() {
         super.onStart();
 
-       OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-       if (opr.isDone()) {
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if (opr.isDone()) {
             Log.d(TAG, "Got cached sign-in");
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);

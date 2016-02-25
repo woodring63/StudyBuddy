@@ -3,6 +3,7 @@ package com.androiddev.thirtyseven.studybuddy.Main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.androiddev.thirtyseven.studybuddy.Accounts.BuddyList;
 import com.androiddev.thirtyseven.studybuddy.Accounts.LoginActivity;
+import com.androiddev.thirtyseven.studybuddy.Accounts.UserProfile;
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
 
@@ -41,9 +43,11 @@ public class NavBase extends AppCompatActivity {
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hub);
+    public void setContentView(@LayoutRes int layoutResID){
+        super.setContentView(layoutResID);
+        onCreateDrawer();
+    }
+    protected void onCreateDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,11 +28,18 @@ public class UserProfile extends AppCompatActivity {
 
         userNameView.setText(userName);
         userImageView.setImageResource(userImgId);
+
+        Button button = (Button) findViewById(R.id.backToSearchButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), BuddyList.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                finish();
+            }
+        });
     }
 
-    public void onClick(View view) {
-        Intent i = new Intent(this, BuddyList.class);
-        startActivity(i);
-    }
+
 
 }

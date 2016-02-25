@@ -43,7 +43,7 @@ public class BuddyList extends AppCompatActivity {
         );
 
         setContentView(R.layout.activity_buddy_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

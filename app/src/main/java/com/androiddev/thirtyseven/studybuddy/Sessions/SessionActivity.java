@@ -56,6 +56,13 @@ public class SessionActivity extends AppCompatActivity {
             }
         });
 
+        // Initialize the tabs to be in the center position
+        try {
+            viewPager.setCurrentItem(tabLayout.getTabCount() / 2);
+            tabLayout.getTabAt(tabLayout.getTabCount() / 2).select();
+        } catch (NullPointerException e) {
+            // rip in pieces
+        }
     }
 
     @Override

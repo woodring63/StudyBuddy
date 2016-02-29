@@ -12,12 +12,12 @@ import android.view.View;
 /**
  * Created by Joseph Elliott on 2/21/2016.
  */
-public class Whiteboard extends View {
+public class WhiteboardView extends View {
 
     private Paint paint = new Paint();
     private Path path = new Path();
 
-    public Whiteboard(Context context, AttributeSet attrs) {
+    public WhiteboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         paint.setAntiAlias(true);

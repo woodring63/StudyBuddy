@@ -1,6 +1,7 @@
 package com.androiddev.thirtyseven.studybuddy.Accounts;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -8,7 +9,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class UserProfile extends AppCompatActivity {
 
@@ -39,7 +47,6 @@ public class UserProfile extends AppCompatActivity {
             }
         });
     }
-
 
 
 }

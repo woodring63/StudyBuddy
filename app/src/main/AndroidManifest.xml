@@ -45,9 +45,11 @@
             android:label="@string/title_activity_edit_profile"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Accounts.UserClasses"
+            android:name=".Accounts.UserCourses"
             android:label="@string/title_activity_user_classes"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

@@ -9,12 +9,12 @@ import android.view.View;
 
 import com.androiddev.thirtyseven.studybuddy.R;
 
-public class UserClasses extends AppCompatActivity {
+public class UserCourses extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_classes);
+        setContentView(R.layout.activity_user_courses);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

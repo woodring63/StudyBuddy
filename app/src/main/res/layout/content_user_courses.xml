@@ -9,14 +9,14 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.androiddev.thirtyseven.studybuddy.Accounts.UserClasses"
-    tools:showIn="@layout/activity_user_classes">
+    tools:context=".Accounts.UserCourses"
+    tools:showIn="@layout/activity_user_courses">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/classes_header_text"
+        android:text="@string/courses_header_text"
         android:id="@+id/classes_header"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />

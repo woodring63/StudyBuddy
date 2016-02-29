@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.androiddev.thirtyseven.studybuddy.R;
 
@@ -21,17 +23,46 @@ public class SessionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_session);
+        // Initialize toolbar stuff
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Initialize ViewPager stuff
+        final NonSwipeViewPager viewPager = (NonSwipeViewPager) findViewById(R.id.session_pager);
+        final SessionPagerAdapter adapter = new SessionPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
+
+        // Initialize tab stuff
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Document"));
         tabLayout.addTab(tabLayout.newTab().setText("Tasks"));
         tabLayout.addTab(tabLayout.newTab().setText("Whiteboard"));
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.session_pager);
-        final SessionPagerAdapter adapter = new SessionPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
+        // Enable moving between fragments with the tabs
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // Unused
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // Unused
+            }
+        });
+
+        // Initialize the tabs to be in the center position
+        try {
+            viewPager.setCurrentItem(tabLayout.getTabCount() / 2);
+            tabLayout.getTabAt(tabLayout.getTabCount() / 2).select();
+        } catch (NullPointerException e) {
+            // rip in pieces
+        }
     }
 
     @Override

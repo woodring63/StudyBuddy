@@ -16,7 +16,7 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by enclark on 2/27/2016.
  */
-public class ServerConnection implements Runnable {
+public class ServerConnection {
 
     /**
      * Created by enclark on 2/7/2016.
@@ -34,9 +34,8 @@ public class ServerConnection implements Runnable {
     // ...
     public ServerConnection(String params)//For the GET method
     {
-        get = true;
         this.params = params;
-
+        get = true;
     }
 
     public ServerConnection(User user, String params)//For the POST method
@@ -48,28 +47,29 @@ public class ServerConnection implements Runnable {
     }
 
 
-    public void run(){
+    public JSONObject run(){
         try {
             //Send a get request or a post request and put the returned value somewhere
 
             if(get)
             {
-                get(params);
+                return get(params);
             }
             else if(post)
             {
-                post(user, params);
-                //send data somewhere
+
+                return post(user, params);
             }
 
         }catch(Exception e){
             e.printStackTrace();
         }
         //Dies
+        return null;
     }
 
 
-    public JSONArray get(String params)throws IOException, JSONException
+    public JSONObject get(String params)throws IOException, JSONException
     {
         HttpsURLConnection urlConnection = (HttpsURLConnection) new URL(URL + params).openConnection();
         urlConnection.setRequestMethod("GET");
@@ -84,7 +84,7 @@ public class ServerConnection implements Runnable {
         }
 
         //Will return a JSON object containing an array of JSON objects
-        JSONArray json = new JSONArray(readResponse(urlConnection));
+        JSONObject json = new JSONObject(readResponse(urlConnection));
         if(json == null) {
             return null;
         }

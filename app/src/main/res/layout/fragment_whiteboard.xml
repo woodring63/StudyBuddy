@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.androiddev.thirtyseven.studybuddy.Sessions.WhiteboardView
+
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android" />
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.androiddev.thirtyseven.studybuddy.Sessions.WhiteboardView
+        android:id="@+id/whiteboard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+
+    </RelativeLayout>
+
+</LinearLayout>
+

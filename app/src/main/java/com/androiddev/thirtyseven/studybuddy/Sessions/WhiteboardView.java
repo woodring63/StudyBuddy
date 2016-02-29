@@ -1,6 +1,8 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,6 +18,7 @@ public class WhiteboardView extends View {
 
     private Paint paint = new Paint();
     private Path path = new Path();
+    private boolean eraser = false;
 
     public WhiteboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -25,6 +28,23 @@ public class WhiteboardView extends View {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
+    }
+
+    public void setStrokeWidth(float f) {
+        paint.setStrokeWidth(f);
+    }
+
+    public void setPenColor(int color) {
+        paint.setColor(color);
+    }
+
+    public void setEraser(boolean flag) {
+        eraser = flag;
+        if (eraser) {
+            paint.setColor(Color.WHITE);
+        } else {
+            paint.setColor(Color.BLACK);
+        }
     }
 
     @Override

@@ -13,20 +13,20 @@ import java.util.ArrayList;
 /**
  * Created by enclark on 2/28/2016.
  */
-public class BuddyAsync extends AsyncTask {
+public class BuddyAsync extends AsyncTask<Void, Void, ArrayList<Buddy>> {
 
     ServerConnection server;
 
-    public BuddyAsync(String method, String params)
+    public BuddyAsync(String method, String params, ArrayList<Buddy> buddies)
     {
         server = new ServerConnection(params);
     }
 
     @Override
-    protected Object doInBackground(Object[] params) {
+    protected ArrayList<Buddy> doInBackground(Void... params) {
+        ArrayList<Buddy> buddies = new ArrayList<Buddy>();
         try {
             JSONObject json = server.run();
-            ArrayList<Buddy> buddies = new ArrayList<Buddy>();
             System.out.println(json);
             JSONArray jerry = (JSONArray) json.get("buddies");
 
@@ -49,6 +49,6 @@ public class BuddyAsync extends AsyncTask {
             e.printStackTrace();
         }
 
-        return server.run();
+        return buddies;
     }
 }

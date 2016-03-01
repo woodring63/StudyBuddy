@@ -26,7 +26,8 @@ public class ServerConnection {
     private static String charset = "UTF-8";  // Or in Java 7 and later, use the constant: java.nio.charset.StandardCharsets.UTF_8.name()
     private boolean get;
     private boolean post;
-    private JSONObject user;
+    private boolean put;
+    private JSONObject body;
     private String params;
 
 
@@ -41,7 +42,15 @@ public class ServerConnection {
     public ServerConnection(User user, String params)//For the POST method
     {
         post = true;
-        this.user = user.getJSON();
+        this.body = user.getJSON();
+        this.params = params;
+
+    }
+
+    public ServerConnection(JSONObject json, String params)//For the POST method
+    {
+        post = true;
+        this.body = json;
         this.params = params;
 
     }
@@ -58,7 +67,12 @@ public class ServerConnection {
             else if(post)
             {
 
-                return post(user, params);
+                return post(body, params);
+            }
+            else if(put)
+            {
+                //Body can be null
+                return put(body, params);
             }
 
         }catch(Exception e){
@@ -102,11 +116,8 @@ public class ServerConnection {
             urlConnection.setRequestProperty("Host", URL);
             urlConnection.setRequestProperty("Content-Type", "application/json");
 
-            //Allows for writing to the body of the request
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream()));
-            out.write(json.toString());
-            out.flush();
-            out.close();
+            writeRequest(urlConnection,json);
+
             urlConnection.connect();
             int responseStatus = urlConnection.getResponseCode(); // 200 is the only acceptable response
             if(responseStatus != 200)
@@ -124,7 +135,38 @@ public class ServerConnection {
             e.printStackTrace();
             return null;
         }
+    }
 
+    public JSONObject put(JSONObject json, String params) {
+        try {
+            HttpsURLConnection urlConnection = (HttpsURLConnection) new URL(URL + params).openConnection();
+            urlConnection.setDoOutput(true);
+            urlConnection.setDoInput(true);
+            urlConnection.setRequestMethod("PUT");
+            urlConnection.setRequestProperty("Host", URL);
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+
+            if(json != null) // If it is null, then this request does not require a body
+            {
+                writeRequest(urlConnection,json);
+            }
+
+            urlConnection.connect();
+            int responseStatus = urlConnection.getResponseCode(); // 200 is the only acceptable response
+            if(responseStatus != 200)
+            {
+                System.out.println(responseStatus);
+                System.out.println(urlConnection.getResponseMessage());
+            }
+
+            JSONObject jsonObj = new JSONObject(readResponse(urlConnection));
+
+            return  jsonObj;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String readResponse(HttpsURLConnection urlConnection)
@@ -142,6 +184,19 @@ public class ServerConnection {
             return "";
         }
 
+    }
+
+    public void writeRequest(HttpsURLConnection urlConnection, JSONObject json)
+    {
+        //Allows for writing to the body of the request
+        try {
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream()));
+            out.write(json.toString());
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

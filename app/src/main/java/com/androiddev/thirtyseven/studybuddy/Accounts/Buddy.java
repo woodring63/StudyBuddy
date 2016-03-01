@@ -1,11 +1,14 @@
 package com.androiddev.thirtyseven.studybuddy.Accounts;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
  * Created by Nathan on 2/28/2016.
  */
-public class Buddy {
+public class Buddy implements Parcelable {
 
     private String id;
     private String name;
@@ -79,6 +82,45 @@ public class Buddy {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(username);
+        dest.writeString(major);
+        dest.writeStringArray(courses);
+        dest.writeStringArray(sessions);
+        dest.writeStringArray(buddies);
+    }
+
+    public static final Parcelable.Creator<Buddy> CREATOR = new Parcelable.Creator<Buddy>() {
+
+        @Override
+        public Buddy createFromParcel(Parcel source) {
+            return new Buddy(source);
+        }
+
+        @Override
+        public Buddy[] newArray(int size) {
+            return new Buddy[size];
+        }
+    };
+
+    private Buddy(Parcel source) {
+        this.setId(source.readString());
+        this.setName(source.readString());
+        this.setUsername(source.readString());
+        this.setMajor(source.readString());
+        this.setCourses(source.createStringArray());
+        this.setSessions(source.createStringArray());
+        this.setBuddies(source.createStringArray());
     }
 }
 

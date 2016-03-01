@@ -10,21 +10,21 @@ import android.widget.TextView;
 
 import com.androiddev.thirtyseven.studybuddy.R;
 
+import java.util.ArrayList;
+
 /**
  * Created by Nathan on 2/8/2016.
  */
-class BuddyListAdapter extends ArrayAdapter<String> {
+class BuddyListAdapter extends ArrayAdapter<Buddy> {
 
     private final Activity context;
-    private final String[] resultNames;
-    private final int[] resultImgIds;
+    private final ArrayList<Buddy> buddies;
 
-    BuddyListAdapter(Activity context, String[] resultNames, int[] resultImgIds){
-        super(context, R.layout.buddy_list_layout, resultNames);
+    BuddyListAdapter(Activity context, ArrayList<Buddy> buddies){
+        super(context, R.layout.buddy_list_layout, buddies);
 
         this.context = context;
-        this.resultNames = resultNames;
-        this.resultImgIds = resultImgIds;
+        this.buddies = buddies;
     }
 
     @Override
@@ -35,8 +35,7 @@ class BuddyListAdapter extends ArrayAdapter<String> {
         TextView resultName = (TextView) searchResult.findViewById(R.id.resultName);
         ImageView resultImg = (ImageView) searchResult.findViewById(R.id.resultImg);
 
-        resultName.setText(resultNames[position]);
-        resultImg.setImageResource(resultImgIds[position]);
+        resultName.setText(buddies.get(position).getName());
         return searchResult;
     }
 }

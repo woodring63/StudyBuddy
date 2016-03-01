@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.Time;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.R;
 
@@ -24,6 +26,14 @@ import java.util.Locale;
 
 public class CreateSessionActivity extends AppCompatActivity {
     private GregorianCalendar calendar;
+    private EditText dateText;
+    private EditText startText;
+    private EditText endText;
+    private AutoCompleteTextView textView;
+    private int startHour;
+    private int endHour;
+    private int startMin;
+    private int endMin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +50,7 @@ public class CreateSessionActivity extends AppCompatActivity {
     }
 
     protected void createAutoComplete(){
-        AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.editTextCourse);
+        textView = (AutoCompleteTextView) findViewById(R.id.editTextCourse);
         String[] courses = getResources().getStringArray(R.array.course_list);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, courses);
         textView.setAdapter(adapter);
@@ -49,8 +59,18 @@ public class CreateSessionActivity extends AppCompatActivity {
         Button button = (Button) findViewById(R.id.buttonConfirm);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), HubActivity.class);
-                startActivity(i);
+                if(dateText.toString() != "" && startText.toString() != "" && endText.toString() != "" &&
+                textView.toString() != "" && (startHour < endHour
+                || (startHour == endHour && startMin < endMin))){
+                    Intent i = new Intent(getApplicationContext(), HubActivity.class);
+                    startActivity(i);
+                }
+                else{
+                   Toast.makeText(getApplicationContext(), "Either you forgot to fill out a field, or your start time " +
+                           "came after your end time." , Toast.LENGTH_LONG).show();
+                }
+
+
             }
         });
         Button button2 = (Button) findViewById(R.id.buttonNo);
@@ -63,7 +83,7 @@ public class CreateSessionActivity extends AppCompatActivity {
     }
 
     protected void createDatePicker(GregorianCalendar calendar) {
-        final EditText dateText = (EditText) findViewById(R.id.editTextDate);
+        dateText = (EditText) findViewById(R.id.editTextDate);
         final DatePickerDialog pick = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
@@ -83,14 +103,16 @@ public class CreateSessionActivity extends AppCompatActivity {
     }
 
     protected void createTimePickers(GregorianCalendar calendar) {
-        final EditText startText = (EditText) findViewById(R.id.editTextStart);
-        final EditText endText = (EditText) findViewById(R.id.editTextEnd);
+        startText = (EditText) findViewById(R.id.editTextStart);
+        endText = (EditText) findViewById(R.id.editTextEnd);
 
 
         final TimePickerDialog startPick = new TimePickerDialog(this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        startHour = hourOfDay;
+                        startMin = minute;
                         String AMPM = "AM";
                         if (hourOfDay == 0) {
                             hourOfDay += 12;
@@ -122,6 +144,9 @@ public class CreateSessionActivity extends AppCompatActivity {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         String AMPM = "AM";
+                        endHour = hourOfDay;
+                        endMin = minute;
+
                         if (hourOfDay == 0) {
                             hourOfDay += 12;
 

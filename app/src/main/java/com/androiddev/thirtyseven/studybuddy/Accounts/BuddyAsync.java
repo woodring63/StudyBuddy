@@ -27,19 +27,19 @@ public class BuddyAsync extends AsyncTask<Void, Void, ArrayList<Buddy>> {
         ArrayList<Buddy> buddies = new ArrayList<Buddy>();
         try {
             JSONObject json = server.run();
-            System.out.println(json);
             JSONArray jerry = (JSONArray) json.get("buddies");
 
             Buddy temp;
             for (int i = 0; i < jerry.length(); ++i) {
                 JSONObject bud = jerry.getJSONObject(i);
                 temp = new Buddy();
-                temp.setBuddies((String[]) bud.get("buddies"));
-                temp.setCourses((String[]) bud.get("courses"));
+                System.out.println(bud);
+                temp.setBuddies((String[]) bud.get("buddies").toString().replace("},{", "~").split("~"));
+                temp.setCourses((String[]) bud.get("courses").toString().replace("},{", "~").split("~"));
                 temp.setId((String) bud.get("_id"));
                 temp.setMajor((String) bud.get("major"));
                 temp.setName((String) bud.get("name"));
-                temp.setSessions((String[]) bud.get("sessions"));
+                temp.setSessions((String[]) bud.get("sessions").toString().replace("},{","~").split("~"));
                 temp.setUsername((String) bud.get("username"));
                 buddies.add(temp);
             }

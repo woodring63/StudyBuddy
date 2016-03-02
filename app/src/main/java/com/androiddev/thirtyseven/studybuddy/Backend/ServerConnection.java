@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -22,7 +23,7 @@ public class ServerConnection {
      * Created by enclark on 2/7/2016.
      */
 
-    private static final String URL = "https://10.26.5.116:3000/users";
+    private static final String URL = "http://10.37.94.38:3000/users";
     private static String charset = "UTF-8";  // Or in Java 7 and later, use the constant: java.nio.charset.StandardCharsets.UTF_8.name()
     private boolean get;
     private boolean post;
@@ -85,8 +86,9 @@ public class ServerConnection {
 
     public JSONObject get(String params)throws IOException, JSONException
     {
-        HttpsURLConnection urlConnection = (HttpsURLConnection) new URL(URL + params).openConnection();
+        HttpURLConnection urlConnection = (HttpURLConnection) new URL(URL + params).openConnection();
         urlConnection.setRequestMethod("GET");
+        urlConnection.setRequestProperty("Content-Type", "application/json");
         urlConnection.setRequestProperty("Host", URL);
         urlConnection.setUseCaches(false);
 
@@ -109,7 +111,7 @@ public class ServerConnection {
 
     public JSONObject post(JSONObject json, String params) {
         try {
-            HttpsURLConnection urlConnection = (HttpsURLConnection) new URL(URL + params).openConnection();
+            HttpURLConnection urlConnection = (HttpURLConnection) new URL(URL + params).openConnection();
             urlConnection.setDoOutput(true);//Sets POST
             urlConnection.setDoInput(true);
             urlConnection.setRequestMethod("POST");
@@ -139,7 +141,7 @@ public class ServerConnection {
 
     public JSONObject put(JSONObject json, String params) {
         try {
-            HttpsURLConnection urlConnection = (HttpsURLConnection) new URL(URL + params).openConnection();
+            HttpURLConnection urlConnection = (HttpURLConnection) new URL(URL + params).openConnection();
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
             urlConnection.setRequestMethod("PUT");
@@ -169,7 +171,7 @@ public class ServerConnection {
         }
     }
 
-    public String readResponse(HttpsURLConnection urlConnection)
+    public String readResponse(HttpURLConnection urlConnection)
     {
         //This will read the response from the server and the string will later be converted into a JSON object
         StringBuilder sBuilder = new StringBuilder();
@@ -186,7 +188,7 @@ public class ServerConnection {
 
     }
 
-    public void writeRequest(HttpsURLConnection urlConnection, JSONObject json)
+    public void writeRequest(HttpURLConnection urlConnection, JSONObject json)
     {
         //Allows for writing to the body of the request
         try {

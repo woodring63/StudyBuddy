@@ -65,8 +65,8 @@
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/classes_button_text"
-                    android:id="@+id/button"
+                    android:text="@string/courses_button_text"
+                    android:id="@+id/coursesButton"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_below="@+id/userMajorView" />
@@ -76,18 +76,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/buddy_up_button_text"
-                    android:id="@+id/button2"
+                    android:id="@+id/buddyUpButton"
                     android:layout_alignParentBottom="true"
-                    android:layout_toStartOf="@+id/button" />
+                    android:layout_toStartOf="@+id/coursesButton" />
 
                 <Button
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/buddies_button_text"
-                    android:id="@+id/button3"
+                    android:id="@+id/buddiesButton"
                     android:layout_alignParentBottom="true"
-                    android:layout_toEndOf="@+id/button" />
+                    android:layout_toEndOf="@+id/coursesButton" />
 
             </RelativeLayout>
 
@@ -125,7 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/back_button_text"
-        android:id="@+id/backToSearchButton"
+        android:id="@+id/backButton"
         android:onClick="onClick"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

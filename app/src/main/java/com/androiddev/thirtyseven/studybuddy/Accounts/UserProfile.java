@@ -3,6 +3,7 @@ package com.androiddev.thirtyseven.studybuddy.Accounts;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -25,25 +26,34 @@ public class UserProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        Bundle userData = getIntent().getExtras();
-        if (userData == null)
-            return;
-        String userName = userData.getString("userName");
-        int userImgId = userData.getInt("userImgId");
+        final Buddy buddy = getIntent().getParcelableExtra("buddy");
 
         TextView userNameView = (TextView) findViewById(R.id.userNameView);
-        ImageView userImageView = (ImageView) findViewById(R.id.userImageView);
+        TextView userMajorView = (TextView) findViewById(R.id.userMajorView);
 
-        userNameView.setText(userName);
-        userImageView.setImageResource(userImgId);
+        userNameView.setText(buddy.getName());
+        userMajorView.setText(buddy.getMajor());
 
-        Button button = (Button) findViewById(R.id.backToSearchButton);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button backButton = (Button) findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), BuddyList.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
+            }
+        });
+
+        Button coursesButton = (Button) findViewById(R.id.coursesButton);
+        coursesButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), UserCourses.class);
+                Parcel parcel = Parcel.obtain();
+                buddy.writeToParcel(parcel, 0);
+
+                i.putExtra("buddy", buddy);
+
+                startActivity(i);
             }
         });
     }

@@ -73,7 +73,7 @@
             tools:visibility="gone" />
 
         <LinearLayout
-            android:id="@+id/sign_out_and_disconnect"
+            android:id="@+id/sign_out_and_return"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"

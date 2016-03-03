@@ -1,4 +1,8 @@
 package com.androiddev.thirtyseven.studybuddy.Main;
+/**
+ * Created By Evan
+ * This class is designed for modularity of the navigation drawer
+ */
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +37,7 @@ import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
 import java.util.ArrayList;
 
 public class NavBase extends AppCompatActivity {
-    private static String TAG = HubActivity.class.getSimpleName();
+    private static String TAG = NavBase.class.getSimpleName();
 
     ListView mDrawerList;
     RelativeLayout mDrawerPane;
@@ -42,20 +46,23 @@ public class NavBase extends AppCompatActivity {
 
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
 
+
+    //We override the setContentView method so that each subclass can call onCreate AND onCreateDrawer
     @Override
     public void setContentView(@LayoutRes int layoutResID){
         super.setContentView(layoutResID);
         onCreateDrawer();
     }
+
+    //This method will actually create the "drawer"
     protected void onCreateDrawer() {
+        //We get the toolbar so that we can add the "hamburger" icon
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-
+        //Added 3 activities, more to come/will change
         mNavItems.add(new NavItem("Buddies", "View Your Buddies", R.drawable.ic_accessibility_black_24dp));
-        mNavItems.add(new NavItem("Whiteboard", "Whiteboard Test", R.drawable.ic_android_black_24dp));
+        mNavItems.add(new NavItem("Sessions", "View a Session", R.drawable.ic_android_black_24dp));
         mNavItems.add(new NavItem("Log Out", "Log Out of App", R.drawable.ic_3d_rotation_black_24dp));
 
         // DrawerLayout
@@ -66,13 +73,15 @@ public class NavBase extends AppCompatActivity {
         DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
         mDrawerList.setAdapter(adapter);
 
-        // Drawer Item click listeners
+        // Drawer Item Listeners
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            //Selects Item from drawer
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectItemFromDrawer(position);
             }
         });
+        //Drawer is now toggleable
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -91,27 +100,29 @@ public class NavBase extends AppCompatActivity {
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        //Adds "hamburger" button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflates menu; adds items to the action bar if present.
         getMenuInflater().inflate(R.menu.menu_hub, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // Handle action bar item clicks.
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    //Selects item from drawer, starting relevant activity depending on which button
+    //is pressed
     private void selectItemFromDrawer(int position) {
 
         Intent i;
@@ -151,6 +162,8 @@ public class NavBase extends AppCompatActivity {
         mDrawerToggle.syncState();
     }
 }
+
+//Drawer item, which has a title, subtitle, and image
 class NavItem {
     String mTitle;
     String mSubtitle;
@@ -162,6 +175,8 @@ class NavItem {
         mIcon = icon;
     }
 }
+
+//Adapter needed for drawer
 class DrawerListAdapter extends BaseAdapter {
 
     Context mContext;
@@ -171,7 +186,7 @@ class DrawerListAdapter extends BaseAdapter {
         mContext = context;
         mNavItems = navItems;
     }
-
+    //Methods must be overriden
     @Override
     public int getCount() {
         return mNavItems.size();
@@ -187,11 +202,13 @@ class DrawerListAdapter extends BaseAdapter {
         return 0;
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
 
         if (convertView == null) {
+            //Inflates all drawer items
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.drawer_item, null);
         }
@@ -203,6 +220,7 @@ class DrawerListAdapter extends BaseAdapter {
         TextView subtitleView = (TextView) view.findViewById(R.id.subtitle);
         ImageView iconView = (ImageView) view.findViewById(R.id.icon);
 
+        //Sets up relevant information
         titleView.setText( mNavItems.get(position).mTitle );
         subtitleView.setText( mNavItems.get(position).mSubtitle );
         iconView.setImageResource(mNavItems.get(position).mIcon);

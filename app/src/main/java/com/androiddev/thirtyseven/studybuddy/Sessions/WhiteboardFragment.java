@@ -14,8 +14,8 @@ import com.androiddev.thirtyseven.studybuddy.R;
  */
 public class WhiteboardFragment extends Fragment {
 
-    private static final int SEEKBAR_MAX = 9;
-    private static final int SEEKBAR_START_PEN = SEEKBAR_MAX / 2 + 1;
+    private static final int SEEKBAR_MAX = 10;
+    private static final int SEEKBAR_START_PEN = (int) Math.ceil((double) SEEKBAR_MAX / 2.0);
 
     private WhiteboardView whiteboard;
     private SeekBar seekBar;

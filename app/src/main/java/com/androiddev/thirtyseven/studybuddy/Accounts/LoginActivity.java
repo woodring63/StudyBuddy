@@ -1,12 +1,16 @@
 package com.androiddev.thirtyseven.studybuddy.Accounts;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 import com.androiddev.thirtyseven.studybuddy.R;
@@ -32,11 +36,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private ProgressDialog mProgressDialog;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
 
         mStatusTextView = (TextView) findViewById(R.id.status);
 
@@ -50,7 +54,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
 
 
-    //Client so we can use Google's Sign in API
+        //Client so we can use Google's Sign in API
         mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
@@ -58,7 +62,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         //Setup Sign In Button
         SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
-        signInButton.setScopes(gso.getScopeArray());    }
+        signInButton.setScopes(gso.getScopeArray());
+    }
 
     //Logs failed connections
     @Override
@@ -71,6 +76,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onStart() {
         super.onStart();
+
 
         //Check if they were previously signed in, handle this sign in
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
@@ -136,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     //On sign out, update UI to false
-    private void signOut(){
+    private void signOut() {
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
@@ -155,8 +161,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
     //Shows progress dialog when needed. Makes a new one and displays it
-    private void showProgressDialog(){
-        if(mProgressDialog == null){
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setMessage(getString(R.string.loading));
             mProgressDialog.setIndeterminate(true);
@@ -182,27 +188,50 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
         //On signed out, show sign in button, remove sign out and return
 
-        else{
+        else {
             mStatusTextView.setText(R.string.signed_out);
 
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
             findViewById(R.id.sign_out_and_return).setVisibility(View.GONE);
         }
     }
+
     //Sets different relevant OnClickListeners
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                signIn();
-                break;
-            case R.id.sign_out_button:
-                signOut();
-                break;
-            case R.id.returnButton:
-                returnToApp();
-                break;
+        if (isNetworkAvailable()) {
+            switch (v.getId()) {
+                case R.id.sign_in_button:
+                    signIn();
+                    break;
+                case R.id.sign_out_button:
+                    signOut();
+                    break;
+                case R.id.returnButton:
+                    returnToApp();
+                    break;
+            }
+        } else {
+            switch(v.getId()){
+                case R.id.sign_out_button:
+                    signOut();
+                    break;
+                default:
+                    Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+
+            }
+
+
+
         }
+
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
 

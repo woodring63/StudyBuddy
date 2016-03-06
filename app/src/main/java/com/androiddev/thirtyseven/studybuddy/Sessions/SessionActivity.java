@@ -12,12 +12,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
 import com.androiddev.thirtyseven.studybuddy.R;
 
 /**
  * Created by Joseph Elliott on 2/2/2016.
  */
-public class SessionActivity extends AppCompatActivity {
+public class SessionActivity extends NavBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

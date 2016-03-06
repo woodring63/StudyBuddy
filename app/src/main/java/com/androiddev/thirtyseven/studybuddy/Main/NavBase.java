@@ -62,6 +62,7 @@ public class NavBase extends AppCompatActivity {
 
         //Added 3 activities, more to come/will change
         mNavItems.add(new NavItem("Buddies", "View Your Buddies", R.drawable.ic_accessibility_black_24dp));
+        mNavItems.add(new NavItem("Profile", "View Your Profile", R.drawable.ic_play_light));
         mNavItems.add(new NavItem("Sessions", "View a Session", R.drawable.ic_android_black_24dp));
         mNavItems.add(new NavItem("Log Out", "Log Out of App", R.drawable.ic_3d_rotation_black_24dp));
 
@@ -131,11 +132,11 @@ public class NavBase extends AppCompatActivity {
                 i = new Intent(getApplicationContext(), BuddyList.class);
                 startActivity(i);
                 break;
-            case 1:
+            case 2:
                 i = new Intent(getApplicationContext(), SessionActivity.class);
                 startActivity(i);
                 break;
-            case 2:
+            case 3:
                 i = new Intent(getApplicationContext(), LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);

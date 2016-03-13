@@ -9,8 +9,10 @@ GET /name/:name
 		if not successful, returns {status:failure}
 	
 GET /username/:username  
-	Used for logging in and finding if a user exists,then if they do, it fin	ds info about all of their sessions, and the sessions that are related t	o their classes occuring in the next 24 hours 
-		returns json {user:{},newSessions:[{}],joinedSessions[{}]}
+	Used for logging in and finding if a user exists,then if they do, it finds 
+	info about all of their sessions, and the sessions that are related to 
+	their classes occuring in the next 24 hours 
+		returns json {user:{},newSessions:[{}],joinedSessions[{}],createdSessions[{}]}
 		if the user is not found, returns {status:failure}
 
 GET /id/:id
@@ -32,9 +34,11 @@ POST /newuser
 		name: String,
 		username: String,
 		courses: Array of Strings,
-		major: String,
+		major: String,	
+		bio: String,
 		buddies: [],
-		sessions: []
+		sessions: [],
+		createdSessions: []
 	}
 	Leave the last two fields as empty arrays
 	returns json {status:failure/success}
@@ -77,7 +81,7 @@ PUT /setmajor/:id/:major
 	about it, I have doubts about this method, but I think it has worked
 		returns json {status:failure/success}
 
-PUT /unjoinsession/:id/:sessionid
+PUT /leavesession/:id/:sessionid
 	Removes the person from the attendance list of the session and the
 	session from the joinedSession of the user
 		returns json {status:failure/success}

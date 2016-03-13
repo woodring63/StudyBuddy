@@ -6,11 +6,23 @@ package com.androiddev.thirtyseven.studybuddy.Backend;
 import org.json.JSONObject;
 
 /**
- * Created by enclark on 2/20/2016.
+ *  An up-to-date user object to format new users to send as a json object to the database.
+ *  Not all the information needs to be set, in fact most of it does not need to be set,
+ *  in that case, undefined or an empty array will be sent in it's place.
  */
+
 public class User {
 
+    /**
+     * The object which stores the user information and will be sent to the database.
+     */
+
     private JSONObject json;
+
+    /**
+     * Constructor that will initially set all the items to an empty array
+     * that should not be set initially.
+     */
 
     public User()
     {
@@ -18,10 +30,23 @@ public class User {
         setName("undefined");
         setUsername("undefined");
         setCourses(null);
-        setSessions(null);
-        setCreatedSessions(null);
-
+        setMajor(null);
+        setBio(null);
+        try{
+            json.put("buddies", new String[0]);
+            json.put("sessions",new String[0]);
+            json.put("createdSessions",new String[0]);
+        }catch(org.json.JSONException e)
+        {
+            e.printStackTrace();
+        }
     }
+
+    /**
+     * Sets the name of the user in the db
+     * @param name The name of the user that will be going into the db.
+     * @return boolean indicating success/failure
+     */
 
     public boolean setName(String name)
     {
@@ -34,6 +59,12 @@ public class User {
         return true;
     }
 
+    /**
+     * Sets the username (the email) of the new user
+     * @param username
+     * @return boolean indicating success/failure
+     */
+
     public boolean setUsername(String username)
     {
         try {
@@ -44,6 +75,13 @@ public class User {
         }
         return true;
     }
+
+    /**
+     * Sets the array of courses as the users current courses.  These will determine
+     * which sessions show up on their main page.
+     * @param courses array of current courses of the user
+     * @return boolean indicating success
+     */
 
     public boolean setCourses(String[] courses)
     {
@@ -63,17 +101,16 @@ public class User {
         return true;
     }
 
-    public boolean setSessions(String[] courses)
-    {
+    /**
+     * Sets the major of the user to show buddies in order to indicate which courses they
+     * might take in the future or what they might know.
+     * @param major The user's college major
+     * @return boolean indicating success/failure
+     */
+
+    public boolean setMajor(String major) {
         try {
-            if(courses != null)
-            {
-                json.put("sessions", courses);
-            }
-            else
-            {
-                json.put("sessions", new String[0]);
-            }
+            json.put("major", major);
         }catch(Exception e)
         {
             return false;
@@ -81,27 +118,71 @@ public class User {
         return true;
     }
 
-    public boolean setCreatedSessions(String[] courses)
-    {
+    /**
+     *
+     */
+
+    public boolean setBio(String bio){
         try {
-            if(courses != null)
-            {
-                json.put("createdSessions", courses);
-            }
-            else
-            {
-                json.put("createdSessions", new String[0]);
-            }
+            json.put("bio", bio);
         }catch(Exception e)
         {
             return false;
         }
         return true;
     }
+
+    /**
+     * This method should be used for testing purposes and by the ServerConnection class.
+     * @return the json object to represent the user in the database
+     */
 
     public JSONObject getJSON()
     {
         return json;
     }
+
+
+//************************The following methods are probably unnecessary
+// ***********************and will be deleted when it is fully determined
+
+//
+//    public boolean setSessions(String[] sessions)
+//    {
+//        try {
+//            if(sessions != null)
+//            {
+//                json.put("sessions", sessions);
+//            }
+//            else
+//            {
+//                json.put("sessions", new String[0]);
+//            }
+//        }catch(Exception e)
+//        {
+//            return false;
+//        }
+//        return true;
+//    }
+//
+//    public boolean setCreatedSessions(String[] sessions)
+//    {
+//        try {
+//            if(sessions != null)
+//            {
+//                json.put("createdSessions", sessions);
+//            }
+//            else
+//            {
+//                json.put("createdSessions", new String[0]);
+//            }
+//        }catch(Exception e)
+//        {
+//            return false;
+//        }
+//        return true;
+//    }
+
+
 
 }

@@ -15,6 +15,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
+ * Comments coming soon
  * Created by enclark on 2/27/2016.
  */
 public class ServerConnection {
@@ -23,7 +24,7 @@ public class ServerConnection {
      * Created by enclark on 2/7/2016.
      */
 
-    private static final String URL = "http://10.37.94.38:3000/users";
+    private static final String URL = "http://10.37.94.38:3000";
     private static String charset = "UTF-8";  // Or in Java 7 and later, use the constant: java.nio.charset.StandardCharsets.UTF_8.name()
     private boolean get;
     private boolean post;
@@ -33,7 +34,6 @@ public class ServerConnection {
 
 
 
-    // ...
     public ServerConnection(String params)//For the GET method
     {
         this.params = params;
@@ -48,13 +48,28 @@ public class ServerConnection {
 
     }
 
-    public ServerConnection(JSONObject json, String params)//For the POST method
+    public ServerConnection(SessionSchema session, String params)//For the POST method
     {
         post = true;
+        this.body = session.getJSON();
+        this.params = params;
+
+    }
+
+    public ServerConnection(JSONObject json,String method, String params)//For the PUT/POST method, for sessions or users
+    {
+        if(method.equals("PUT"))
+        {
+            put = true;
+        }else if(method.equals("POST"))
+        {
+            post = true;
+        }
         this.body = json;
         this.params = params;
 
     }
+
 
 
     public JSONObject run(){
@@ -79,7 +94,6 @@ public class ServerConnection {
         }catch(Exception e){
             e.printStackTrace();
         }
-        //Dies
         return null;
     }
 
@@ -104,7 +118,7 @@ public class ServerConnection {
         if(json == null) {
             return null;
         }
-
+        get = false;
         return json;
 
     }
@@ -129,11 +143,12 @@ public class ServerConnection {
             }
 
             JSONObject jsonObj = new JSONObject(readResponse(urlConnection));
-
+            post = false;
             return  jsonObj;
 
 
         } catch (Exception e) {
+            post = false;
             e.printStackTrace();
             return null;
         }
@@ -162,10 +177,11 @@ public class ServerConnection {
             }
 
             JSONObject jsonObj = new JSONObject(readResponse(urlConnection));
-
+            put = false;
             return  jsonObj;
 
         } catch (Exception e) {
+            put = false;
             e.printStackTrace();
             return null;
         }

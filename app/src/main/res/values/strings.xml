@@ -8238,4 +8238,6 @@
     </string-array>
     <string name="title_activity_buddy_list">BuddyList</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_no_valid_account">NoValidAccount</string>
+    <string name="title_activity_new_user_async">NewUserAsync</string>
 </resources>

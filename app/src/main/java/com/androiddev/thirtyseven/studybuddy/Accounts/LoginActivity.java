@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.google.android.gms.auth.api.Auth;
@@ -25,6 +27,12 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
@@ -34,7 +42,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
-
+    private Boolean exists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,8 +117,21 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             //Handle the Sign in
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
+            exists = false;
+            //TO DO: Finish Async Task
+
+
+
+            //NewUserAsync async = new NewUserAsync(null , "/username/", exists);
+            //async.execute();
             //Move to Hub
-            Intent i = new Intent(getApplicationContext(), HubActivity.class);
+            Intent i;
+            if(exists == false) {
+                i = new Intent(getApplicationContext(), NoValidAccount.class);
+            }
+            else{
+                i = new Intent(getApplicationContext(), HubActivity.class);
+            }
             startActivity(i);
         }
     }
@@ -233,5 +254,25 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+}
+
+class NewUserAsync extends AsyncTask<Void, Void, Boolean> {
+
+    ServerConnection server;
+
+    public NewUserAsync(String method, String params, Boolean exists)
+    {
+        server = new ServerConnection(params);
+    }
+
+    @Override
+    protected Boolean doInBackground(Void... params) {
+        JSONObject json = server.run();
+
+        return true;
+    }
+
+
+
 }
 

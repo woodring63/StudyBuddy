@@ -67,7 +67,7 @@ public class BuddyList extends NavBase {
 
         @Override
         protected ArrayList<Buddy> doInBackground(Void... params) {
-//            ArrayList<Buddy> buddies = new ArrayList<Buddy>();
+            //ArrayList<Buddy> buddies = new ArrayList<Buddy>();
             try {
                 JSONObject json = server.run();
                 JSONArray jerry = (JSONArray) json.get("buddies");
@@ -91,7 +91,7 @@ public class BuddyList extends NavBase {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-           // adapter.notifyDataSetChanged();
+           //adapter.notifyDataSetChanged();
             return buddies;
         }
 

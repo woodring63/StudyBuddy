@@ -59,10 +59,12 @@ public class CreateSessionActivity extends AppCompatActivity {
         Button button = (Button) findViewById(R.id.buttonConfirm);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if(dateText.toString() != "" && startText.toString() != "" && endText.toString() != "" &&
-                textView.toString() != "" && (startHour < endHour
+                if(!(dateText.getText().toString().equals("")) && !(startText.getText().toString().equals("")) && !(endText.getText().toString().equals("")) &&
+                        !(textView.getText().toString().equals("")) && (startHour < endHour
                 || (startHour == endHour && startMin < endMin))){
+                    Toast.makeText(getApplicationContext(), dateText.getText().toString() + " fuck", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(getApplicationContext(), HubActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                 }
                 else{
@@ -77,6 +79,7 @@ public class CreateSessionActivity extends AppCompatActivity {
         button2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), HubActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
             }
         });

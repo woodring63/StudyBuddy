@@ -19,7 +19,9 @@
         android:id="@+id/note"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="64dp" />
+        android:layout_marginTop="64dp"
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,7 +29,10 @@
         android:text="Please Make An Account!"
         android:id="@+id/textView"
         android:layout_below="@+id/note"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
+
 
     <EditText
         android:layout_width="wrap_content"
@@ -54,15 +59,25 @@
         android:id="@+id/coursesText"
         android:hint="Enter Your Courses..."
         android:layout_below="@+id/majorText"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignEnd="@+id/majorText"
+        android:layout_alignStart="@+id/majorText" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Make Account!"
         android:id="@+id/button"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="53dp"
         android:layout_below="@+id/coursesText"
-        android:layout_alignStart="@+id/note" />
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bioText"
+        android:layout_below="@+id/coursesText"
+        android:layout_alignEnd="@+id/majorText"
+        android:layout_alignStart="@+id/majorText"
+        android:hint="Enter a Bio..."/>
 
 </RelativeLayout>

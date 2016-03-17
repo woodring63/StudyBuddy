@@ -2,6 +2,7 @@ package com.androiddev.thirtyseven.studybuddy.Backend;
 
 import android.content.pm.PackageInstaller;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -43,8 +44,8 @@ public class SessionSchema {
         setCourse("undefined");
         setBio("undefined");
         try{
-            json.put("attendees",new String[0]);
-            json.put("messages",new String[0]);
+            json.put("attendees",new JSONArray());
+            json.put("messages",new JSONArray());
             json.put("leader",userId);
         }catch(org.json.JSONException e)
         {

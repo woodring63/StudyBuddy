@@ -24,6 +24,10 @@ public class NoValidAccount extends AppCompatActivity {
     private EditText majorText;
     private EditText bioText;
 
+    /*TODO: Post Request
+    Need to do a Post request to generate a new user if they are prompted to do so
+     */
+
 
 
     @Override

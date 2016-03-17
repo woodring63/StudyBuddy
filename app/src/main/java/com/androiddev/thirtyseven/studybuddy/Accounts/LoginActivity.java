@@ -31,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final String TAG = "LoginActivity";
@@ -117,7 +116,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             //Handle the Sign in
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
-            //TO DO: Finish Async Task
+            /*TODO: Finish Async Task
+            Need to a) extract the used email for my_params
+                    b) save the id of the user to a shared preferences
+             */
+
 
 
             exists = false;
@@ -130,34 +133,31 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                     ServerConnection s = new ServerConnection(my_params);
                     j = s.run();
-                    return true;
 
-                }
-                @Override
-                protected void onPostExecute(Boolean result) {
-
-                    String str = "";
                     try {
-                        str = j.getString("name");
+                        Log.v("EVANTEST", j.getJSONObject("user").getString("name"));
+                        exists = true;
+                    } catch (Exception e) {
+                        Log.v("EVANTEST", "NOPE");
+                        exists = false;
                     }
-                    catch(Exception e){
-                    }
-                    if(result){
-                         Toast.makeText(getApplicationContext(), str  ,Toast.LENGTH_LONG).show();
-
-                    }
+                    return exists;
 
                 }
-
 
             };
-            a.execute();
+            try {
+                exists = (Boolean) a.execute().get();
+            }
+            catch(Exception e){
+
+            }
+            Log.v("EXESTENCE", exists.toString());
             //Move to Hub
             Intent i;
-            if(exists == false) {
+            if (exists == false) {
                 i = new Intent(getApplicationContext(), NoValidAccount.class);
-            }
-            else{
+            } else {
                 i = new Intent(getApplicationContext(), HubActivity.class);
             }
             startActivity(i);
@@ -261,7 +261,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     break;
             }
         } else {
-            switch(v.getId()){
+            switch (v.getId()) {
                 case R.id.sign_out_button:
                     signOut();
                     break;
@@ -287,8 +287,7 @@ class NewUserAsync extends AsyncTask<Void, Void, Boolean> {
     ServerConnection server;
     Boolean exists;
 
-    public NewUserAsync(String method, String params)
-    {
+    public NewUserAsync(String method, String params) {
         server = new ServerConnection(params);
         exists = false;
 
@@ -297,16 +296,15 @@ class NewUserAsync extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         JSONObject json = server.run();
-        if(1 == 1){
+        if (1 == 1) {
             exists = true;
         }
         return exists;
     }
-    public void onPostExecute(Boolean result)
-    {
+
+    public void onPostExecute(Boolean result) {
 
     }
-
 
 
 }

@@ -1,11 +1,15 @@
 package com.androiddev.thirtyseven.studybuddy.Accounts;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -14,6 +18,8 @@ import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
+import com.androiddev.thirtyseven.studybuddy.Backend.User;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 import com.androiddev.thirtyseven.studybuddy.R;
 
@@ -23,6 +29,9 @@ public class NoValidAccount extends AppCompatActivity {
     private EditText nameText;
     private EditText majorText;
     private EditText bioText;
+    private SharedPreferences prefs;
+    private String email;
+    private User user;
 
     /*TODO: Post Request
     Need to do a Post request to generate a new user if they are prompted to do so
@@ -35,6 +44,8 @@ public class NoValidAccount extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_no_valid_account);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        email = prefs.getString("email", "None");
         setSupportActionBar(toolbar);
         createAutoComplete();
         createButton();
@@ -59,6 +70,28 @@ public class NoValidAccount extends AppCompatActivity {
             public void onClick(View view) {
                 if(!(textView.getText().toString().equals("")) &&!(nameText.getText().toString().equals("")) && !(majorText.getText().toString().equals("")) && !(bioText.getText().toString().equals(""))) {
                     Intent i = new Intent(getApplicationContext(), HubActivity.class);
+                    user = new User();
+                    user.setName(nameText.getText().toString());
+                    user.setBio(bioText.getText().toString());
+                    String[] myCourses = textView.getText().toString().split(",");
+                    user.setCourses(myCourses);
+                    user.setMajor(majorText.getText().toString());
+                    user.setUsername(email);
+                    AsyncTask a = new AsyncTask<Object, Void, Void>() {
+
+
+                        @Override
+                        protected Void doInBackground(Object... params) {
+
+                            ServerConnection s = new ServerConnection(user, "/users/newuser/");
+                            s.run();
+                            return null;
+
+                        }
+
+
+                    };
+                    a.execute();
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                 }

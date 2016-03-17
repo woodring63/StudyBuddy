@@ -6,7 +6,9 @@ package com.androiddev.thirtyseven.studybuddy.Main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
@@ -27,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Accounts.BuddyList;
 import com.androiddev.thirtyseven.studybuddy.Accounts.LoginActivity;
@@ -43,6 +46,7 @@ public class NavBase extends AppCompatActivity {
     RelativeLayout mDrawerPane;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
+    private SharedPreferences prefs;
 
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
 
@@ -59,6 +63,8 @@ public class NavBase extends AppCompatActivity {
         //We get the toolbar so that we can add the "hamburger" icon
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String id = prefs.getString("id", "None");
 
         //Added 3 activities, more to come/will change
         mNavItems.add(new NavItem("Buddies", "View Your Buddies", R.drawable.ic_accessibility_black_24dp));

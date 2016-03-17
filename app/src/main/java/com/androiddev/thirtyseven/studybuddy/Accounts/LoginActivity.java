@@ -3,10 +3,12 @@ package com.androiddev.thirtyseven.studybuddy.Accounts;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +34,9 @@ import org.json.JSONObject;
 
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+        /*TODO: Store UserID in SharedPreferences
+             */
+
 
     private static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
@@ -41,12 +46,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private ProgressDialog mProgressDialog;
     private Boolean exists;
     private JSONObject j;
+    private String email;
+    private SharedPreferences.Editor editor;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 
 
         mStatusTextView = (TextView) findViewById(R.id.status);
@@ -116,15 +125,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             //Handle the Sign in
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
-            /*TODO: Finish Async Task
-            Need to a) extract the used email for my_params
-                    b) save the id of the user to a shared preferences
-             */
 
 
+            GoogleSignInAccount acct = result.getSignInAccount();
+            email = acct.getEmail();
+            editor.putString("email", email);
+            editor.commit();
 
             exists = false;
-            final String my_params = "/users/username/woodring@iastate.edu";
+            final String my_params = "/users/username/"+ email;
             AsyncTask a = new AsyncTask<Object, Void, Boolean>() {
 
 
@@ -135,12 +144,21 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     j = s.run();
 
                     try {
-                        Log.v("EVANTEST", j.getJSONObject("user").getString("name"));
+                        Log.v("Login", j.getJSONObject("user").getString("name"));
                         exists = true;
+
                     } catch (Exception e) {
-                        Log.v("EVANTEST", "NOPE");
+                        Log.v("Login", "NOPE");
                         exists = false;
                     }
+                    try {
+                        editor.putString("id", j.getJSONObject("user").getString("_id"));
+
+                    }
+                    catch(Exception e){
+
+                    }
+
                     return exists;
 
                 }
@@ -155,7 +173,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             Log.v("EXESTENCE", exists.toString());
             //Move to Hub
             Intent i;
-            if (exists == false) {
+            if (!exists) {
                 i = new Intent(getApplicationContext(), NoValidAccount.class);
             } else {
                 i = new Intent(getApplicationContext(), HubActivity.class);
@@ -280,32 +298,5 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-}
-
-class NewUserAsync extends AsyncTask<Void, Void, Boolean> {
-
-    ServerConnection server;
-    Boolean exists;
-
-    public NewUserAsync(String method, String params) {
-        server = new ServerConnection(params);
-        exists = false;
-
-    }
-
-    @Override
-    protected Boolean doInBackground(Void... params) {
-        JSONObject json = server.run();
-        if (1 == 1) {
-            exists = true;
-        }
-        return exists;
-    }
-
-    public void onPostExecute(Boolean result) {
-
-    }
-
-
 }
 

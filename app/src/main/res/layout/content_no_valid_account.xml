@@ -42,7 +42,9 @@
         android:layout_marginTop="41dp"
         android:layout_alignStart="@+id/textView"
         android:layout_alignEnd="@+id/textView"
-        android:hint="Enter Your Name..."/>
+        android:hint="Enter Your Name..."
+        android:inputType="textCapWords"
+        android:singleLine="true"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -51,7 +53,10 @@
         android:layout_below="@+id/nameText"
         android:layout_alignEnd="@+id/nameText"
         android:layout_alignStart="@+id/nameText"
-        android:hint="Enter Your Major..."/>
+        android:hint="Enter Your Major..."
+        android:inputType="textCapWords"
+        android:singleLine="true"
+        />
 
     <MultiAutoCompleteTextView
         android:layout_width="wrap_content"
@@ -60,7 +65,9 @@
         android:hint="Enter Your Courses..."
         android:layout_below="@+id/majorText"
         android:layout_alignEnd="@+id/majorText"
-        android:layout_alignStart="@+id/majorText" />
+        android:layout_alignStart="@+id/majorText"
+        android:inputType="textCapSentences"
+        />
 
     <Button
         android:layout_width="wrap_content"
@@ -78,6 +85,7 @@
         android:layout_below="@+id/coursesText"
         android:layout_alignEnd="@+id/majorText"
         android:layout_alignStart="@+id/majorText"
-        android:hint="Enter a Bio..."/>
+        android:hint="Enter a Bio..."
+        android:inputType="textCapSentences"/>
 
 </RelativeLayout>

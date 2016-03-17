@@ -27,11 +27,9 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -43,6 +41,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
     private Boolean exists;
+    private JSONObject j;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,13 +117,41 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             //Handle the Sign in
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
-            exists = false;
             //TO DO: Finish Async Task
 
 
+            exists = false;
+            final String my_params = "/users/username/woodring@iastate.edu";
+            AsyncTask a = new AsyncTask<Object, Void, Boolean>() {
 
-            //NewUserAsync async = new NewUserAsync(null , "/username/", exists);
-            //async.execute();
+
+                @Override
+                protected Boolean doInBackground(Object... params) {
+
+                    ServerConnection s = new ServerConnection(my_params);
+                    j = s.run();
+                    return true;
+
+                }
+                @Override
+                protected void onPostExecute(Boolean result) {
+
+                    String str = "";
+                    try {
+                        str = j.getString("name");
+                    }
+                    catch(Exception e){
+                    }
+                    if(result){
+                         Toast.makeText(getApplicationContext(), str  ,Toast.LENGTH_LONG).show();
+
+                    }
+
+                }
+
+
+            };
+            a.execute();
             //Move to Hub
             Intent i;
             if(exists == false) {
@@ -242,8 +270,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             }
 
-
-
         }
 
     }
@@ -259,17 +285,26 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 class NewUserAsync extends AsyncTask<Void, Void, Boolean> {
 
     ServerConnection server;
+    Boolean exists;
 
-    public NewUserAsync(String method, String params, Boolean exists)
+    public NewUserAsync(String method, String params)
     {
         server = new ServerConnection(params);
+        exists = false;
+
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
         JSONObject json = server.run();
+        if(1 == 1){
+            exists = true;
+        }
+        return exists;
+    }
+    public void onPostExecute(Boolean result)
+    {
 
-        return true;
     }
 
 

@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -24,7 +25,7 @@ public class ServerConnection {
      * Created by enclark on 2/7/2016.
      */
 
-    private static final String URL = "http://10.65.207.45:3000";
+    private static final String URL = "http://192.168.0.20:3000";
     private static String charset = "UTF-8";  // Or in Java 7 and later, use the constant: java.nio.charset.StandardCharsets.UTF_8.name()
     private boolean get;
     private boolean post;
@@ -216,6 +217,7 @@ public class ServerConnection {
             e.printStackTrace();
         }
     }
+
 
 
 

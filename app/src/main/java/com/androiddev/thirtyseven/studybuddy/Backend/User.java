@@ -3,6 +3,7 @@ package com.androiddev.thirtyseven.studybuddy.Backend;
 /**
  * Created by enclark on 2/27/2016.
  */
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -33,9 +34,9 @@ public class User {
         setMajor(null);
         setBio(null);
         try{
-            json.put("buddies", new String[0]);
-            json.put("sessions",new String[0]);
-            json.put("createdSessions",new String[0]);
+            json.put("buddies", new JSONArray());
+            json.put("sessions",new JSONArray());
+            json.put("createdSessions",new JSONArray());
         }catch(org.json.JSONException e)
         {
             e.printStackTrace();
@@ -88,11 +89,11 @@ public class User {
         try {
             if(courses != null)
             {
-                json.put("courses", courses);
+                json.put("courses", new JSONArray(courses));
             }
             else
             {
-                json.put("courses", new String[0]);
+                json.put("courses", new JSONArray());
             }
         }catch(Exception e)
         {

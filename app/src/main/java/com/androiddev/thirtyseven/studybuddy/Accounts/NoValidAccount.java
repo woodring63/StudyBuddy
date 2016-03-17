@@ -23,6 +23,8 @@ import com.androiddev.thirtyseven.studybuddy.Backend.User;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 import com.androiddev.thirtyseven.studybuddy.R;
 
+import java.util.ArrayList;
+
 public class NoValidAccount extends AppCompatActivity {
 
     private MultiAutoCompleteTextView textView;
@@ -74,6 +76,13 @@ public class NoValidAccount extends AppCompatActivity {
                     user.setName(nameText.getText().toString());
                     user.setBio(bioText.getText().toString());
                     String[] myCourses = textView.getText().toString().split(",");
+                    ArrayList<String> finalCourses = new ArrayList<String>();
+                    for(int j = 0; j < myCourses.length; j++){
+                        if(!myCourses[j].trim().isEmpty()){
+                            finalCourses.add(myCourses[j]);
+                        }
+                    }
+                    myCourses = finalCourses.toArray(new String[finalCourses.size()]);
                     user.setCourses(myCourses);
                     user.setMajor(majorText.getText().toString());
                     user.setUsername(email);
@@ -94,6 +103,7 @@ public class NoValidAccount extends AppCompatActivity {
                     a.execute();
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
+                    finish();
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "Please Fill Out All Fields"

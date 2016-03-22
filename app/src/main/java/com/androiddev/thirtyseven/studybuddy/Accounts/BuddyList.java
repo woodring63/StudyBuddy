@@ -1,10 +1,13 @@
 package com.androiddev.thirtyseven.studybuddy.Accounts;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -23,14 +26,19 @@ import java.util.ArrayList;
 public class BuddyList extends NavBase {
     private ArrayList<Buddy> buddies;
     private BuddyListAdapter adapter;
+    private SharedPreferences prefs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buddy_list);
-
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String id = prefs.getString("id", "None");
         buddies = new ArrayList<Buddy>();
-        BuddieAsync async = new BuddieAsync(null, "/buddies/56c91d1d28c61d543b355647", buddies);
+        BuddieAsync async = new BuddieAsync(null, "/users/buddies/"+id, buddies);
+        Log.v("HEY2", "users/buddies/"+id);
+
         async.execute();
 
         adapter = new BuddyListAdapter(this, buddies);

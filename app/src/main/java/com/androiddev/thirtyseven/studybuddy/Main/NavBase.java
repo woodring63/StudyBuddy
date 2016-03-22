@@ -63,8 +63,12 @@ public class NavBase extends AppCompatActivity {
         //We get the toolbar so that we can add the "hamburger" icon
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //SHARED PREFERENCE EXAMPLE
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String id = prefs.getString("id", "None");
+        Log.v("HEYadsfasd", id);
+
 
         //Added 3 activities, more to come/will change
         mNavItems.add(new NavItem("Buddies", "View Your Buddies", R.drawable.ic_accessibility_black_24dp));

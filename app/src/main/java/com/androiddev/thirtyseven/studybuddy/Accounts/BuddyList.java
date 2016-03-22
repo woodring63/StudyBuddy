@@ -34,9 +34,11 @@ public class BuddyList extends NavBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buddy_list);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String id = prefs.getString("email", "None");
+        String id = prefs.getString("id", "None");
         buddies = new ArrayList<Buddy>();
-        BuddieAsync async = new BuddieAsync(null, "users/buddies/"+id, buddies);
+        BuddieAsync async = new BuddieAsync(null, "/users/buddies/"+id, buddies);
+        Log.v("HEY2", "users/buddies/"+id);
+
         async.execute();
 
         adapter = new BuddyListAdapter(this, buddies);

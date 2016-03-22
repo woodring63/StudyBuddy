@@ -67,7 +67,7 @@ public class NavBase extends AppCompatActivity {
         //SHARED PREFERENCE EXAMPLE
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String id = prefs.getString("id", "None");
-        Log.v("HEYadsfasd", id);
+        Log.v("HEY", id);
 
 
         //Added 3 activities, more to come/will change

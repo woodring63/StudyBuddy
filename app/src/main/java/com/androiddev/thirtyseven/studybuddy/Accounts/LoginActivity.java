@@ -55,7 +55,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 
 
         mStatusTextView = (TextView) findViewById(R.id.status);
@@ -129,6 +128,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             GoogleSignInAccount acct = result.getSignInAccount();
             email = acct.getEmail();
+            editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString("email", email);
             editor.commit();
 
@@ -153,6 +153,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     }
                     try {
                         editor.putString("id", j.getJSONObject("user").getString("_id"));
+                        editor.commit();
 
                     }
                     catch(Exception e){

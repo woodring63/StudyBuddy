@@ -1,5 +1,6 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
@@ -19,7 +20,7 @@ import com.google.android.gms.drive.Drive;
 /**
  * Created by Joseph Elliott on 2/28/2016.
  */
-public class DocumentFragment extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener,
+public class DocumentFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks {
 
     private static final String TAG = "DocumentFragment";
@@ -31,7 +32,8 @@ public class DocumentFragment extends FragmentActivity implements GoogleApiClien
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this.getActivity())
                 .addApi(Drive.API)
                 .addScope(Drive.SCOPE_FILE)
                 .addConnectionCallbacks(this)
@@ -42,7 +44,7 @@ public class DocumentFragment extends FragmentActivity implements GoogleApiClien
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
@@ -51,33 +53,33 @@ public class DocumentFragment extends FragmentActivity implements GoogleApiClien
     public void onConnectionFailed(ConnectionResult connectionResult) {
         if (connectionResult.hasResolution()) {
             try {
-                connectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
+                connectionResult.startResolutionForResult(this.getActivity(), REQUEST_CODE_RESOLUTION);
             } catch (IntentSender.SendIntentException e) {
-                Toast.makeText(this, "Unable to resolve connection", Toast.LENGTH_SHORT);
+                Toast.makeText(this.getActivity(), "Unable to resolve connection", Toast.LENGTH_SHORT);
             }
         }
         else {
-            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this, 0).show();
+            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this.getActivity(), 0).show();
         }
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_CAPTURE_IMAGE:
                 break;
             case REQUEST_CODE_CREATOR:
                 break;
             case REQUEST_CODE_RESOLUTION:
-                if (resultCode == RESULT_OK) {
+                //if (resultCode == RESULT_OK) {
                     mGoogleApiClient.connect();
-                }
+                //}
                 break;
         }
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
     }
 

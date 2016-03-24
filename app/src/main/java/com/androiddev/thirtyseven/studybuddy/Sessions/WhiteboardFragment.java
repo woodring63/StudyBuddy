@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.ColorDialogFragment;
@@ -27,8 +28,7 @@ public class WhiteboardFragment extends Fragment {
     private Button btnSize;
     //private SeekBar seekBar;
 
-    private int size;
-    private Color color;
+    private WhiteboardFragment thisFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,6 +38,7 @@ public class WhiteboardFragment extends Fragment {
             whiteboard = (WhiteboardView) rootView.findViewById(R.id.whiteboard);
             btnColor = (Button) rootView.findViewById(R.id.btn_color);
             btnSize = (Button) rootView.findViewById(R.id.btn_size);
+            thisFragment = this;
             initializeColorButton();
             initializeSizeButton();
         } catch (NullPointerException e) {
@@ -58,6 +59,7 @@ public class WhiteboardFragment extends Fragment {
             public void onClick(View v) {
                 ColorDialogFragment cdf = new ColorDialogFragment();
                 cdf.show(getFragmentManager(), "cdf");
+                cdf.setParentWhiteboardFragment(thisFragment);
             }
         });
     }
@@ -68,8 +70,48 @@ public class WhiteboardFragment extends Fragment {
             public void onClick(View v) {
                 SizeDialogFragment sdf = new SizeDialogFragment();
                 sdf.show(getFragmentManager(), "sdf");
+                sdf.setParentWhiteboardFragment(thisFragment);
             }
         });
+    }
+
+    public void setColor(String color) {
+        // TODO FIX COLORS
+        switch(color) {
+            case "red":
+                whiteboard.setPenColor(Color.RED);
+                break;
+            case "orange":
+                whiteboard.setPenColor(Color.RED);
+                break;
+            case "yellow":
+                whiteboard.setPenColor(Color.YELLOW);
+                break;
+            case "green":
+                whiteboard.setPenColor(Color.GREEN);
+                break;
+            case "blue":
+                whiteboard.setPenColor(Color.BLUE);
+                break;
+            case "indigo":
+                whiteboard.setPenColor(Color.BLUE);
+                break;
+            case "violet":
+                whiteboard.setPenColor(Color.BLUE);
+                break;
+            case "black":
+                whiteboard.setPenColor(Color.BLACK);
+                break;
+            case "white":
+                whiteboard.setPenColor(Color.WHITE);
+                break;
+            default:
+                whiteboard.setPenColor(Color.BLACK);
+        }
+    }
+
+    public void setSize(int size) {
+        whiteboard.setStrokeWidth((float) size);
     }
 
     /*

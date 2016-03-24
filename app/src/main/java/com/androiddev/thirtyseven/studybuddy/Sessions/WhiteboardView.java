@@ -31,7 +31,7 @@ public class WhiteboardView extends View {
     }
 
     public void setStrokeWidth(float f) {
-        paint.setStrokeWidth(f);
+        paint.setStrokeWidth(f * 1.5f);
     }
 
     public void setPenColor(int color) {

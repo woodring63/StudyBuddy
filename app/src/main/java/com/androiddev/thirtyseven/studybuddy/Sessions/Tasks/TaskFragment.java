@@ -1,4 +1,4 @@
-package com.androiddev.thirtyseven.studybuddy.Sessions;
+package com.androiddev.thirtyseven.studybuddy.Sessions.Tasks;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

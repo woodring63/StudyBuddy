@@ -1,4 +1,4 @@
-package com.androiddev.thirtyseven.studybuddy.Sessions;
+package com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -21,15 +21,15 @@ import com.androiddev.thirtyseven.studybuddy.R;
  */
 public class WhiteboardView extends View {
 
-    //drawing path
+    // drawing path
     private Path drawPath;
-    //drawing and canvas paint
+    // drawing and canvas paint
     private Paint drawPaint, canvasPaint;
-    //initial color
+    // paint color
     private int paintColor;
-    //canvas
+    // canvas
     private Canvas drawCanvas;
-    //canvas bitmap
+    // canvas bitmap
     private Bitmap canvasBitmap;
     // eraser
     private boolean eraser = false;
@@ -37,18 +37,21 @@ public class WhiteboardView extends View {
     public WhiteboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        // Initialize path and paint
         drawPath = new Path();
         drawPaint = new Paint();
+        canvasPaint = new Paint(Paint.DITHER_FLAG);
 
+        // Set up the paints
         paintColor = ContextCompat.getColor(getContext(), R.color.black);
-        drawPaint.setColor(paintColor);
         drawPaint.setAntiAlias(true);
-        drawPaint.setStrokeWidth(5f);
         drawPaint.setStyle(Paint.Style.STROKE);
         drawPaint.setStrokeJoin(Paint.Join.ROUND);
         drawPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        canvasPaint = new Paint(Paint.DITHER_FLAG);
+        // Initialize the size and color
+        setStrokeWidth(5f);
+        setPaintColor("black");
     }
 
     @Override
@@ -122,21 +125,29 @@ public class WhiteboardView extends View {
                 break;
         }
         drawPaint.setColor(paintColor);
+        canvasPaint.setColor(paintColor);
     }
 
     public void setStrokeWidth(float f) {
         // set the size for the pen stroke
-        drawPaint.setStrokeWidth(f * 1.5f);
-        canvasPaint.setStrokeWidth(f * 1.5f);
+        if (eraser) {
+            drawPaint.setStrokeWidth(f * 6f);
+            canvasPaint.setStrokeWidth(f * 6f);
+        } else {
+            drawPaint.setStrokeWidth(f * 2f);
+            canvasPaint.setStrokeWidth(f * 2f);
+        }
     }
 
     public void toggleEraser() {
         eraser = !eraser;
         if (eraser) {
             setPaintColor("white");
+            setStrokeWidth(10f);
             drawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         } else {
             setPaintColor("black");
+            setStrokeWidth(5f);
             drawPaint.setXfermode(null);
         }
     }

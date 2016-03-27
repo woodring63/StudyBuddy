@@ -81,8 +81,10 @@ public class WhiteboardFragment extends Fragment {
                 whiteboard.toggleEraser();
                 if (whiteboard.isEraser()) {
                     btnEraserToggle.setText("ERASER");
+                    Toast.makeText(getContext(), "eraser enabled", Toast.LENGTH_SHORT).show();
                 } else {
                     btnEraserToggle.setText("PEN");
+                    Toast.makeText(getContext(), "pen enabled", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -90,9 +92,11 @@ public class WhiteboardFragment extends Fragment {
 
     public void setColor(String color) {
         whiteboard.setPaintColor(color);
+        Toast.makeText(getContext(), "color set to " + color, Toast.LENGTH_SHORT).show();
     }
 
     public void setSize(int size) {
         whiteboard.setStrokeWidth((float) size);
+        Toast.makeText(getContext(), "size set to " + size, Toast.LENGTH_SHORT).show();
     }
 }

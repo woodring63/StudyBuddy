@@ -20,7 +20,7 @@ public class TaskFragment extends Fragment {
 
     private ListView listView;
     private TaskListViewAdapter adapter;
-    private ArrayList<String> tasks;
+    private ArrayList<Task> tasks;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,9 +45,27 @@ public class TaskFragment extends Fragment {
         // TODO load tasks from server for the session
         // Here are some dummy tasks
         tasks = new ArrayList<>();
-        tasks.add("get a puppy");
-        tasks.add("get a kitty");
-        tasks.add("potato potato potato potato");
+        tasks.add(new Task("get a puppy", false));
+        tasks.add(new Task("get a kitty", false));
+        tasks.add(new Task("potato potato", true));
+        tasks.add(new Task("get a puppy", false));
+        tasks.add(new Task("get a kitty", false));
+        tasks.add(new Task("potato potato", true));
+        tasks.add(new Task("get a puppy", false));
+        tasks.add(new Task("get a kitty", false));
+        tasks.add(new Task("potato potato", true));
+        tasks.add(new Task("get a puppy", false));
+        tasks.add(new Task("get a kitty", false));
+        tasks.add(new Task("potato potato", true));
+        tasks.add(new Task("get a puppy", false));
+        tasks.add(new Task("get a kitty", false));
+        tasks.add(new Task("potato potato", true));
+        tasks.add(new Task("get a puppy", false));
+        tasks.add(new Task("get a kitty", false));
+        tasks.add(new Task("potato potato", true));
+        tasks.add(new Task("get a puppy", false));
+        tasks.add(new Task("get a kitty", false));
+        tasks.add(new Task("potato potato", true));
     }
 
 }

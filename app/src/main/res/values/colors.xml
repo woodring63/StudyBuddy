@@ -4,10 +4,20 @@
     <color name="colorPrimaryDark">#F44336</color>
     <color name="colorAccent">#FFBF00</color>
     <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
 
     <color name="blue_grey_500">#607D8B</color>
     <color name="blue_grey_600">#546E7A</color>
     <color name="blue_grey_700">#455A64</color>
     <color name="blue_grey_800">#37474F</color>
     <color name="blue_grey_900">#263238</color>
+
+    <!-- Colors for the whiteboard -->
+    <color name="red">#F44336</color>
+    <color name="orange">#FF9800</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="green">#4CAF50</color>
+    <color name="blue">#2196F3</color>
+    <color name="indigo">#3F51B5</color>
+    <color name="violet">#9C27B0</color>
 </resources>

@@ -20,13 +20,10 @@ import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.SizeDialogFragment
  */
 public class WhiteboardFragment extends Fragment {
 
-    //private static final int SEEKBAR_MAX = 10;
-    //private static final int SEEKBAR_START_PEN = (int) Math.ceil((double) SEEKBAR_MAX / 2.0);
-
     private WhiteboardView whiteboard;
     private Button btnColor;
     private Button btnSize;
-    //private SeekBar seekBar;
+    private Button btnEraserToggle;
 
     private WhiteboardFragment thisFragment;
 
@@ -38,9 +35,11 @@ public class WhiteboardFragment extends Fragment {
             whiteboard = (WhiteboardView) rootView.findViewById(R.id.whiteboard);
             btnColor = (Button) rootView.findViewById(R.id.btn_color);
             btnSize = (Button) rootView.findViewById(R.id.btn_size);
+            btnEraserToggle = (Button) rootView.findViewById(R.id.btn_eraser_toggle);
             thisFragment = this;
             initializeColorButton();
             initializeSizeButton();
+            initializeEraserToggleButton();
         } catch (NullPointerException e) {
             // rip in pieces
         }
@@ -75,72 +74,25 @@ public class WhiteboardFragment extends Fragment {
         });
     }
 
+    private void initializeEraserToggleButton() {
+        btnEraserToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                whiteboard.toggleEraser();
+                if (whiteboard.isEraser()) {
+                    btnEraserToggle.setText("ERASER");
+                } else {
+                    btnEraserToggle.setText("PEN");
+                }
+            }
+        });
+    }
+
     public void setColor(String color) {
-        // TODO FIX COLORS
-        switch(color) {
-            case "red":
-                whiteboard.setPenColor(Color.RED);
-                break;
-            case "orange":
-                whiteboard.setPenColor(Color.RED);
-                break;
-            case "yellow":
-                whiteboard.setPenColor(Color.YELLOW);
-                break;
-            case "green":
-                whiteboard.setPenColor(Color.GREEN);
-                break;
-            case "blue":
-                whiteboard.setPenColor(Color.BLUE);
-                break;
-            case "indigo":
-                whiteboard.setPenColor(Color.BLUE);
-                break;
-            case "violet":
-                whiteboard.setPenColor(Color.BLUE);
-                break;
-            case "black":
-                whiteboard.setPenColor(Color.BLACK);
-                break;
-            case "white":
-                whiteboard.setPenColor(Color.WHITE);
-                break;
-            default:
-                whiteboard.setPenColor(Color.BLACK);
-        }
+        whiteboard.setPaintColor(color);
     }
 
     public void setSize(int size) {
         whiteboard.setStrokeWidth((float) size);
     }
-
-    /*
-    private void initializeSeekBar() {
-        seekBar.setMax(SEEKBAR_MAX);
-        seekBar.setProgress(SEEKBAR_START_PEN);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (progress >= SEEKBAR_START_PEN) {
-                    // We are using the pen, anything greater will increase pen size.
-                    whiteboard.setEraser(false);
-                    whiteboard.setStrokeWidth(((float) progress) * 5f);
-                } else {
-                    whiteboard.setEraser(true);
-                    whiteboard.setStrokeWidth(((float) SEEKBAR_MAX - (float) progress) * 5f);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-    }
-    */
 }

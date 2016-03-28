@@ -1,11 +1,13 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Tasks;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.androiddev.thirtyseven.studybuddy.R;
@@ -20,16 +22,35 @@ public class TaskFragment extends Fragment {
 
     private ListView listView;
     private TaskListViewAdapter adapter;
+    private Button btnAdd;
+    private EditText etText;
     private ArrayList<Task> tasks;
+    private TaskFragment thisTaskFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_tasks, container, false);
 
         try {
+            thisTaskFragment = this;
             listView = (ListView) rootView.findViewById(R.id.tasks_list_view);
             adapter = new TaskListViewAdapter(getContext(), R.layout.item_task, tasks);
             listView.setAdapter(adapter);
+            etText = (EditText) rootView.findViewById(R.id.tasks_add_edit_text);
+            btnAdd = (Button) rootView.findViewById(R.id.tasks_add_button);
+            btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (etText.getText().toString().length() == 0) {
+                        Snackbar.make(thisTaskFragment.getView(), "Oops! You tried to make a blank task.", Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        Task task = new Task(etText.getText().toString(), false);
+                        tasks.add(task);
+                        adapter.notifyDataSetChanged();
+                        etText.setText("");
+                    }
+                }
+            });
         } catch (NullPointerException e) {
             // rip in pieces
         }
@@ -43,29 +64,7 @@ public class TaskFragment extends Fragment {
         super.onCreate(savedInstances);
 
         // TODO load tasks from server for the session
-        // Here are some dummy tasks
         tasks = new ArrayList<>();
-        tasks.add(new Task("get a puppy", false));
-        tasks.add(new Task("get a kitty", false));
-        tasks.add(new Task("potato potato", true));
-        tasks.add(new Task("get a puppy", false));
-        tasks.add(new Task("get a kitty", false));
-        tasks.add(new Task("potato potato", true));
-        tasks.add(new Task("get a puppy", false));
-        tasks.add(new Task("get a kitty", false));
-        tasks.add(new Task("potato potato", true));
-        tasks.add(new Task("get a puppy", false));
-        tasks.add(new Task("get a kitty", false));
-        tasks.add(new Task("potato potato", true));
-        tasks.add(new Task("get a puppy", false));
-        tasks.add(new Task("get a kitty", false));
-        tasks.add(new Task("potato potato", true));
-        tasks.add(new Task("get a puppy", false));
-        tasks.add(new Task("get a kitty", false));
-        tasks.add(new Task("potato potato", true));
-        tasks.add(new Task("get a puppy", false));
-        tasks.add(new Task("get a kitty", false));
-        tasks.add(new Task("potato potato", true));
     }
 
 }

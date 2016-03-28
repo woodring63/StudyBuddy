@@ -43,6 +43,16 @@ import java.util.Iterator;
 /**
  * Created by Joseph Elliott on 2/28/2016.
  */
+
+public class DocumentFragment extends Fragment {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_tasks, container, false);
+
+        return rootView;
+    }
+}
+/*
 public class DocumentFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
@@ -402,3 +412,4 @@ public class DocumentFragment extends Fragment
 
     }
 }
+*/

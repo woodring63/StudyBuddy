@@ -8241,7 +8241,7 @@
     <string name="title_activity_no_valid_account">NoValidAccount</string>
     <string name="title_activity_new_user_async">NewUserAsync</string>
     <string name="title_activity_google_drive_testing">GoogleDriveTesting</string>
-    <string name="load_button_text">DON'T PRESS</string>
+    <string name="load_button_text">DON\'T PRESS</string>
     <string name="clear_button_text">Clear</string>
     <string name="save_button_text">Save</string>
     <string name="title_activity_file_list">FileList</string>

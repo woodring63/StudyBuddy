@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
 import com.androiddev.thirtyseven.studybuddy.R;
 
-public class UserProfile extends AppCompatActivity {
+public class UserProfile extends NavBase {
 
     private SharedPreferences prefs;
     private String id;
@@ -31,7 +31,7 @@ public class UserProfile extends AppCompatActivity {
         id = prefs.getString("id", "None");
         bio = prefs.getString("bio", "None");
         name = prefs.getString("name", "None");
-        major = prefs.getString("major", "EricaFixPls");
+        major = prefs.getString("major", "None");
         TextView userNameView = (TextView) findViewById(R.id.userNameView);
         TextView userMajorView = (TextView) findViewById(R.id.userMajorView);
         TextView userBioView = (TextView) findViewById(R.id.userAboutMeText);
@@ -40,6 +40,6 @@ public class UserProfile extends AppCompatActivity {
         userBioView.setText(bio);
         userMajorView.setText(major);
 
-    }
-
 }
+
+        }

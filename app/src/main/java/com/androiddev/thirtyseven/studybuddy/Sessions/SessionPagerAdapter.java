@@ -1,9 +1,11 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.androiddev.thirtyseven.studybuddy.Sessions.Tasks.TaskFragment;
+import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardFragment;
 
 /**
  * Created by Joseph Elliott on 2/28/2016.

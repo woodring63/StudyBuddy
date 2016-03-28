@@ -69,6 +69,7 @@ public class NavBase extends AppCompatActivity {
 
 
         //Added 3 activities, more to come/will change
+        mNavItems.add(new NavItem("Home", "Return Home", R.drawable.ic_3d_rotation_black_24dp));
         mNavItems.add(new NavItem("Buddies", "View Your Buddies", R.drawable.ic_accessibility_black_24dp));
         mNavItems.add(new NavItem("Profile", "View Your Profile", R.drawable.ic_play_light));
         mNavItems.add(new NavItem("Sessions", "View a Session", R.drawable.ic_android_black_24dp));
@@ -137,20 +138,27 @@ public class NavBase extends AppCompatActivity {
         Intent i;
         switch(position){
             case 0:
-                i = new Intent(getApplicationContext(), BuddyList.class);
+                i = new Intent(getApplicationContext(), HubActivity.class);
                 startActivity(i);
+                finish();
                 break;
             case 1:
-                i = new Intent(getApplicationContext(), UserProfile.class);
+                i = new Intent(getApplicationContext(), BuddyList.class);
                 startActivity(i);
+                finish();
                 break;
             case 2:
-                i = new Intent(getApplicationContext(), SessionActivity.class);
+                i = new Intent(getApplicationContext(), UserProfile.class);
                 startActivity(i);
+                finish();
                 break;
             case 3:
+                i = new Intent(getApplicationContext(), SessionActivity.class);
+                startActivity(i);
+                finish();
+                break;
+            case 4:
                 i = new Intent(getApplicationContext(), LoginActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 break;
@@ -173,6 +181,16 @@ public class NavBase extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
+    }
+    @Override
+    public void onBackPressed(){
+        Intent main = new Intent(getApplicationContext(), HubActivity.class);
+        main.addCategory(Intent.CATEGORY_HOME);
+        main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(main);
+        finish();
+
+
     }
 }
 
@@ -240,6 +258,7 @@ class DrawerListAdapter extends BaseAdapter {
 
         return view;
     }
+
 
 }
 

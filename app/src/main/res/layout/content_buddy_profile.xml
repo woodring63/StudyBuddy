@@ -1,134 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+app:layout_behavior="@string/appbar_scrolling_view_behavior"
+tools:context=".Accounts.BuddyProfile"
+tools:showIn="@layout/activity_buddy_profile">
+
+<ScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".Accounts.BuddyProfile"
-    tools:showIn="@layout/activity_buddy_profile">
+    android:layout_height="fill_parent"
+    android:id="@+id/scrollView"
+    android:onClick="backToSearch"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentStart="true"
+    android:fillViewport="false">
 
-    <ScrollView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/scrollView"
-        android:onClick="backToSearch"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:fillViewport="false">
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal">
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/default_user_name"
+                android:id="@+id/userNameView"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/default_user_name"
-                    android:id="@+id/userNameView"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true" />
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:id="@+id/userImageView"
+                android:layout_below="@+id/userNameView"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/user"
+                android:layout_margin="5dp" />
 
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:id="@+id/userImageView"
-                    android:layout_below="@+id/userNameView"
-                    android:layout_centerHorizontal="true"
-                    android:src="@drawable/user"
-                    android:layout_margin="5dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/default_major_text"
+                android:id="@+id/userMajorView"
+                android:layout_alignParentTop="false"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentStart="false"
+                android:layout_below="@+id/userImageView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/default_major_text"
-                    android:id="@+id/userMajorView"
-                    android:layout_alignParentTop="false"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentEnd="false"
-                    android:layout_alignParentStart="false"
-                    android:layout_below="@+id/userImageView" />
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/courses_button_text"
+                android:id="@+id/coursesButton"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/userMajorView" />
 
-                <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/courses_button_text"
-                    android:id="@+id/coursesButton"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@+id/userMajorView" />
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/buddy_up_button_text"
+                android:id="@+id/buddyUpButton"
+                android:layout_alignParentBottom="true"
+                android:layout_toStartOf="@+id/coursesButton" />
 
-                <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/buddy_up_button_text"
-                    android:id="@+id/buddyUpButton"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toStartOf="@+id/coursesButton" />
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/buddies_button_text"
+                android:id="@+id/buddiesButton"
+                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@+id/coursesButton" />
 
-                <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/buddies_button_text"
-                    android:id="@+id/buddiesButton"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toEndOf="@+id/coursesButton" />
+        </RelativeLayout>
 
-            </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/about_me_text_colon"
+                android:id="@+id/aboutMeTextLabel"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/about_me_text_colon"
-                    android:id="@+id/aboutMeTextLabel"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_about_me_text_profile"
+                android:id="@+id/userAboutMeText"
+                android:layout_below="@+id/aboutMeTextLabel"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/default_about_me_text_profile"
-                    android:id="@+id/userAboutMeText"
-                    android:layout_below="@+id/aboutMeTextLabel"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
 
-            </RelativeLayout>
-        </LinearLayout>
-    </ScrollView>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/back_button_text"
-        android:id="@+id/backButton"
-        android:onClick="onClick"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="107dp" />
+<Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/back_button_text"
+    android:id="@+id/backButton"
+    android:onClick="onClick"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="107dp" />
 
 </RelativeLayout>

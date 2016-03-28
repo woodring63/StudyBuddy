@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,8 +35,8 @@ public class DocumentFragment extends Fragment
     EditText text;
     GoogleApiClient mGoogleApiClient;
     DriveId driveId;
+    Activity activity; // For use in nested objects
 
-    private final Activity activity = getActivity(); // For use in nested objects
     static final String TAG = "DocumentFragment";
 
     @Override
@@ -50,6 +49,8 @@ public class DocumentFragment extends Fragment
         Button clearButton = (Button) view.findViewById(R.id.clear_button);
         Button saveButton = (Button) view.findViewById(R.id.save_button);
 
+        activity = getActivity();
+
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Drive.API)
                 .addScope(Drive.SCOPE_FILE)
@@ -59,6 +60,7 @@ public class DocumentFragment extends Fragment
                 .build();
         mGoogleApiClient.connect();
 
+        Log.d(TAG, "mGoogleApiClient created");
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,21 +176,6 @@ public class DocumentFragment extends Fragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addApi(Drive.API)
-                    .addScope(Drive.SCOPE_FILE)
-                    .setAccountName("nlg@iastate.edu")
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-        }
-        mGoogleApiClient.connect();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         if (mGoogleApiClient == null) {
@@ -201,14 +188,6 @@ public class DocumentFragment extends Fragment
                     .build();
         }
         mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onStop() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
-        }
-        super.onStop();
     }
 
     @Override

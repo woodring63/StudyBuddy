@@ -4,31 +4,13 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="415dp"
-        android:id="@+id/drive_file_text_display"
-        android:layout_weight="0.69"
-        android:layout_columnSpan="3" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/load_button_text"
-        android:id="@+id/load_button"
-        android:layout_row="1"
-        android:layout_column="0"
-        android:allowUndo="true"
-        android:layout_columnWeight="1" />
-
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/clear_button_text"
         android:id="@+id/clear_button"
-        android:layout_row="1"
+        android:layout_row="0"
         android:layout_column="1"
         android:layout_columnWeight="1" />
 
@@ -38,8 +20,28 @@
         android:layout_height="wrap_content"
         android:text="@string/save_button_text"
         android:id="@+id/save_button"
-        android:layout_row="1"
+        android:layout_row="0"
         android:layout_column="2"
+        android:layout_columnWeight="1" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/drive_file_text_display"
+        android:layout_weight="0.69"
+        android:layout_columnSpan="3"
+        android:layout_row="1"
+        android:layout_column="0" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/load_button_text"
+        android:id="@+id/load_button"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:allowUndo="true"
         android:layout_columnWeight="1" />
 
 </GridLayout>

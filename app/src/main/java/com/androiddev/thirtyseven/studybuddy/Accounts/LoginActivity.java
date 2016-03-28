@@ -153,6 +153,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     }
                     try {
                         editor.putString("id", j.getJSONObject("user").getString("_id"));
+                        editor.putString("name", j.getJSONObject("user").getString("name"));
+                        editor.putString("bio", j.getJSONObject("user").getString("bio"));
+                        editor.putString("major", j.getJSONObject("user").getString("major"));
                         editor.commit();
 
                     }

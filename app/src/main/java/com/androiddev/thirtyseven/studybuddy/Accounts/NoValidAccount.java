@@ -35,9 +35,7 @@ public class NoValidAccount extends AppCompatActivity {
     private String email;
     private User user;
 
-    /*TODO: Post Request
-    Need to do a Post request to generate a new user if they are prompted to do so
-     */
+
 
 
 

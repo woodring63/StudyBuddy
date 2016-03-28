@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Accounts.BuddyList;
 import com.androiddev.thirtyseven.studybuddy.Accounts.LoginActivity;
@@ -140,6 +138,10 @@ public class NavBase extends AppCompatActivity {
         switch(position){
             case 0:
                 i = new Intent(getApplicationContext(), BuddyList.class);
+                startActivity(i);
+                break;
+            case 1:
+                i = new Intent(getApplicationContext(), UserProfile.class);
                 startActivity(i);
                 break;
             case 2:

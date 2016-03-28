@@ -8246,4 +8246,5 @@
     <string name="save_button_text">Save</string>
     <string name="title_activity_file_list">FileList</string>
     <string name="default_file_name">File Name</string>
+    <string name="title_activity_user_profile">UserProfile</string>
 </resources>

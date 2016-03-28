@@ -17,6 +17,7 @@ public class Buddy implements Parcelable {
     private String[] courses;
     private String[] sessions;
     private String[] buddies;
+    private String bio;
 
     public Buddy() {
         id = null;
@@ -26,6 +27,7 @@ public class Buddy implements Parcelable {
         courses = null;
         sessions = null;
         buddies = null;
+        bio = null;
     }
 
     public String[] getBuddies() {
@@ -84,6 +86,10 @@ public class Buddy implements Parcelable {
         this.username = username;
     }
 
+    public String getBio(){ return bio;}
+
+    public void setBio(String bio){this.bio = bio;}
+
     @Override
     public int describeContents() {
         return 0;
@@ -98,6 +104,7 @@ public class Buddy implements Parcelable {
         dest.writeStringArray(courses);
         dest.writeStringArray(sessions);
         dest.writeStringArray(buddies);
+        dest.writeString(bio);
     }
 
     public static final Parcelable.Creator<Buddy> CREATOR = new Parcelable.Creator<Buddy>() {
@@ -121,6 +128,7 @@ public class Buddy implements Parcelable {
         this.setCourses(source.createStringArray());
         this.setSessions(source.createStringArray());
         this.setBuddies(source.createStringArray());
+        this.setBio((source.readString()));
     }
 }
 

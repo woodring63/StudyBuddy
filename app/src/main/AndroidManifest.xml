@@ -39,12 +39,10 @@
             android:name=".Sessions.SessionActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        android:theme="@style/AppTheme.NoActionBar"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="adjustPan"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name=".Accounts.UserProfile"
+            android:name=".Accounts.BuddyProfile"
             android:label="@string/title_activity_my_profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -69,14 +67,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Sessions.FileList"
-            android:label="@string/title_activity_file_list"
-            android:parentActivityName=".Sessions.SessionActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity" />
-        </activity>
+            android:name=".Accounts.UserProfile"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

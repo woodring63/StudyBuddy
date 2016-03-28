@@ -8244,4 +8244,5 @@
     <string name="load_button_text">Load</string>
     <string name="clear_button_text">Clear</string>
     <string name="save_button_text">Save</string>
+    <string name="title_activity_user_profile">UserProfile</string>
 </resources>

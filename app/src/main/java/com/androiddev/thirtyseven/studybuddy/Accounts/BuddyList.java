@@ -6,16 +6,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toolbar;
+
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
 import com.androiddev.thirtyseven.studybuddy.R;
-import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,7 +49,7 @@ public class BuddyList extends NavBase {
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent i = new Intent(getApplicationContext(), UserProfile.class);
+                        Intent i = new Intent(getApplicationContext(), BuddyProfile.class);
                         Parcel parcel = Parcel.obtain();
                         Buddy bud = buddies.get(position);
                         bud.writeToParcel(parcel, 0);
@@ -93,6 +91,7 @@ public class BuddyList extends NavBase {
                         temp.setName((String) bud.get("name"));
                         temp.setSessions((String[]) bud.get("sessions").toString().replace("},{", "~").split("~"));
                         temp.setUsername((String) bud.get("username"));
+                        temp.setBio((String) bud.get("bio"));
                         buddies.add(temp);
                     }
                 }

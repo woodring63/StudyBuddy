@@ -1,16 +1,19 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Tasks;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.androiddev.thirtyseven.studybuddy.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Joseph Elliott on 3/26/2016.
@@ -41,11 +44,20 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
                     markTaskAsIncomplete(view);
                 }
                 tasks.get(finalPosition).toggleDone();
+                notifyDataSetChanged();
             }
         });
 
-        EditText editText = (EditText) view.findViewById(R.id.item_task_edit_text);
+        final EditText editText = (EditText) view.findViewById(R.id.item_task_edit_text);
         editText.setText(tasks.get(position).getTask());
+
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                tasks.get(finalPosition).setTask(editText.getText().toString());
+                return false;
+            }
+        });
 
         if (tasks.get(position).getDone()) {
             markTaskAsComplete(view);
@@ -67,6 +79,13 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
 
     private void markTaskAsIncomplete(View view) {
         view.setAlpha(1f);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        // sort the tasks by alphabet / done or not done
+        Collections.sort(tasks);
+        super.notifyDataSetChanged();
     }
 
 }

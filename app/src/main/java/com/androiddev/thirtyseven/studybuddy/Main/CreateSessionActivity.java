@@ -3,10 +3,14 @@ package com.androiddev.thirtyseven.studybuddy.Main;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,9 +22,18 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.androiddev.thirtyseven.studybuddy.Accounts.Buddy;
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
+import com.androiddev.thirtyseven.studybuddy.Backend.SessionSchema;
 import com.androiddev.thirtyseven.studybuddy.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.SecureCacheResponse;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -62,11 +75,22 @@ public class CreateSessionActivity extends AppCompatActivity {
                 if(!(dateText.getText().toString().equals("")) && !(startText.getText().toString().equals("")) && !(endText.getText().toString().equals("")) &&
                         !(textView.getText().toString().equals("")) && (startHour < endHour
                 || (startHour == endHour && startMin < endMin))){
-                    Toast.makeText(getApplicationContext(), dateText.getText().toString() + " fuck", Toast.LENGTH_LONG).show();
+                    String[] date = dateText.getText().toString().split("-");
+                    GregorianCalendar gc = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]),Integer.parseInt(date[1]), startHour,startMin);
+                    GregorianCalendar gc2 = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]),Integer.parseInt(date[1]), endHour,endMin);
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    String id = prefs.getString("id", "None");
+                    SessionSchema schema = new SessionSchema(id);
+                    //schema.setBio();
+                    schema.setCourse(textView.getText().toString());
+                    schema.setTimes(gc.getTimeInMillis(), gc2.getTimeInMillis());
+                    CreateSessionAsync async = new CreateSessionAsync("sessions/newsession",schema);
+                    Toast.makeText(getApplicationContext(), ((long)gc.getTimeInMillis()) + " fuck", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(getApplicationContext(), HubActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
-                }
+            }
                 else{
                    Toast.makeText(getApplicationContext(), "Either you forgot to fill out a field, or your start time " +
                            "came after your end time." , Toast.LENGTH_LONG).show();
@@ -178,3 +202,27 @@ public class CreateSessionActivity extends AppCompatActivity {
 }
 
 
+class CreateSessionAsync extends AsyncTask<Void, Void, Boolean> {
+
+    ServerConnection server;
+
+    public CreateSessionAsync(String params, SessionSchema sessionSchema)
+    {
+        server = new ServerConnection(sessionSchema,params);
+    }
+
+    @Override
+    protected Boolean doInBackground(Void... params) {
+        JSONObject obj = server.run();
+        try {
+            if (obj.getString("status").equals("success"))
+            {
+                return true;
+            }
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}

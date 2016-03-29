@@ -79,7 +79,7 @@ public class SessionSchema {
      * @return boolean indicating success/failure
      */
 
-    public boolean setTimes(int startTime, int endTime)
+    public boolean setTimes(long startTime, long endTime)
     {
         try {
             json.put("startTime", startTime);

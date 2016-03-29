@@ -1,15 +1,38 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Tasks;
 
+import android.test.PerformanceTestCase;
+
+import java.util.Date;
+
 /**
  * Created by Joseph Elliott on 3/26/2016.
  */
 public class Task implements Comparable<Task> {
+
     private String task;
     private boolean done;
+    private Date createdDate;
+    private Date terminationDate;
+    private Date checkedDate;
 
-    public Task(String task, boolean done) {
+    public Task(String task, boolean done, Date createdDate) {
         this.task = task;
         this.done = done;
+        this.createdDate = new Date(createdDate.getTime());
+        this.terminationDate = null;
+        this.checkedDate = null;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public Date getTerminationDate() {
+        return terminationDate;
+    }
+
+    public Date getCheckedDate() {
+        return checkedDate;
     }
 
     public String getTask() {
@@ -18,6 +41,26 @@ public class Task implements Comparable<Task> {
 
     public boolean getDone() {
         return done;
+    }
+
+    public void setCreatedDate(Date date) {
+        this.createdDate = new Date(date.getTime());
+    }
+
+    public void setTerminationDate(Date date) {
+        try {
+            this.terminationDate = new Date(date.getTime());
+        } catch (NullPointerException e) {
+            this.terminationDate = null;
+        }
+    }
+
+    public void setCheckedDate(Date date) {
+        try {
+            this.checkedDate = new Date(date.getTime());
+        } catch (NullPointerException e) {
+            this.checkedDate = null;
+        }
     }
 
     public void setTask(String task) {
@@ -35,7 +78,7 @@ public class Task implements Comparable<Task> {
         } else if (!done && t.getDone()) {
             return -1;
         } else {
-            return task.compareTo(t.getTask());
+            return Long.compare(createdDate.getTime(), t.getCreatedDate().getTime());
         }
     }
 }

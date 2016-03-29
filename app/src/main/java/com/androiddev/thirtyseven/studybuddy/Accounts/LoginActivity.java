@@ -34,8 +34,7 @@ import org.json.JSONObject;
 
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
-        /*TODO: Store UserID in SharedPreferences
-             */
+
 
 
     private static final String TAG = "LoginActivity";

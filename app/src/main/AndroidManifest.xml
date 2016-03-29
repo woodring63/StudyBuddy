@@ -73,6 +73,10 @@
         <activity
             android:name=".Accounts.AddFriendActivity"
             android:label="@string/title_activity_add_friend"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Accounts.UserCourses"
+            android:label="@string/title_activity_user_courses"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

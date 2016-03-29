@@ -8248,4 +8248,5 @@
     <string name="default_file_name">File Name</string>
     <string name="title_activity_user_profile">UserProfile</string>
     <string name="title_activity_add_friend">AddFriendActivity</string>
+    <string name="title_activity_user_courses">UserCourses</string>
 </resources>

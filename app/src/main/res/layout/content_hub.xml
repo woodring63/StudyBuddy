@@ -22,9 +22,6 @@
         android:id="@+id/drawerPane"
         android:layout_gravity="start">
 
-
-
-
         <!-- List of Actions (pages) -->
         <ListView
             android:id="@+id/navList"

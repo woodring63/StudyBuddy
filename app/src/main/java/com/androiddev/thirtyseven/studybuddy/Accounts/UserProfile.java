@@ -40,6 +40,6 @@ public class UserProfile extends NavBase {
         userBioView.setText(bio);
         userMajorView.setText(major);
 
-        }
+    }
 
-        }
+}

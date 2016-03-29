@@ -51,7 +51,7 @@ public class AddFriendActivity extends AppCompatActivity {
         catch(Exception e){
 
         }
-        final String my_params2 = "/users/updatefriends;
+        final String my_params2 = "/users/updatefriends";
 
         a = new AsyncTask<Object, Void, Void>() {
 

@@ -57,7 +57,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Accounts.UserCourses"
+            android:name=".Accounts.BuddyCourses"
             android:label="@string/title_activity_user_classes"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />

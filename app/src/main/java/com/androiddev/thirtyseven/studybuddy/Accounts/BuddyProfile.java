@@ -40,7 +40,7 @@ public class BuddyProfile extends AppCompatActivity {
         Button coursesButton = (Button) findViewById(R.id.coursesButton);
         coursesButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), UserCourses.class);
+                Intent i = new Intent(getApplicationContext(), BuddyCourses.class);
                 Parcel parcel = Parcel.obtain();
                 buddy.writeToParcel(parcel, 0);
 

@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.androiddev.thirtyseven.studybuddy.R;
 
@@ -21,6 +24,22 @@ public class HubActivity extends NavBase{
                 startActivity(i);
             }
         });
-
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_hub, menu);
+        MenuItem filter = menu.findItem(R.id.action_filter);
+        filter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent i = new Intent(getApplicationContext(), CreateSessionActivity.class);
+                startActivity(i);
+                return true;
+            }
+        });
+        return true;
+    }
+
 }

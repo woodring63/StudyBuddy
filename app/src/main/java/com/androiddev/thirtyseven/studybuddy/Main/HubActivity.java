@@ -28,23 +28,6 @@ public class HubActivity extends NavBase{
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getMenuInflater().inflate(R.menu.menu_hub, menu);
-        MenuItem filter = menu.findItem(R.id.action_filter);
-        filter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(getApplicationContext(), CreateSessionActivity.class);
-                startActivity(i);
-                return true;
-            }
-        });
-        return true;
-
-    }
-
-    @Override
     public void onBackPressed(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);

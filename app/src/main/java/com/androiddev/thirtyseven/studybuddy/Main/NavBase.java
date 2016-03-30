@@ -44,6 +44,7 @@ public class NavBase extends AppCompatActivity {
     ListView mDrawerList;
     RelativeLayout mDrawerPane;
     private ActionBarDrawerToggle mDrawerToggle;
+    private MenuItem filter;
     private DrawerLayout mDrawerLayout;
     private SharedPreferences prefs;
 
@@ -117,16 +118,33 @@ public class NavBase extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflates menu; adds items to the action bar if present.
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.menu_hub, menu);
-        return true;
+        filter = menu.findItem(R.id.action_filter);
+        filter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent i = new Intent(getApplicationContext(), FilterSessionActivity.class);
+                startActivity(i);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks.
+
         if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        if(item.getItemId() == R.id.action_filter){
+            Intent i = new Intent(getApplicationContext(), FilterSessionActivity.class);
+            startActivity(i);
             return true;
         }
 

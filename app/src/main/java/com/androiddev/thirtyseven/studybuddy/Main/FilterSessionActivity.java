@@ -85,7 +85,7 @@ public class FilterSessionActivity extends AppCompatActivity {
                         String[] date = dateText.getText().toString().split("-");
                         GregorianCalendar gc = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]),Integer.parseInt(date[1]), startHour,startMin);
                         GregorianCalendar gc2 = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]),Integer.parseInt(date[1]), endHour,endMin);
-                        params += gc.getTimeInMillis() +"/" + gc2.getTimeInMillis();
+                        params += gc.getTimeInMillis() +"/" + (gc2.getTimeInMillis() + 86400000);
                     }
                     else
                     {

@@ -14,6 +14,8 @@ import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Joseph Elliott on 2/28/2016.
@@ -42,9 +44,11 @@ public class TaskFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (etText.getText().toString().length() == 0) {
-                        Snackbar.make(thisTaskFragment.getView(), "Oops! You tried to make a blank task.", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(thisTaskFragment.getView(), "Oops! You tried to make a blank task."
+                                , Snackbar.LENGTH_SHORT).show();
                     } else {
-                        Task task = new Task(etText.getText().toString(), false);
+                        Task task = new Task(etText.getText().toString(), false
+                                , new Date(Calendar.getInstance().getTimeInMillis()));
                         tasks.add(task);
                         adapter.notifyDataSetChanged();
                         etText.setText("");

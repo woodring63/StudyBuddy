@@ -1,11 +1,13 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Tasks;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -13,7 +15,9 @@ import android.widget.TextView;
 import com.androiddev.thirtyseven.studybuddy.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * Created by Joseph Elliott on 3/26/2016.
@@ -39,9 +43,9 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
             @Override
             public void onClick(View v) {
                 if (!tasks.get(finalPosition).getDone()) {
-                    markTaskAsComplete(view);
+                    markTaskAsComplete(view, tasks.get(finalPosition));
                 } else {
-                    markTaskAsIncomplete(view);
+                    markTaskAsIncomplete(view, tasks.get(finalPosition));
                 }
                 tasks.get(finalPosition).toggleDone();
                 notifyDataSetChanged();
@@ -60,10 +64,10 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
         });
 
         if (tasks.get(position).getDone()) {
-            markTaskAsComplete(view);
+            markTaskAsComplete(view, tasks.get(position));
             checkBox.setChecked(true);
         } else {
-            markTaskAsIncomplete(view);
+            markTaskAsIncomplete(view, tasks.get(position));
         }
 
         return view;
@@ -73,17 +77,43 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
         tasks = new ArrayList<>();
     }
 
-    private void markTaskAsComplete(View view) {
+    private void markTaskAsComplete(View view, Task task) {
         view.setAlpha(0.05f);
+        try {
+            EditText et = (EditText) view.findViewById(R.id.item_task_edit_text);
+            et.setPaintFlags(et.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } catch (Exception e) {
+
+        }
+        Calendar cal = Calendar.getInstance();
+        task.setCheckedDate(new Date(cal.getTimeInMillis()));
+        cal.add(Calendar.SECOND, 10); // TIME UNTIL IT'S DELETED
+        task.setTerminationDate(new Date(cal.getTimeInMillis()));
     }
 
-    private void markTaskAsIncomplete(View view) {
+    private void markTaskAsIncomplete(View view, Task task) {
         view.setAlpha(1f);
+        try {
+            EditText et = (EditText) view.findViewById(R.id.item_task_edit_text);
+            et.setPaintFlags(et.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        } catch (Exception e) {
+
+        }
+        task.setCheckedDate(null);
+        task.setTerminationDate(null);
     }
 
     @Override
     public void notifyDataSetChanged() {
         // sort the tasks by alphabet / done or not done
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).getTerminationDate() != null) {
+                if (tasks.get(i).getTerminationDate().getTime() < Calendar.getInstance().getTimeInMillis()
+                        && tasks.get(i).getDone()) {
+                    tasks.remove(i);
+                }
+            }
+        }
         Collections.sort(tasks);
         super.notifyDataSetChanged();
     }

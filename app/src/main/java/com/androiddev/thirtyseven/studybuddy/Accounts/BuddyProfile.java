@@ -27,15 +27,7 @@ public class BuddyProfile extends AppCompatActivity {
         userMajorView.setText(buddy.getMajor());
         userBioView.setText(buddy.getBio());
 
-        Button backButton = (Button) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), BuddyList.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                finish();
-            }
-        });
+
 
         Button coursesButton = (Button) findViewById(R.id.coursesButton);
         coursesButton.setOnClickListener(new View.OnClickListener() {

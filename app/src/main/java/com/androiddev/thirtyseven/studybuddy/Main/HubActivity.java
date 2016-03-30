@@ -26,6 +26,7 @@ public class HubActivity extends NavBase{
         });
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -40,6 +41,17 @@ public class HubActivity extends NavBase{
             }
         });
         return true;
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+
     }
 
 }

@@ -23,6 +23,8 @@ import com.androiddev.thirtyseven.studybuddy.Backend.User;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 import com.androiddev.thirtyseven.studybuddy.R;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class NoValidAccount extends AppCompatActivity {
@@ -32,8 +34,10 @@ public class NoValidAccount extends AppCompatActivity {
     private EditText majorText;
     private EditText bioText;
     private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
     private String email;
     private User user;
+    private JSONObject j;
 
 
 
@@ -49,6 +53,8 @@ public class NoValidAccount extends AppCompatActivity {
         setSupportActionBar(toolbar);
         createAutoComplete();
         createButton();
+        editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+
 
     }
 
@@ -85,6 +91,7 @@ public class NoValidAccount extends AppCompatActivity {
                     user.setCourses(myCourses);
                     user.setMajor(majorText.getText().toString());
                     user.setUsername(email);
+
                     AsyncTask a = new AsyncTask<Object, Void, Void>() {
 
 
@@ -100,10 +107,52 @@ public class NoValidAccount extends AppCompatActivity {
 
                     };
                     a.execute();
+
+                    final String my_params = "/users/username/"+ email;
+
+                    AsyncTask a1 = new AsyncTask<Object, Void, Void>() {
+
+
+                        @Override
+                        protected Void doInBackground(Object... params) {
+
+                            ServerConnection s = new ServerConnection(my_params);
+                            j = s.run();
+
+                            try {
+                                Log.v("Login", j.getJSONObject("user").getString("name"));
+
+                            } catch (Exception e) {
+                                Log.v("Login", "NOPE");
+                            }
+                            try {
+                                editor.putString("id", j.getJSONObject("user").getString("_id"));
+                                editor.putString("name", j.getJSONObject("user").getString("name"));
+                                editor.putString("bio", j.getJSONObject("user").getString("bio"));
+                                editor.putString("major", j.getJSONObject("user").getString("major"));
+                                editor.commit();
+
+                            }
+                            catch(Exception e){
+
+                            }
+
+                            return null;
+
+                        }
+
+                    };
+                    a1.execute();
+
+
+
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
+
+
                 }
+
                 else{
                     Toast.makeText(getApplicationContext(), "Please Fill Out All Fields"
                             , Toast.LENGTH_LONG).show();

@@ -21,13 +21,13 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <TextView
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/coursesList"
         android:layout_below="@+id/coursesHeader"
-        android:layout_centerHorizontal="true"
         android:textSize="16sp"
         android:textColor="@color/black"
+        android:layout_centerHorizontal="true"
         />
 </RelativeLayout>

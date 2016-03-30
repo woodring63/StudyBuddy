@@ -2,11 +2,13 @@ package com.androiddev.thirtyseven.studybuddy.Sessions;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,6 +22,8 @@ import com.androiddev.thirtyseven.studybuddy.R;
  */
 public class SessionActivity extends NavBase {
 
+    SessionPagerAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +34,7 @@ public class SessionActivity extends NavBase {
 
         // Initialize ViewPager stuff
         final NonSwipeViewPager viewPager = (NonSwipeViewPager) findViewById(R.id.session_pager);
-        final SessionPagerAdapter adapter = new SessionPagerAdapter(getSupportFragmentManager());
+        adapter = new SessionPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
         // Initialize tab stuff
@@ -86,5 +90,11 @@ public class SessionActivity extends NavBase {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("DocumentFragment", "onActivityResult Activity");
+        adapter.getItem(0).onActivityResult(requestCode, resultCode, data);
     }
 }

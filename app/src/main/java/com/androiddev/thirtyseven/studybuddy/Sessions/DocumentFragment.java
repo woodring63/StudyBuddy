@@ -5,40 +5,39 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.drive.CreateFileActivityBuilder;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.DriveFolder;
+import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataChangeSet;
-import com.google.android.gms.drive.query.Filters;
-import com.google.android.gms.drive.query.Query;
+import com.google.android.gms.drive.OpenFileActivityBuilder;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Scanner;
 
 /**
  * Created by Joseph Elliott on 2/28/2016.
@@ -49,9 +48,8 @@ public class DocumentFragment extends Fragment
     private EditText text = null;
     private GoogleApiClient mGoogleApiClient = null;
     private Activity activity = null; // Used to pass a context
-    private ArrayList<Metadata> driveFiles = null;
     private Metadata openFile = null;
-    //private SharedPreferences prefs;
+    private SharedPreferences prefs;
 
     static final String TAG = "DocumentFragment";
     private static final int REQUEST_CODE_LOAD = 1;
@@ -60,22 +58,20 @@ public class DocumentFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
 
         View view = inflater.inflate(R.layout.fragment_document, container, false);
+        activity = getActivity();
         text = (EditText) view.findViewById(R.id.drive_file_text_display);
         Button loadButton = (Button) view.findViewById(R.id.load_button);
         Button clearButton = (Button) view.findViewById(R.id.clear_button);
         Button saveButton = (Button) view.findViewById(R.id.save_button);
-
-        //prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-
-        activity = getActivity();
+        prefs = PreferenceManager.getDefaultSharedPreferences(activity);
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Drive.API)
                 .addScope(Drive.SCOPE_FILE)
-                //.setAccountName(prefs.getString("email", "None"))
-                .setAccountName("nlg@iastate.edu")
+                .setAccountName(prefs.getString("email", "None"))
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
@@ -93,33 +89,34 @@ public class DocumentFragment extends Fragment
                             "Study Buddy is not connected to Google Drive. Please try again later.",
                             Toast.LENGTH_LONG).show();
                 } else {
-                    // Make a query
-                    Query query = new Query.Builder()
-                            .addFilter(Filters.or(Filters.ownedByMe(), Filters.sharedWithMe()))
-                            .build();
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
 
-                    // Execute the query
-                    Drive.DriveApi.query(mGoogleApiClient, query)
-                            .setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
+                    // Set the title
+                    alertDialogBuilder.setTitle("WARNING");
+
+                    // Set the message and buttons
+                    alertDialogBuilder
+                            .setMessage("All unsaved changes will be discarded!")
+                            .setCancelable(false)
+                            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onResult(DriveApi.MetadataBufferResult metadataBufferResult) {
-                                    // Iterate through the Buffer and add the items to the ArrayList
-                                    driveFiles = new ArrayList<Metadata>();
-                                    ArrayList<String> fileNames = new ArrayList<String>();
-                                    Iterator<Metadata> iterator = metadataBufferResult
-                                            .getMetadataBuffer().iterator();
-                                    while (iterator.hasNext()) {
-                                        Metadata metadata = iterator.next();
-                                        driveFiles.add(metadata);
-                                        fileNames.add(metadata.getTitle());
-                                    }
-
-                                    // Open a new FileList Activity
-                                    Intent intent = new Intent(activity, FileList.class);
-                                    intent.putStringArrayListExtra("names", fileNames);
-                                    startActivityForResult(intent, REQUEST_CODE_LOAD);
+                                public void onClick(DialogInterface dialog, int which) {
+                                    save();
+                                    load();
+                                }
+                            })
+                            .setNegativeButton("Discard Changes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    load();
                                 }
                             });
+
+                    // Create the actual AlertDialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    // And show it
+                    alertDialog.show();
                 }
             }
         });
@@ -128,33 +125,7 @@ public class DocumentFragment extends Fragment
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-
-                // Set the title
-                alertDialogBuilder.setTitle("Clear text?");
-
-                // Set the message and buttons
-                alertDialogBuilder
-                        .setMessage("Are you sure you want to erase everything?")
-                        .setCancelable(false)
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                text.setText("");
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-
-                // Create the actual AlertDialog
-                AlertDialog alertDialog = alertDialogBuilder.create();
-
-                // And show it
-                alertDialog.show();
+                clear();
             }
         });
 
@@ -171,59 +142,7 @@ public class DocumentFragment extends Fragment
                             "Study Buddy is not connected to Google Drive. Please try again later.",
                             Toast.LENGTH_LONG).show();
                 } else {
-                    if (openFile != null) {
-                        // Deal with file already open
-                    }
-                    // Otherwise make a new file
-                    else {
-                        // Make new contents to save to the drive
-                        Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                                .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
-                                    @Override
-                                    public void onResult(DriveApi.DriveContentsResult driveContentsResult) {
-                                        // If unsuccessful
-                                        if (!driveContentsResult.getStatus().isSuccess()) {
-                                            Toast.makeText(activity,
-                                                    "Could not create new drive contents. Please try again.",
-                                                    Toast.LENGTH_LONG).show();
-                                        }
-                                        // Otherwise continue
-                                        else {
-                                            // Set contents
-                                            try {
-                                                FileOutputStream fileOutputStream = new FileOutputStream(driveContentsResult
-                                                        .getDriveContents()
-                                                        .getParcelFileDescriptor()
-                                                        .getFileDescriptor());
-                                                Writer writer = new OutputStreamWriter(fileOutputStream);
-                                                writer.write(text.getText().toString());
-                                                writer.close();
-                                                fileOutputStream.close();
-                                            } catch (IOException e) {
-                                                Log.e(TAG, e.toString());
-                                            }
-
-                                            // Create the MetadataChangeSet for file info
-                                            MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                                                    .setTitle("Session Document.txt")
-                                                    .setMimeType("text/plain")
-                                                    .build();
-
-                                            IntentSender intentSender = Drive.DriveApi
-                                                    .newCreateFileActivityBuilder()
-                                                    .setInitialMetadata(changeSet)
-                                                    .setInitialDriveContents(driveContentsResult.getDriveContents())
-                                                    .build(mGoogleApiClient);
-                                            try {
-                                                activity.startIntentSenderForResult(
-                                                        intentSender, REQUEST_CODE_SAVE, null, 0, 0, 0);
-                                            } catch (IntentSender.SendIntentException e) {
-                                                Log.e(TAG, e.toString());
-                                            }
-                                        }
-                                    }
-                                });
-                    }
+                    save();
                 }
             }
         });
@@ -233,35 +152,58 @@ public class DocumentFragment extends Fragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult Fragment");
         switch (requestCode) {
             case REQUEST_CODE_LOAD:
                 if (resultCode == Activity.RESULT_OK) {
                     // Load file
-                    final Metadata metadata = driveFiles.get(data.getIntExtra("position", 0));
-                    DriveFile file = metadata.getDriveId().asDriveFile();
-
-                    if (metadata.getFileExtension() != "txt" && metadata.getFileExtension() != ".txt") {
-                        Log.d(TAG, "Tried to load non-txt file.");
-                        Toast.makeText(activity, "You can only load files with the \".txt\" extension.",
-                                Toast.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    file.open(mGoogleApiClient, DriveFile.MODE_READ_WRITE, null)
-                            .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
-                        @Override
-                        public void onResult(DriveApi.DriveContentsResult driveContentsResult) {
-                            if (!(driveContentsResult.getStatus().isSuccess())) {
-                                Log.d(TAG, "Could not open file " + metadata.getTitle());
-                            }
-                        }
-                    });
+                    Log.d(TAG, "File successfully opened");
+                    DriveId driveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+                    driveId.asDriveResource().getMetadata(mGoogleApiClient)
+                            .setResultCallback(new ResultCallback<DriveResource.MetadataResult>() {
+                                @Override
+                                public void onResult(DriveResource.MetadataResult metadataResult) {
+                                    openFile = metadataResult.getMetadata();openFile.getDriveId().asDriveFile().open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
+                                            .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
+                                                @Override
+                                                public void onResult(DriveApi.DriveContentsResult driveContentsResult) {
+                                                    if (driveContentsResult == null) {
+                                                        Log.d(TAG, "Could not retrieve file contents");
+                                                        Toast.makeText(activity, "Could not retrieve file contents. Please try again.",
+                                                                Toast.LENGTH_LONG).show();
+                                                    }
+                                                    else {
+                                                        Scanner in = new Scanner(driveContentsResult.getDriveContents().getInputStream());
+                                                        String fileText = "";
+                                                        while (in.hasNextLine()) {
+                                                            fileText += in.nextLine() + "\n";
+                                                        }
+                                                        fileText = fileText.substring(0, fileText.length() - 1);
+                                                        text.setText(fileText);
+                                                        in.close();
+                                                    }
+                                                }
+                                            });
+                                }
+                            });
+                }
+                else {
+                    Log.d(TAG, "Failed to load file");
+                    Toast.makeText(activity, "Load failed. Please try again.", Toast.LENGTH_LONG).show();
                 }
                 break;
             case REQUEST_CODE_SAVE:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, "File save successful");
                     Toast.makeText(activity, "File saved!", Toast.LENGTH_LONG).show();
+                    DriveId driveId = data.getParcelableExtra(CreateFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+                    driveId.asDriveResource().getMetadata(mGoogleApiClient)
+                            .setResultCallback(new ResultCallback<DriveResource.MetadataResult>() {
+                                @Override
+                                public void onResult(DriveResource.MetadataResult metadataResult) {
+                                    openFile = metadataResult.getMetadata();
+                                }
+                    });
                 }
                 else {
                     Log.d(TAG, "File save unsuccessful. Result Code: " + resultCode);
@@ -294,9 +236,11 @@ public class DocumentFragment extends Fragment
     public void onConnectionSuspended(int i) {
         switch (i) {
             case CAUSE_NETWORK_LOST:
+                Log.d(TAG, "Connection Suspended: Network Lost");
                 Toast.makeText(activity, "Network lost. Please try again later.", Toast.LENGTH_LONG).show();
                 break;
             case CAUSE_SERVICE_DISCONNECTED:
+                Log.d(TAG, "Connection Suspended: Service Disconnected");
                 Toast.makeText(activity, "Service disconnected. Please try again later.", Toast.LENGTH_LONG).show();
                 break;
         }
@@ -315,90 +259,221 @@ public class DocumentFragment extends Fragment
             }
         }
         else {
+            Log.d(TAG, "Connection failed");
             Toast.makeText(activity, "Google Drive connection failed. Please try again later.", Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume");
         super.onResume();
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Drive.API)
                     .addScope(Drive.SCOPE_FILE)
-                    .setAccountName("nlg@iastate.edu")
+                    .setAccountName(prefs.getString("username", "None"))
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .build();
         }
-        mGoogleApiClient.connect();
+        if (!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
     }
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onPause");
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
-        super.onResume();
+        super.onPause();
     }
 
-    public class FileList extends AppCompatActivity {
+    private void load() {
+        Log.d(TAG, "load");
+        String[] mimeType = {"text/plain"};
+        IntentSender intentSender = Drive.DriveApi.newOpenFileActivityBuilder()
+                .setActivityStartFolder(Drive.DriveApi.getRootFolder(mGoogleApiClient).getDriveId())
+                .setMimeType(mimeType)
+                .build(mGoogleApiClient);
+        try {
+            activity.startIntentSenderForResult(
+                    intentSender, REQUEST_CODE_LOAD, null, 0, 0, 0);
+        }
+        catch (IntentSender.SendIntentException e) {
+            Log.e(TAG, e.toString());
+        }
+    }
 
-        Activity thisActivity;
+    private void clear() {
+        Log.d(TAG, "clear");
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_file_list);
+        // Set the title
+        alertDialogBuilder.setTitle("Clear text?");
 
-            thisActivity = this;
-
-            ArrayList<String> names = getIntent().getStringArrayListExtra("names");
-            FileListAdapter adapter = new FileListAdapter(this, names);
-            ListView fileList = (ListView) findViewById(R.id.file_list);
-            fileList.setAdapter(adapter);
-
-            fileList.setOnItemClickListener(
-                    new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent data = new Intent();
-                            data.putExtra("position", position);
-                            thisActivity.setResult(Activity.RESULT_OK, data);
-                            thisActivity.finish();
-                        }
+        // Set the message and buttons
+        alertDialogBuilder
+                .setMessage("Are you sure you want to erase everything?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        text.setText("");
                     }
-            );
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
 
+        // Create the actual AlertDialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
 
+        // And show it
+        alertDialog.show();
+    }
+
+    private void save() {
+        Log.d(TAG, "save");
+        if (openFile != null) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+
+            // Set the title
+            alertDialogBuilder.setTitle("Save");
+
+            // Set the message and buttons
+            alertDialogBuilder
+                    .setMessage("Saving will overwrite " + openFile.getTitle() + ". Do you wish to continue?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Delete the open file and create a new version of it with the same name
+                            // New contents
+                            Drive.DriveApi.newDriveContents(mGoogleApiClient)
+                                    .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
+                                        @Override
+                                        public void onResult(DriveApi.DriveContentsResult driveContentsResult) {
+                                            // If unsuccessful
+                                            if (!driveContentsResult.getStatus().isSuccess()) {
+                                                Log.d(TAG, "Could not create new drive contents");
+                                            }
+                                            // Otherwise continue
+                                            try {
+                                                FileOutputStream fileOutputStream = new FileOutputStream(driveContentsResult
+                                                        .getDriveContents()
+                                                        .getParcelFileDescriptor()
+                                                        .getFileDescriptor());
+                                                Writer writer = new OutputStreamWriter(fileOutputStream);
+                                                writer.write(text.getText().toString());
+                                                writer.close();
+                                                fileOutputStream.close();
+                                            } catch (IOException e) {
+                                                Log.e(TAG, e.toString());
+                                            }
+
+                                            // Create the MetadataChangeSet for file info
+                                            MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                                                    .setTitle(openFile.getTitle())
+                                                    .setMimeType("text/plain")
+                                                    .build();
+
+                                            // Create the file
+                                            Drive.DriveApi.getRootFolder(mGoogleApiClient).createFile(
+                                                    mGoogleApiClient, changeSet, driveContentsResult.getDriveContents())
+                                                    .setResultCallback(new ResultCallback<DriveFolder.DriveFileResult>() {
+                                                        @Override
+                                                        public void onResult(DriveFolder.DriveFileResult driveFileResult) {
+                                                            if (driveFileResult == null) {
+                                                                Log.d(TAG, "Could not overwrite file " + openFile.getTitle());
+                                                                Toast.makeText(activity, "Save failed. Please try again.", Toast.LENGTH_LONG)
+                                                                        .show();
+                                                            }
+                                                            else {
+                                                                // Delete current openFile
+                                                                Log.d(TAG, "File " + openFile.getTitle() + " successfully overwritten");
+                                                                Toast.makeText(activity, "File saved!" , Toast.LENGTH_LONG).show();
+                                                                // CANNOT BE UNDONE!!
+                                                                openFile.getDriveId().asDriveResource().delete(mGoogleApiClient);
+                                                                driveFileResult.getDriveFile().getMetadata(mGoogleApiClient)
+                                                                        .setResultCallback(new ResultCallback<DriveResource.MetadataResult>() {
+                                                                            @Override
+                                                                            public void onResult(DriveResource.MetadataResult metadataResult) {
+                                                                                openFile = metadataResult.getMetadata();
+                                                                            }
+                                                                        });
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                    });
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+            // Create the actual AlertDialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            // And show it
+            alertDialog.show();
         }
+        // Otherwise make a new file
+        else {
+            // Make new contents to save to the drive
+            Drive.DriveApi.newDriveContents(mGoogleApiClient)
+                    .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
+                        @Override
+                        public void onResult(DriveApi.DriveContentsResult driveContentsResult) {// If unsuccessful
+                            if (!driveContentsResult.getStatus().isSuccess()) {
+                                Log.d(TAG, "Could not create new drive contents");
+                            }
+                            // Otherwise continue
+                            else {
+                                // Set contents
+                                try {
+                                    FileOutputStream fileOutputStream = new FileOutputStream(driveContentsResult
+                                            .getDriveContents()
+                                            .getParcelFileDescriptor()
+                                            .getFileDescriptor());
+                                    Writer writer = new OutputStreamWriter(fileOutputStream);
+                                    writer.write(text.getText().toString());
+                                    writer.close();
+                                    fileOutputStream.close();
+                                } catch (IOException e) {
+                                    Log.e(TAG, e.toString());
+                                }
 
-        public class FileListAdapter extends ArrayAdapter<String> {
+                                // Create the MetadataChangeSet for file info
+                                MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                                        .setTitle("Session Document.txt")
+                                        .setMimeType("text/plain")
+                                        .build();
 
-            private final Activity context;
-            private final ArrayList<String> names;
-
-            FileListAdapter(Activity context, ArrayList<String> names) {
-                super(context, R.layout.file_list_layout, names);
-
-                this.context = context;
-                this.names = names;
-            }
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                LayoutInflater inflater = context.getLayoutInflater();
-                View fileListView = inflater.inflate(R.layout.file_list_layout, null, true);
-
-                ImageView fileIcon = (ImageView) findViewById(R.id.file_icon);
-                TextView fileName = (TextView) findViewById(R.id.file_name);
-
-                fileName.setText(names.get(position));
-                fileIcon.setImageResource(R.drawable.defult_text_file_icon);
-
-                return fileListView;
-            }
+                                // Start the create file activity
+                                IntentSender intentSender = Drive.DriveApi
+                                        .newCreateFileActivityBuilder()
+                                        .setInitialMetadata(changeSet)
+                                        .setInitialDriveContents(driveContentsResult.getDriveContents())
+                                        .build(mGoogleApiClient);
+                                try {
+                                    activity.startIntentSenderForResult(
+                                            intentSender, REQUEST_CODE_SAVE, null, 0, 0, 0);
+                                } catch (IntentSender.SendIntentException e) {
+                                    Log.e(TAG, e.toString());
+                                }
+                            }
+                        }
+                    });
         }
-
     }
 }

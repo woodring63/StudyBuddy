@@ -76,6 +76,10 @@ public class AddFriendActivity extends AppCompatActivity {
 
                 }
 
+                if(id.equals("None")){
+                    Toast.makeText(getApplicationContext(), "There appears to be a login issue. Try logging out and in.", Toast.LENGTH_LONG).show();
+                }
+
                 if (j2 == null) {
                     Toast.makeText(getApplicationContext(), "That user does not exists!", Toast.LENGTH_LONG).show();
                 } else {
@@ -88,7 +92,7 @@ public class AddFriendActivity extends AppCompatActivity {
                         @Override
                         protected Void doInBackground(Object... params) {
 
-                            ServerConnection s = new ServerConnection(j2, "PUT", my_params2);
+                            ServerConnection s = new ServerConnection(null, "PUT", my_params2);
                             j2 = s.run();
                             return null;
 

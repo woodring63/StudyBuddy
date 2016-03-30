@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by enclark on 3/29/2016.
@@ -95,10 +96,23 @@ public class FilterSessionActivity extends AppCompatActivity {
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     String id = prefs.getString("id", "None");
                     FilterSessionAsync async = new FilterSessionAsync("/sessions/" +params);
-                    async.execute();
+                    JSONObject json= null;
+                    try {
+                        json = async.execute().get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
                     Toast.makeText(getApplicationContext(), "Session Created", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(getApplicationContext(), HubActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    if(json != null)
+                    {
+                        Bundle b =new Bundle();
+                        b.putSerializable("sessions",json.toString());
+                        i.putExtras(b);
+                    }
                     startActivity(i);
 
                 }

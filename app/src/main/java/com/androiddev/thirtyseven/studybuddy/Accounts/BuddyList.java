@@ -35,7 +35,6 @@ public class BuddyList extends NavBase {
         String id = prefs.getString("id", "None");
         buddies = new ArrayList<Buddy>();
         BuddieAsync async = new BuddieAsync(null, "/users/buddies/"+id, buddies);
-        Log.v("HEY2", "users/buddies/"+id);
 
         async.execute();
 
@@ -85,7 +84,9 @@ public class BuddyList extends NavBase {
                         temp = new Buddy();
                         System.out.println(bud);
                         temp.setBuddies((String[]) bud.get("buddies").toString().replace("},{", "~").split("~"));
-                        temp.setCourses((String[]) bud.get("courses").toString().replace("},{", "~").split("~"));
+                        //temp.setCourses((String[]) bud.get("courses").toString().replace("},{", "~").split("~"));
+                        temp.setCourses( bud.get("courses").toString().replace("[", "").replace("]", "")
+                                .replace("\"", "").split(","));
                         temp.setId((String) bud.get("_id"));
                         temp.setMajor((String) bud.get("major"));
                         temp.setName((String) bud.get("name"));

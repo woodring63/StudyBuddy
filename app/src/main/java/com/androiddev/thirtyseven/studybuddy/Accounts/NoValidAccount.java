@@ -77,6 +77,7 @@ public class NoValidAccount extends AppCompatActivity {
                     ArrayList<String> finalCourses = new ArrayList<String>();
                     for(int j = 0; j < myCourses.length; j++){
                         if(!myCourses[j].trim().isEmpty()){
+                            myCourses[j] = myCourses[j].replaceAll("^\\s+", "");
                             finalCourses.add(myCourses[j]);
                         }
                     }

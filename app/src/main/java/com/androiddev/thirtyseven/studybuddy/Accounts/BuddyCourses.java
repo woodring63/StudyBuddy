@@ -22,7 +22,7 @@ public class BuddyCourses extends AppCompatActivity {
         name.setText(buddy.getName() + "'s Courses");
         String[] buddyCourses = buddy.getCourses();
         for(int i = 0; i < buddyCourses.length; i++){
-                coursesList.append(buddyCourses[i] + "\n");
+                coursesList.append("\n" + buddyCourses[i] + "\n");
         }
     }
 

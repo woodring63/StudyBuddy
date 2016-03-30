@@ -37,9 +37,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/editText"
+        android:hint="Enter an email..."
+        android:layout_marginTop="73dp"
         android:layout_below="@+id/textView3"
-        android:layout_alignEnd="@+id/textView3"
-        android:layout_alignStart="@+id/textView3"
-        android:hint="Enter an email..."/>
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:inputType="textEmailAddress"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buddy Up!"
+        android:id="@+id/buddyButton"
+        android:layout_marginTop="92dp"
+        android:layout_below="@+id/editText"
+        android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>

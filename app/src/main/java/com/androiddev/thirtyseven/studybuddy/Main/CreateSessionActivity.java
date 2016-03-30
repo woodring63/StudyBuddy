@@ -42,6 +42,7 @@ public class CreateSessionActivity extends AppCompatActivity {
     private EditText dateText;
     private EditText startText;
     private EditText endText;
+    private EditText descText;
     private AutoCompleteTextView textView;
     private int startHour;
     private int endHour;
@@ -53,6 +54,7 @@ public class CreateSessionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_session);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        descText =(EditText) findViewById(R.id.editTextDesc);
         setSupportActionBar(toolbar);
         createAutoComplete();
         createButtons();
@@ -82,11 +84,12 @@ public class CreateSessionActivity extends AppCompatActivity {
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     String id = prefs.getString("id", "None");
                     SessionSchema schema = new SessionSchema(id);
-                    //schema.setBio();
+                    schema.setBio(descText.getText().toString());
                     schema.setCourse(textView.getText().toString());
                     schema.setTimes(gc.getTimeInMillis(), gc2.getTimeInMillis());
-                    CreateSessionAsync async = new CreateSessionAsync("sessions/newsession",schema);
-                    Toast.makeText(getApplicationContext(), ((long)gc.getTimeInMillis()) + " fuck", Toast.LENGTH_LONG).show();
+                    CreateSessionAsync async = new CreateSessionAsync("/sessions/newsession",schema);
+                    async.execute();
+                    Toast.makeText(getApplicationContext(), "Session Created", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(getApplicationContext(), HubActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);

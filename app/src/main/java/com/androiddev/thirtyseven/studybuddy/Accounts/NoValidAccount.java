@@ -58,6 +58,8 @@ public class NoValidAccount extends AppCompatActivity {
 
     }
 
+    //creates the MultiAutoCompleteTextView for the user's courses
+
     protected void createAutoComplete() {
         textView = (MultiAutoCompleteTextView) findViewById(R.id.coursesText);
         textView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
@@ -68,6 +70,7 @@ public class NoValidAccount extends AppCompatActivity {
 
     protected void createButton() {
         Button button = (Button) findViewById(R.id.button);
+        //get the entered text
         nameText = (EditText) findViewById(R.id.nameText);
         majorText = (EditText) findViewById(R.id.majorText);
         bioText = (EditText) findViewById(R.id.bioText);
@@ -76,6 +79,7 @@ public class NoValidAccount extends AppCompatActivity {
             public void onClick(View view) {
                 if(!(textView.getText().toString().equals("")) &&!(nameText.getText().toString().equals("")) && !(majorText.getText().toString().equals("")) && !(bioText.getText().toString().equals(""))) {
                     Intent i = new Intent(getApplicationContext(), HubActivity.class);
+                    //make a user object and set their info
                     user = new User();
                     user.setName(nameText.getText().toString());
                     user.setBio(bioText.getText().toString());
@@ -91,6 +95,8 @@ public class NoValidAccount extends AppCompatActivity {
                     user.setCourses(myCourses);
                     user.setMajor(majorText.getText().toString());
                     user.setUsername(email);
+
+                    //Async task to add the user to the server
 
                     AsyncTask a = new AsyncTask<Object, Void, Void>() {
 
@@ -109,6 +115,8 @@ public class NoValidAccount extends AppCompatActivity {
                     a.execute();
 
                     final String my_params = "/users/username/"+ email;
+
+                    //Then, save all their info
 
                     AsyncTask a1 = new AsyncTask<Object, Void, Void>() {
 

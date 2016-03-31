@@ -54,6 +54,8 @@ public class UserCourses extends AppCompatActivity {
         TextView nameText = (TextView) findViewById(R.id.coursesHeader);
         nameText.setText(name + "'s Courses");
         final String my_params = "/users/id/" + id;
+
+        //Gets the user's courses
         AsyncTask a = new AsyncTask<Object, Void, JSONArray>() {
 
 
@@ -82,6 +84,7 @@ public class UserCourses extends AppCompatActivity {
         catch(Exception e){
 
         }
+        //show courses in ListView
         courses = new String[jArray.length()];
         try {
             for (int i = 0; i < jArray.length(); i++) {

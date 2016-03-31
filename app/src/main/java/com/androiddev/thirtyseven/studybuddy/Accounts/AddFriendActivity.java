@@ -40,14 +40,22 @@ public class AddFriendActivity extends NavBase {
         setSupportActionBar(toolbar);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         id = prefs.getString("id", "None");
+        createButton();
+
+
+
+
+    }
+    protected void createButton(){
         Button button = (Button) findViewById(R.id.buddyButton);
         button.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
                 EditText usernameField = (EditText) (findViewById(R.id.editText));
 
+                //username in email form
                 String friendName = usernameField.getText().toString();
-                Log.v("TST", friendName);
 
+                //first async task to get the id
                 final String my_params = "/users/username/" + friendName;
                 AsyncTask a = new AsyncTask<Object, Void, JSONObject>() {
 
@@ -77,14 +85,13 @@ public class AddFriendActivity extends NavBase {
 
                 }
 
-                if(id.equals("None")){
-                    Toast.makeText(getApplicationContext(), "There appears to be a login issue. Try logging out and in.", Toast.LENGTH_LONG).show();
-                }
 
+                //Don't run the second async task if the person didn't exist!
                 if (j2 == null) {
                     Toast.makeText(getApplicationContext(), "That user does not exists!", Toast.LENGTH_LONG).show();
                 } else {
 
+                    //make them your friend
                     final String my_params2 = "/users/updatefriends/" + id + "/" + id2;
 
                     AsyncTask a2 = new AsyncTask<Object, Void, Void>() {
@@ -108,9 +115,6 @@ public class AddFriendActivity extends NavBase {
                 }
             }
         });
-
-
-
     }
     @Override
     public void onBackPressed(){

@@ -48,6 +48,7 @@ public class EditCourses extends AppCompatActivity {
 
     }
 
+    //Creates the autocompletetextview
     protected void createAutoComplete(){
         allCourses = getResources().getStringArray(R.array.course_list);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, allCourses);
@@ -55,6 +56,8 @@ public class EditCourses extends AppCompatActivity {
     }
 
     protected void createButtons(){
+
+        //Button for adding a course
         Button addButton = (Button) findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -99,6 +102,7 @@ public class EditCourses extends AppCompatActivity {
 
         });
 
+        //Button for removing a course
         Button removeButton = (Button) findViewById(R.id.removeButton);
         removeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {

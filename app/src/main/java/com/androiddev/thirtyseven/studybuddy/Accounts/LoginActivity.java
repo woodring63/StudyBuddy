@@ -126,6 +126,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
             GoogleSignInAccount acct = result.getSignInAccount();
+            //get the email
             email = acct.getEmail();
             editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString("email", email);
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                     ServerConnection s = new ServerConnection(my_params);
                     j = s.run();
-
+                    //login successful, exists = true
                     try {
                         Log.v("Login", j.getJSONObject("user").getString("name"));
                         exists = true;
@@ -151,6 +152,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         exists = false;
                     }
                     try {
+                        //save all user info
                         editor.putString("id", j.getJSONObject("user").getString("_id"));
                         editor.putString("name", j.getJSONObject("user").getString("name"));
                         editor.putString("bio", j.getJSONObject("user").getString("bio"));
@@ -168,12 +170,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             };
             try {
+                //set exists again should be true if it worked)
                 exists = (Boolean) a.execute().get();
             }
             catch(Exception e){
 
             }
-            Log.v("EXESTENCE", exists.toString());
+            Log.v("EXISTENCE", exists.toString());
             //Move to Hub
             Intent i;
             if (!exists) {
@@ -294,6 +297,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
 
     }
+    //Ensures the network actually exists
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager =

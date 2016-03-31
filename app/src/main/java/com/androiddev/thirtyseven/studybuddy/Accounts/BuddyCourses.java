@@ -33,6 +33,7 @@ public class BuddyCourses extends AppCompatActivity {
         for(int i = 0; i < courses.length; i++){
             courses[i] = "- " + courses[i];
         }
+        //Listview adapter of all of the courses the Buddy is in
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,courses);
         adapter.setNotifyOnChange(true);
         courseslist = (ListView) findViewById(R.id.coursesList);

@@ -18,11 +18,12 @@ import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
+import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
 import com.androiddev.thirtyseven.studybuddy.R;
 
 import org.json.JSONObject;
 
-public class AddFriendActivity extends AppCompatActivity {
+public class AddFriendActivity extends NavBase {
 
     private JSONObject j;
     private JSONObject j2;

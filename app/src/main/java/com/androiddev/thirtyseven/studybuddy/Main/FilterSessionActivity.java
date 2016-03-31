@@ -104,7 +104,6 @@ public class FilterSessionActivity extends AppCompatActivity {
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(getApplicationContext(), "Session Created", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(getApplicationContext(), HubActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     if(json != null)

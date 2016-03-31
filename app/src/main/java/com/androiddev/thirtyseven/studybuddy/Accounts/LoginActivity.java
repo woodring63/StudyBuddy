@@ -139,6 +139,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 @Override
                 protected Boolean doInBackground(Object... params) {
 
+
                     ServerConnection s = new ServerConnection(my_params);
                     j = s.run();
 

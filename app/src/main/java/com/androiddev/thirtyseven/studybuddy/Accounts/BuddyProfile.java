@@ -66,7 +66,7 @@ public class BuddyProfile extends AppCompatActivity {
 
 
 
-                final String my_params = "/users/deletefriend/" + budId + "/" + id;
+                final String my_params = "/users/deletefriend/" + id + "/" + budId;
                 AsyncTask a = new AsyncTask<Object, Void, Void>() {
 
                     @Override

@@ -77,7 +77,7 @@ public class BuddyProfile extends AppCompatActivity {
                     }
                 };
                 a.execute();
-                Toast.makeText(getApplicationContext(), "Frienship Over", Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "Friendship Over", Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), BuddyList.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);

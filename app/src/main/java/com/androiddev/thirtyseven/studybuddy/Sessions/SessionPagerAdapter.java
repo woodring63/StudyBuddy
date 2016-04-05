@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.androiddev.thirtyseven.studybuddy.Sessions.Document.DocumentFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Tasks.TaskFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardFragment;
 

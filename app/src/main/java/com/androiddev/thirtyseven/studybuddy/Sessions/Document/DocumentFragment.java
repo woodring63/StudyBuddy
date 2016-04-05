@@ -1,4 +1,4 @@
-package com.androiddev.thirtyseven.studybuddy.Sessions;
+package com.androiddev.thirtyseven.studybuddy.Sessions.Document;
 
 import android.app.Activity;
 import android.app.AlertDialog;

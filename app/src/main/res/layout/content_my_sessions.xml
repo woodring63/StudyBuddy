@@ -40,7 +40,6 @@
 
     <!-- The navigation drawer -->
     <RelativeLayout
-        android:paddingTop="60dp"
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:id="@+id/drawerPane"

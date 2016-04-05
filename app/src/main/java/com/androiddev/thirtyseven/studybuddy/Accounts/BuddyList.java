@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
@@ -33,6 +34,9 @@ public class BuddyList extends NavBase {
         setContentView(R.layout.activity_buddy_list);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String id = prefs.getString("id", "None");
+        String name = prefs.getString("name", "None");
+        TextView t = (TextView) findViewById(R.id.header);
+        t.setText(name + "'s Buddies");
         buddies = new ArrayList<Buddy>();
         BuddieAsync async = new BuddieAsync(null, "/users/buddies/"+id, buddies);
 

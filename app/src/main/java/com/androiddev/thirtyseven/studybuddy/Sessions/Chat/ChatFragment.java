@@ -1,4 +1,4 @@
-package com.androiddev.thirtyseven.studybuddy.Sessions.Description;
+package com.androiddev.thirtyseven.studybuddy.Sessions.Chat;
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -20,11 +20,11 @@ import java.util.Date;
 /**
  * Created by Joseph Elliott on 2/28/2016.
  */
-public class DescriptionFragment extends Fragment {
+public class ChatFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_description, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_chat, container, false);
 
         return rootView;
     }

@@ -42,6 +42,8 @@ public class SessionActivity extends NavBase {
         tabLayout.addTab(tabLayout.newTab().setText("Document"));
         tabLayout.addTab(tabLayout.newTab().setText("Tasks"));
         tabLayout.addTab(tabLayout.newTab().setText("Whiteboard"));
+        tabLayout.addTab(tabLayout.newTab().setText("Chat"));
+        tabLayout.addTab(tabLayout.newTab().setText("Description"));
 
         // Enable moving between fragments with the tabs
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -61,10 +63,10 @@ public class SessionActivity extends NavBase {
             }
         });
 
-        // Initialize the tabs to be in the center position
+        // Initialize the tabs to be in the last position
         try {
-            viewPager.setCurrentItem(tabLayout.getTabCount() / 2);
-            tabLayout.getTabAt(tabLayout.getTabCount() / 2).select();
+            viewPager.setCurrentItem(tabLayout.getTabCount() - 1);
+            tabLayout.getTabAt(tabLayout.getTabCount() - 1).select();
         } catch (NullPointerException e) {
             // rip in pieces
         }

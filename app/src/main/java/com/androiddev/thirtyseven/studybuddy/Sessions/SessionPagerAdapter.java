@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.androiddev.thirtyseven.studybuddy.Sessions.Chat.ChatFragment;
+import com.androiddev.thirtyseven.studybuddy.Sessions.Description.DescriptionFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Document.DocumentFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Tasks.TaskFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardFragment;
@@ -13,17 +15,21 @@ import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardFragm
  */
 public class SessionPagerAdapter extends FragmentPagerAdapter {
 
-    private static final int numOfTabs = 3;
+    private static final int numOfTabs = 5;
 
     private DocumentFragment documentFragment;
     private TaskFragment taskFragment;
     private WhiteboardFragment whiteboardFragment;
+    private DescriptionFragment descriptionFragment;
+    private ChatFragment chatFragment;
 
     public SessionPagerAdapter(FragmentManager fm) {
         super(fm);
         documentFragment = new DocumentFragment();
         taskFragment = new TaskFragment();
         whiteboardFragment = new WhiteboardFragment();
+        descriptionFragment = new DescriptionFragment();
+        chatFragment = new ChatFragment();
     }
 
     @Override
@@ -35,6 +41,10 @@ public class SessionPagerAdapter extends FragmentPagerAdapter {
                 return taskFragment;
             case 2:
                 return whiteboardFragment;
+            case 3:
+                return chatFragment;
+            case 4:
+                return descriptionFragment;
             default:
                 return null;
         }

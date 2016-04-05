@@ -93,6 +93,10 @@ public class WhiteboardView extends View {
         return true;
     }
 
+    public Bitmap getCanvasBitMap() {
+        return canvasBitmap;
+    }
+
     public void setPaintColor(String newColor) {
         invalidate();
         switch (newColor) {

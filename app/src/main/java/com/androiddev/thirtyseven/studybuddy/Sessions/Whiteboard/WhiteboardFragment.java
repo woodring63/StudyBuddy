@@ -1,7 +1,9 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,12 @@ import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.ColorDialogFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.SizeDialogFragment;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 /**
  * Created by Joseph Elliott on 2/28/2016.
  */
@@ -21,6 +29,7 @@ public class WhiteboardFragment extends Fragment {
     private Button btnColor;
     private Button btnSize;
     private Button btnEraserToggle;
+    private Button btnDownload;
 
     private WhiteboardFragment thisFragment;
 
@@ -33,10 +42,12 @@ public class WhiteboardFragment extends Fragment {
             btnColor = (Button) rootView.findViewById(R.id.btn_color);
             btnSize = (Button) rootView.findViewById(R.id.btn_size);
             btnEraserToggle = (Button) rootView.findViewById(R.id.btn_eraser_toggle);
+            btnDownload = (Button) rootView.findViewById(R.id.btn_download);
             thisFragment = this;
             initializeColorButton();
             initializeSizeButton();
             initializeEraserToggleButton();
+            initializeDownloadButton();
         } catch (NullPointerException e) {
             // rip in pieces
         }
@@ -47,6 +58,8 @@ public class WhiteboardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstances) {
         super.onCreate(savedInstances);
+        // TODO create an async task for saving to the server
+        // TODO call saveToServer
     }
 
     private void initializeColorButton() {
@@ -87,6 +100,23 @@ public class WhiteboardFragment extends Fragment {
         });
     }
 
+    private void initializeDownloadButton() {
+        btnDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO save to internal storage
+            }
+        });
+    }
+
+    private void saveToServer() {
+        Bitmap bitmap = whiteboard.getCanvasBitMap();
+        ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
+        bitmap.copyPixelsToBuffer(buffer);
+        byte[] array = buffer.array();
+        // TODO do a PostRequest
+    }
+
     public void setColor(String color) {
         whiteboard.setPaintColor(color);
         Toast.makeText(getContext(), "color set to " + color, Toast.LENGTH_SHORT).show();
@@ -96,4 +126,6 @@ public class WhiteboardFragment extends Fragment {
         whiteboard.setStrokeWidth((float) size);
         Toast.makeText(getContext(), "size set to " + size, Toast.LENGTH_SHORT).show();
     }
+
+
 }

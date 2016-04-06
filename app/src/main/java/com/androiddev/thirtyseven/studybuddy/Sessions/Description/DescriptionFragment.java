@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 import com.androiddev.thirtyseven.studybuddy.R;
+import com.androiddev.thirtyseven.studybuddy.Sessions.MySessions;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardView;
 
 import org.json.JSONException;
@@ -90,7 +91,7 @@ public class DescriptionFragment extends Fragment {
                         }
                     };
                     a.execute();
-                    Intent i = new Intent(getActivity().getApplicationContext(), HubActivity.class);
+                    Intent i = new Intent(getActivity().getApplicationContext(), MySessions.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     Toast.makeText(getActivity().getApplicationContext(), "You have left the study session", Toast.LENGTH_LONG).show();
                     startActivity(i);

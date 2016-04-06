@@ -80,7 +80,6 @@ public class MySessions extends NavBase {
             String pattern = "MM/dd/yyyy";
             SimpleDateFormat format = new SimpleDateFormat(pattern);
 
-            int pos = 0;
 
 
             for (int j = 0; j < createdSessions.length(); j++) {
@@ -94,7 +93,7 @@ public class MySessions extends NavBase {
                 Date date = new Date(Long.parseLong(joinedSessions.getJSONObject(i).getString("startTime")));
 
                 mySessions.add(joinedSessions.getJSONObject(i).getString("course") + " " + format.format(date));
-                JArray.put(createdSessions.getJSONObject(i));
+                JArray.put(joinedSessions.getJSONObject(i));
 
             }
 

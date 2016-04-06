@@ -79,6 +79,8 @@ public class NavBase extends AppCompatActivity {
         mNavItems.add(new NavItem("Sessions", "View Your Sessions", R.drawable.ic_accessibility_black_24dp));
         mNavItems.add(new NavItem("Tools", "Use Study Tools", R.drawable.ic_android_black_24dp));
         mNavItems.add(new NavItem("Log Out", "Log Out of App", R.drawable.ic_3d_rotation_black_24dp));
+        mNavItems.add(new NavItem("Test", "Map Test", R.drawable.ic_play_light));
+
 
         // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -194,6 +196,11 @@ public class NavBase extends AppCompatActivity {
                 startActivity(i);
                 finish();
                 break;
+            /*case 7:
+                i = new Intent(getApplicationContext(), MapTest.class);
+                startActivity(i);
+                finish();
+                break;*/
         }
 
 

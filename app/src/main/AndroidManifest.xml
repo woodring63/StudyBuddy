@@ -14,6 +14,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDsiMPuM_90T5XH-OO5RCOkqui9JDMBHXk"/>
         <activity
             android:name=".Main.HubActivity"
             android:label="@string/app_name"
@@ -100,7 +102,10 @@
             android:name=".Sessions.MySessions"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-        
+        <activity
+            android:name=".AddGeoCoord"
+            android:label="@string/title_activity_add_geo_coord"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

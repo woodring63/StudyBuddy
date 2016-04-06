@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.androiddev.thirtyseven.studybuddy.Accounts.AddFriendActivity;
 import com.androiddev.thirtyseven.studybuddy.Accounts.BuddyList;
 import com.androiddev.thirtyseven.studybuddy.Accounts.LoginActivity;
+import com.androiddev.thirtyseven.studybuddy.AddGeoCoord;
 import com.androiddev.thirtyseven.studybuddy.Sessions.MySessions;
 import com.androiddev.thirtyseven.studybuddy.Accounts.UserProfile;
 import com.androiddev.thirtyseven.studybuddy.R;
@@ -196,11 +197,11 @@ public class NavBase extends AppCompatActivity {
                 startActivity(i);
                 finish();
                 break;
-            /*case 7:
-                i = new Intent(getApplicationContext(), MapTest.class);
+            case 7:
+                i = new Intent(getApplicationContext(), AddGeoCoord.class);
                 startActivity(i);
                 finish();
-                break;*/
+                break;
         }
 
 

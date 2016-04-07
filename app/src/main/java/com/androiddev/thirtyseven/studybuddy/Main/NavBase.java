@@ -78,7 +78,6 @@ public class NavBase extends AppCompatActivity {
         mNavItems.add(new NavItem("New Buddy", "Add A Buddy", R.drawable.ic_android_black_24dp));
         mNavItems.add(new NavItem("Profile", "View Your Profile", R.drawable.ic_play_light));
         mNavItems.add(new NavItem("Sessions", "View Your Sessions", R.drawable.ic_accessibility_black_24dp));
-        mNavItems.add(new NavItem("Tools", "Use Study Tools", R.drawable.ic_android_black_24dp));
         mNavItems.add(new NavItem("Log Out", "Log Out of App", R.drawable.ic_3d_rotation_black_24dp));
         mNavItems.add(new NavItem("Test", "Map Test", R.drawable.ic_play_light));
 
@@ -187,17 +186,13 @@ public class NavBase extends AppCompatActivity {
                 startActivity(i);
                 finish();
                 break;
+
             case 5:
-                i = new Intent(getApplicationContext(), SessionActivity.class);
-                startActivity(i);
-                finish();
-                break;
-            case 6:
                 i = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(i);
                 finish();
                 break;
-            case 7:
+            case 6:
                 i = new Intent(getApplicationContext(), AddGeoCoord.class);
                 startActivity(i);
                 finish();
@@ -257,7 +252,7 @@ class DrawerListAdapter extends BaseAdapter {
         mContext = context;
         mNavItems = navItems;
     }
-    //Methods must be overriden
+    //Methods must be overridden
     @Override
     public int getCount() {
         return mNavItems.size();

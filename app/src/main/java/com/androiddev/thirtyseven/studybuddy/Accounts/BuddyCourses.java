@@ -6,12 +6,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
 import com.androiddev.thirtyseven.studybuddy.R;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class BuddyCourses extends AppCompatActivity {
+public class BuddyCourses extends NavBase {
 
     private String[] courses;
     ListView courseslist;

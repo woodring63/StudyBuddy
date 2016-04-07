@@ -1,5 +1,6 @@
 package com.androiddev.thirtyseven.studybuddy.Accounts;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -77,6 +79,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setScopes(gso.getScopeArray());
+
+
+
+        if(Build.VERSION.SDK_INT >= 23) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
+        }
+
+
+
     }
 
     //Logs failed connections
@@ -90,6 +101,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onStart() {
         super.onStart();
+
 
 
         //Check if they were previously signed in, handle this sign in

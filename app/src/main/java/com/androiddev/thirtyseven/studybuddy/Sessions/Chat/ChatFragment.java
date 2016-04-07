@@ -1,6 +1,8 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Chat;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -35,6 +37,7 @@ import org.json.JSONObject;
 public class ChatFragment extends Fragment {
 
     private TextView mView;
+    private String name;
     private EditText mInput;
     private Socket mSocket;
     {
@@ -57,7 +60,11 @@ public class ChatFragment extends Fragment {
                     String username;
                     String message;
                     try {
-                        //username = data.getString("username");
+//                        if(!data.getString("session").equals(session))
+//                        {
+//                            return;
+//                        }
+                        username = data.getString("name");
                         message = data.getString("msg");
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -66,7 +73,7 @@ public class ChatFragment extends Fragment {
 
                     // add the message to view
                     Log.e("Message", message);
-                    addMessage("", message);
+                    addMessage(username, message);
                 }
             });
         }
@@ -88,6 +95,8 @@ public class ChatFragment extends Fragment {
                 attemptSend();
             }
         });
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        name = pref.getString("name", "None");
         return rootView;
     }
 
@@ -107,14 +116,21 @@ public class ChatFragment extends Fragment {
         }
 
         mInput.setText("");
+
         //mView.setText(mView.getText().toString() + '\n' + message);
-        mSocket.emit("new message", message);
+        try {
+            JSONObject json = new JSONObject("{msg:\" " + message +"\",name:\""+name+"\"}");//,session:\""+sessionID+"\",}");
+            mSocket.emit("new message", json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void addMessage(String username, String message) {
 
         Toast.makeText(getContext(), "Test", Toast.LENGTH_LONG);
-        mView.setText(mView.getText().toString() + '\n' + message);
+        mView.setText(mView.getText().toString() + '\n' + username + message);
 
     }
 

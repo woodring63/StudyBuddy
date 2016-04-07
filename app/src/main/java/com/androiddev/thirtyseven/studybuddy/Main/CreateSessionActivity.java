@@ -78,8 +78,8 @@ public class CreateSessionActivity extends AppCompatActivity {
                         !(textView.getText().toString().equals("")) && (startHour < endHour
                 || (startHour == endHour && startMin < endMin))){
                     String[] date = dateText.getText().toString().split("-");
-                    GregorianCalendar gc = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]),Integer.parseInt(date[1]), startHour,startMin);
-                    GregorianCalendar gc2 = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]),Integer.parseInt(date[1]), endHour,endMin);
+                    GregorianCalendar gc = new GregorianCalendar(Integer.parseInt(date[2]) ,Integer.parseInt(date[0]) -1 ,Integer.parseInt(date[1]) , startHour,startMin);
+                    GregorianCalendar gc2 = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]) -1 ,Integer.parseInt(date[1]) , endHour,endMin);
 
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     String id = prefs.getString("id", "None");

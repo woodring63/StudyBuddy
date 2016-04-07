@@ -84,8 +84,8 @@ public class FilterSessionActivity extends AppCompatActivity {
                     if(!(dateText.getText().toString().equals("")))
                     {
                         String[] date = dateText.getText().toString().split("-");
-                        GregorianCalendar gc = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]),Integer.parseInt(date[1]), startHour,startMin);
-                        GregorianCalendar gc2 = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]),Integer.parseInt(date[1]), endHour,endMin);
+                        GregorianCalendar gc = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]) -1 ,Integer.parseInt(date[1]), startHour,startMin);
+                        GregorianCalendar gc2 = new GregorianCalendar(Integer.parseInt(date[2]),Integer.parseInt(date[0]) -1,Integer.parseInt(date[1]), endHour,endMin);
                         params += gc.getTimeInMillis() +"/" + (gc2.getTimeInMillis() + 86400000);
                     }
                     else
@@ -143,7 +143,7 @@ public class FilterSessionActivity extends AppCompatActivity {
                         dateText.setText(monthOfYear+1 + "-"
                                 + dayOfMonth + "-" + year);
                     }
-                }, calendar.get(GregorianCalendar.YEAR), calendar.get(GregorianCalendar.MONTH), calendar.get(GregorianCalendar.DAY_OF_MONTH));
+                }, calendar.get(GregorianCalendar.YEAR), calendar.get(GregorianCalendar.MONTH) , calendar.get(GregorianCalendar.DAY_OF_MONTH));
         dateText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

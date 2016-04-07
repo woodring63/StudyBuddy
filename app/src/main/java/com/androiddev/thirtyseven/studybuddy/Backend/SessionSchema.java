@@ -23,7 +23,7 @@ public class SessionSchema {
          bio: String,
          attendees: Array,
          messages: Array,
-         leader: String
+         tasks: Array,
       }
      */
 
@@ -31,9 +31,9 @@ public class SessionSchema {
 
     /**
      * Constructs a new session object and initially defines all fields to be undefined
-     *  except the leader which is the current user. Some of the info should not be set and
+     *  except one attendant who created the event. Some of the info should not be set and
      *  here will be initialized as empty arrays.
-     * @param userId of the current user (will by default be the leader)
+     * @param userId of the current user to be added to the attendance list
      */
 
     public SessionSchema(String userId)
@@ -44,9 +44,8 @@ public class SessionSchema {
         setCourse("undefined");
         setBio("undefined");
         try{
-            json.put("attendees",new JSONArray());
+            json.put("attendees",new JSONArray("\"" + userId + "\"]"));
             json.put("messages",new JSONArray());
-            json.put("leader",userId);
         }catch(org.json.JSONException e)
         {
             e.printStackTrace();

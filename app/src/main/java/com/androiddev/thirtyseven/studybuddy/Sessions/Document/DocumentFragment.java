@@ -50,6 +50,7 @@ public class DocumentFragment extends Fragment
     private Activity activity = null; // Used to pass a context
     private Metadata openFile = null;
     private SharedPreferences prefs;
+    private boolean notifiedFail = false;
 
     static final String TAG = "DocumentFragment";
     private static final int REQUEST_CODE_LOAD = 1;
@@ -260,7 +261,10 @@ public class DocumentFragment extends Fragment
         }
         else {
             Log.d(TAG, "Connection failed");
-            Toast.makeText(activity, "Google Drive connection failed. Please try again later.", Toast.LENGTH_LONG).show();
+            if(notifiedFail == false) {
+                Toast.makeText(activity, "Google Drive connection failed. Please try again later.", Toast.LENGTH_LONG).show();
+                notifiedFail = true;
+            }
         }
     }
 

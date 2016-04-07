@@ -119,7 +119,7 @@ public class CreateSessionActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
-                        dateText.setText(monthOfYear + "-"
+                        dateText.setText(monthOfYear+1 + "-"
                                 + dayOfMonth + "-" + year);
                     }
                 }, calendar.get(GregorianCalendar.YEAR), calendar.get(GregorianCalendar.MONTH), calendar.get(GregorianCalendar.DAY_OF_MONTH));

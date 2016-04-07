@@ -14,11 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
+import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
 import com.androiddev.thirtyseven.studybuddy.R;
 
 import org.json.JSONObject;
 
-public class BuddyProfile extends AppCompatActivity {
+public class BuddyProfile extends NavBase {
     private JSONObject j;
     private SharedPreferences prefs;
     private String id;

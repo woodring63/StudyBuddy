@@ -39,6 +39,7 @@ public class MySessions extends NavBase {
     private String email;
     private JSONObject j;
     private JSONArray JArray;
+    private JSONArray joinedSessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class MySessions extends NavBase {
         } catch (Exception e) {
 
         }
-        JSONArray joinedSessions = null;
+        joinedSessions = null;
         JSONArray createdSessions = null;
         JArray = new JSONArray();
 
@@ -82,13 +83,13 @@ public class MySessions extends NavBase {
 
 
 
-            for (int j = 0; j < createdSessions.length(); j++) {
+            /*for (int j = 0; j < createdSessions.length(); j++) {
                 Date date = new Date(Long.parseLong(createdSessions.getJSONObject(j).getString("startTime")));
 
                 mySessions.add(createdSessions.getJSONObject(j).getString("course") + " " + format.format(date));
                 JArray.put(createdSessions.getJSONObject(j));
 
-            }
+            }*/
             for (int i = 0; i < joinedSessions.length(); i++) {
                 Date date = new Date(Long.parseLong(joinedSessions.getJSONObject(i).getString("startTime")));
 
@@ -114,7 +115,7 @@ public class MySessions extends NavBase {
                 Intent i = new Intent(getApplicationContext(), SessionActivity.class);
                 Bundle bundle = new Bundle();
                 try {
-                    if (JArray != null) {
+                    if (joinedSessions != null) {
                         bundle.putSerializable("session", JArray.getJSONObject(position).toString());
                         i.putExtras(bundle);
                     }

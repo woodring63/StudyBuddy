@@ -32,11 +32,9 @@ import android.widget.TextView;
 import com.androiddev.thirtyseven.studybuddy.Accounts.AddFriendActivity;
 import com.androiddev.thirtyseven.studybuddy.Accounts.BuddyList;
 import com.androiddev.thirtyseven.studybuddy.Accounts.LoginActivity;
-import com.androiddev.thirtyseven.studybuddy.AddGeoCoord;
 import com.androiddev.thirtyseven.studybuddy.Sessions.MySessions;
 import com.androiddev.thirtyseven.studybuddy.Accounts.UserProfile;
 import com.androiddev.thirtyseven.studybuddy.R;
-import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
 
 import java.util.ArrayList;
 

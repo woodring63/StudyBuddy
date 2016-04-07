@@ -1,4 +1,4 @@
-package com.androiddev.thirtyseven.studybuddy;
+package com.androiddev.thirtyseven.studybuddy.Main;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
+import com.androiddev.thirtyseven.studybuddy.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;

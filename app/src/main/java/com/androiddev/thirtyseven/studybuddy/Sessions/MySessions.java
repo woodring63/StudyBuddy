@@ -77,7 +77,7 @@ public class MySessions extends NavBase {
 
         try {
             joinedSessions = j.getJSONArray("joinedSessions");
-            createdSessions = j.getJSONArray("createdSessions");
+            //createdSessions = j.getJSONArray("createdSessions");
             String pattern = "MM/dd/yyyy";
             SimpleDateFormat format = new SimpleDateFormat(pattern);
 

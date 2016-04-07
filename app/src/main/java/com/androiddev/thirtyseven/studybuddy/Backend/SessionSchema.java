@@ -44,7 +44,9 @@ public class SessionSchema {
         setCourse("undefined");
         setBio("undefined");
         try{
-            json.put("attendees",new JSONArray("\"" + userId + "\"]"));
+            JSONArray arr = new JSONArray();
+            arr.put(userId);
+            json.put("attendees", arr);
             json.put("messages",new JSONArray());
         }catch(org.json.JSONException e)
         {

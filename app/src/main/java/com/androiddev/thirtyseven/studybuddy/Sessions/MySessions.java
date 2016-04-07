@@ -1,4 +1,4 @@
-package com.androiddev.thirtyseven.studybuddy.Accounts;
+package com.androiddev.thirtyseven.studybuddy.Sessions;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +38,7 @@ public class MySessions extends NavBase {
     private SharedPreferences prefs;
     private String email;
     private JSONObject j;
+    private JSONArray JArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class MySessions extends NavBase {
         }
         JSONArray joinedSessions = null;
         JSONArray createdSessions = null;
+        JArray = new JSONArray();
 
         try {
             joinedSessions = j.getJSONArray("joinedSessions");
@@ -78,29 +80,52 @@ public class MySessions extends NavBase {
             String pattern = "MM/dd/yyyy";
             SimpleDateFormat format = new SimpleDateFormat(pattern);
 
-            for (int i = 0; i < joinedSessions.length(); i++) {
-                Date date = new Date(Long.parseLong(joinedSessions.getJSONObject(i).getString("startTime")));
 
-                mySessions.add(joinedSessions.getJSONObject(i).getString("course")  + " " + format.format(date));
-            }
+
             for (int j = 0; j < createdSessions.length(); j++) {
                 Date date = new Date(Long.parseLong(createdSessions.getJSONObject(j).getString("startTime")));
 
-                mySessions.add(createdSessions.getJSONObject(j).getString("course")   + " " + format.format(date));
+                mySessions.add(createdSessions.getJSONObject(j).getString("course") + " " + format.format(date));
+                JArray.put(createdSessions.getJSONObject(j));
+
             }
+            for (int i = 0; i < joinedSessions.length(); i++) {
+                Date date = new Date(Long.parseLong(joinedSessions.getJSONObject(i).getString("startTime")));
+
+                mySessions.add(joinedSessions.getJSONObject(i).getString("course") + " " + format.format(date));
+                JArray.put(joinedSessions.getJSONObject(i));
+
+            }
+
         } catch (Exception e) {
 
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mySessions);
         adapter.setNotifyOnChange(true);
+
+
         sessions = (ListView) findViewById(R.id.sessionListView);
 
         sessions.setAdapter(adapter);
 
+        sessions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getApplicationContext(), SessionActivity.class);
+                Bundle bundle = new Bundle();
+                try {
+                    if (JArray != null) {
+                        bundle.putSerializable("session", JArray.getJSONObject(position).toString());
+                        i.putExtras(bundle);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                startActivity(i);
+            }
+        });
         TextView t = (TextView) findViewById(R.id.header);
         t.setText(name + "'s Sessions");
-
-
     }
 
 

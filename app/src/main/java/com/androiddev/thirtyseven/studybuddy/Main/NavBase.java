@@ -32,7 +32,8 @@ import android.widget.TextView;
 import com.androiddev.thirtyseven.studybuddy.Accounts.AddFriendActivity;
 import com.androiddev.thirtyseven.studybuddy.Accounts.BuddyList;
 import com.androiddev.thirtyseven.studybuddy.Accounts.LoginActivity;
-import com.androiddev.thirtyseven.studybuddy.Accounts.MySessions;
+import com.androiddev.thirtyseven.studybuddy.AddGeoCoord;
+import com.androiddev.thirtyseven.studybuddy.Sessions.MySessions;
 import com.androiddev.thirtyseven.studybuddy.Accounts.UserProfile;
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
@@ -79,6 +80,8 @@ public class NavBase extends AppCompatActivity {
         mNavItems.add(new NavItem("Sessions", "View Your Sessions", R.drawable.ic_accessibility_black_24dp));
         mNavItems.add(new NavItem("Tools", "Use Study Tools", R.drawable.ic_android_black_24dp));
         mNavItems.add(new NavItem("Log Out", "Log Out of App", R.drawable.ic_3d_rotation_black_24dp));
+        mNavItems.add(new NavItem("Test", "Map Test", R.drawable.ic_play_light));
+
 
         // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -191,6 +194,11 @@ public class NavBase extends AppCompatActivity {
                 break;
             case 6:
                 i = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(i);
+                finish();
+                break;
+            case 7:
+                i = new Intent(getApplicationContext(), AddGeoCoord.class);
                 startActivity(i);
                 finish();
                 break;

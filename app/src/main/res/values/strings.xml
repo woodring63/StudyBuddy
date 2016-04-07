@@ -8250,4 +8250,6 @@
     <string name="title_activity_user_courses">UserCourses</string>
     <string name="title_activity_edit_courses">EditCourses</string>
     <string name="title_activity_my_sessions">MySessions</string>
+    <string name="title_activity_map_test">MapTest</string>
+    <string name="title_activity_add_geo_coord">AddGeoCoord</string>
 </resources>

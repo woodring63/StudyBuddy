@@ -92,6 +92,7 @@ public class CreateSessionActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Session Created", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(getApplicationContext(), HubActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    finish();
                     startActivity(i);
             }
                 else{

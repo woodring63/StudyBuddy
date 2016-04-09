@@ -219,11 +219,4 @@ public class ServerConnection {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
-
 }

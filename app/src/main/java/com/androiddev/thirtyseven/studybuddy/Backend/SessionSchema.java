@@ -3,6 +3,7 @@ package com.androiddev.thirtyseven.studybuddy.Backend;
 import android.content.pm.PackageInstaller;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -43,6 +44,7 @@ public class SessionSchema {
         setTimes(0, 0);
         setCourse("undefined");
         setBio("undefined");
+        setLoc(0,0);
         try{
             JSONArray arr = new JSONArray();
             arr.put(userId);
@@ -52,6 +54,34 @@ public class SessionSchema {
         {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Sets the location of the study session at the current coordinates stored.
+     * @param x
+     * @param y
+     * @return
+     */
+
+
+    public boolean setLoc(int x, int y)
+    {
+        if(x != 0 && y != 0)
+        {
+            JSONArray arr = new JSONArray();
+            arr.put(x);
+            arr.put(y);
+            try {
+                JSONObject temp = new JSONObject();
+                temp.put("coordinates", arr);
+                json.put("loc", temp);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

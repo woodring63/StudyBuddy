@@ -1,7 +1,18 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +30,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
 /**
  * Created by Joseph Elliott on 2/28/2016.
  */
 public class WhiteboardFragment extends Fragment {
+
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     private WhiteboardView whiteboard;
     private Button btnColor;
@@ -104,7 +125,7 @@ public class WhiteboardFragment extends Fragment {
         btnDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO save to internal storage
+                saveToExternalStorage();
             }
         });
     }
@@ -127,5 +148,49 @@ public class WhiteboardFragment extends Fragment {
         Toast.makeText(getContext(), "size set to " + size, Toast.LENGTH_SHORT).show();
     }
 
+    private void saveToExternalStorage() {
 
+        verifyStoragePermissions(getActivity());
+
+        File myDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString());
+        myDir.mkdirs();
+
+        String fname = Long.toString(System.currentTimeMillis()) + ".png";
+
+        File file = new File (myDir, fname);
+        if (file.exists()) {
+            file.delete();
+        }
+
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            whiteboard.getCanvasBitMap().compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Snackbar.make(getView(), "Error: FileNotFoundException.", Snackbar.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Snackbar.make(getView(), "Error: IOException.", Snackbar.LENGTH_SHORT).show();
+        }
+
+        // Notify the user
+        Snackbar.make(getView(), fname + " saved to " + myDir, Snackbar.LENGTH_SHORT).show();
+    }
+
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
 }

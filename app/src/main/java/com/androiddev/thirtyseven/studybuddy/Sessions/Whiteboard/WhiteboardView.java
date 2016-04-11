@@ -59,6 +59,7 @@ public class WhiteboardView extends View {
         //view given size
         super.onSizeChanged(w, h, oldw, oldh);
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
         drawCanvas = new Canvas(canvasBitmap);
     }
 

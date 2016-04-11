@@ -115,6 +115,7 @@ public class WhiteboardFragment extends Fragment {
                     Toast.makeText(getContext(), "eraser enabled", Toast.LENGTH_SHORT).show();
                 } else {
                     btnEraserToggle.setText("PEN");
+                    //setColor(latestColor);
                     Toast.makeText(getContext(), "pen enabled", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -152,7 +153,7 @@ public class WhiteboardFragment extends Fragment {
 
         verifyStoragePermissions(getActivity());
 
-        File myDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString());
+        File myDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/StudyBuddy");
         myDir.mkdirs();
 
         String fname = Long.toString(System.currentTimeMillis()) + ".png";

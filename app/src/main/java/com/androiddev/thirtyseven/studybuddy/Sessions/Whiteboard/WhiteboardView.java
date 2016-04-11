@@ -59,8 +59,8 @@ public class WhiteboardView extends View {
         //view given size
         super.onSizeChanged(w, h, oldw, oldh);
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-
         drawCanvas = new Canvas(canvasBitmap);
+        drawCanvas.drawColor(0xffffffff);
     }
 
     @Override
@@ -147,11 +147,9 @@ public class WhiteboardView extends View {
     public void toggleEraser() {
         eraser = !eraser;
         if (eraser) {
-            setPaintColor("white");
             setStrokeWidth(10f);
             drawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         } else {
-            setPaintColor("black");
             setStrokeWidth(5f);
             drawPaint.setXfermode(null);
         }

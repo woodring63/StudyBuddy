@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.github.nkzawa.emitter.Emitter;
@@ -70,7 +72,7 @@ public class WhiteboardFragment extends Fragment {
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket("http://10.26.52.185:8000");
+            mSocket = IO.socket(ServerConnection.IP +":8000");
         } catch (URISyntaxException e) {}
     }
 

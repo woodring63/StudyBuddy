@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardView;
 
@@ -43,7 +44,7 @@ public class ChatFragment extends Fragment {
     {
         try {
             //Connects to a socket on the server
-            mSocket = IO.socket("http://10.26.52.185:8000");
+            mSocket = IO.socket(ServerConnection.IP + ":8000");
         } catch (URISyntaxException e) {}
     }
 

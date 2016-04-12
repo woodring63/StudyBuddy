@@ -48,19 +48,27 @@ public class CreateSessionActivity extends AppCompatActivity {
     private int endHour;
     private int startMin;
     private int endMin;
+    private double lat;
+    private double lon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_session);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         descText =(EditText) findViewById(R.id.editTextDesc);
         setSupportActionBar(toolbar);
+        Intent receiveIntent = this.getIntent();
+        lat = receiveIntent.getDoubleExtra("latitude", 12);
+        lon = receiveIntent.getDoubleExtra("longitude", 13);
+
         createAutoComplete();
         createButtons();
         calendar = new GregorianCalendar();
         createDatePicker(calendar);
         createTimePickers(calendar);
+
 
     }
 
@@ -87,6 +95,9 @@ public class CreateSessionActivity extends AppCompatActivity {
                     schema.setBio(descText.getText().toString());
                     schema.setCourse(textView.getText().toString());
                     schema.setTimes(gc.getTimeInMillis(), gc2.getTimeInMillis());
+
+
+                    schema.setLoc(lat, lon);
                     CreateSessionAsync async = new CreateSessionAsync("/sessions/newsession",schema);
                     async.execute();
                     Toast.makeText(getApplicationContext(), "Session Created", Toast.LENGTH_LONG).show();

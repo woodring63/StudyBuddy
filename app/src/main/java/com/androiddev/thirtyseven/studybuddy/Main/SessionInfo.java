@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,6 +62,9 @@ public class SessionInfo extends NavBase{
 
             course.setText(sessionInfo.getString("course"));
             desc.setText(sessionInfo.getString("bio"));
+
+            JSONArray jArr = sessionInfo.getJSONObject("loc").getJSONArray("coordinates");
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

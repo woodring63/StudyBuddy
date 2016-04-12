@@ -36,13 +36,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import android.Manifest;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
 
     private double longitude;
     private double latitude;
     private boolean permission;
-    private SharedPreferences.Editor editor;
     private MarkerOptions userMarker;
 
 
@@ -68,16 +68,18 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
             longitude = location.getLongitude();
             latitude = location.getLatitude();
         }
-        editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 
         Button button = (Button) findViewById(R.id.buddyButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LatLng position = userMarker.getPosition();
-                editor.putString("Latitude", String.valueOf(position.latitude));
-                editor.putString("Longitude", String.valueOf(position.longitude));
+
+
                 Intent i = new Intent(getApplicationContext(), CreateSessionActivity.class);
+                i.putExtra("latitude", position.latitude);
+                i.putExtra("longitude", position.longitude);
+
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
                 startActivity(i);

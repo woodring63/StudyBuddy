@@ -64,22 +64,27 @@ public class SessionSchema {
      */
 
 
-    public boolean setLoc(int x, int y)
+    public boolean setLoc(double x, double y)
     {
         if(x != 0 && y != 0)
         {
-            JSONArray arr = new JSONArray();
-            arr.put(x);
-            arr.put(y);
             try {
-                JSONObject temp = new JSONObject();
-                temp.put("coordinates", arr);
-                json.put("loc", temp);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return false;
+                JSONArray arr = new JSONArray();
+                arr.put(x);
+                arr.put(y);
+                try {
+                    JSONObject temp = new JSONObject();
+                    temp.put("coordinates", arr);
+                    json.put("loc", temp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
             }
-            return true;
+            catch(Exception e){
+
+            }
         }
         return false;
     }

@@ -12,42 +12,55 @@
         android:layout_height="0dp"
         android:layout_weight="10"/>
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal">
+        >
 
-        <Button
-            android:id="@+id/btn_color"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="COLOR"/>
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/btn_color"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="COLOR"/>
 
-        <Button
-            android:id="@+id/btn_eraser_toggle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="PEN"/>
+            <Button
+                android:id="@+id/btn_eraser_toggle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="PEN"/>
 
-        <Button
-            android:id="@+id/btn_size"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="SIZE"/>
+            <Button
+                android:id="@+id/btn_size"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="SIZE"/>
 
-        <Button
-            android:id="@+id/btn_download"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="DOWNLOAD"/>
+            <Button
+                android:id="@+id/btn_download"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="DOWNLOAD"/>
+
+            <Button
+                android:id="@+id/btn_push"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="PUSH"/>
+        </LinearLayout>
 
 
-    </LinearLayout>
+
+    </HorizontalScrollView>
 
 </LinearLayout>
 

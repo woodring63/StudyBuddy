@@ -64,6 +64,7 @@ public class WhiteboardFragment extends Fragment {
     private Button btnSize;
     private Button btnEraserToggle;
     private Button btnDownload;
+    private Button btnPush;
 
     private WhiteboardFragment thisFragment;
     private Socket mSocket;
@@ -77,21 +78,26 @@ public class WhiteboardFragment extends Fragment {
     private Emitter.Listener onNewBitmap = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    String encodedBitmap;
-                    try {
-                        encodedBitmap = data.getString("image");
-                    } catch (JSONException e) {
-                        return;
-                    }
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = (JSONObject) args[0];
+                        String encodedBitmap;
+                        try {
+                            encodedBitmap = data.getString("image");
+                        } catch (JSONException e) {
+                            return;
+                        }
 
-                    // add the message to view
-                    updateBitmap(encodedBitmap);
-                }
-            });
+                        // add the message to view
+                        updateBitmap(encodedBitmap);
+                    }
+                });
+            } catch (NullPointerException e) {
+                Log.d("onNewBitmap", "Null pointer exception getActivity.runOnUiThread.");
+            }
+
         }
     };
 
@@ -106,11 +112,13 @@ public class WhiteboardFragment extends Fragment {
             btnSize = (Button) rootView.findViewById(R.id.btn_size);
             btnEraserToggle = (Button) rootView.findViewById(R.id.btn_eraser_toggle);
             btnDownload = (Button) rootView.findViewById(R.id.btn_download);
+            btnPush = (Button) rootView.findViewById(R.id.btn_push);
             thisFragment = this;
             initializeColorButton();
             initializeSizeButton();
             initializeEraserToggleButton();
             initializeDownloadButton();
+            initializePushButton();
         } catch (NullPointerException e) {
             // rip in pieces
         }
@@ -124,6 +132,7 @@ public class WhiteboardFragment extends Fragment {
         mSocket.on("new bitmap", onNewBitmap);
         mSocket.connect();
 
+        /*
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -131,6 +140,7 @@ public class WhiteboardFragment extends Fragment {
                 attemptSend();
             }
         },0,3000);//Update text every 3 seconds
+        */
     }
 
     private void attemptSend() {
@@ -138,7 +148,7 @@ public class WhiteboardFragment extends Fragment {
             Bitmap image = whiteboard.getCanvasBitMap();
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            image.compress(Bitmap.CompressFormat.PNG, 100, baos);
             byte[] imageBytes = baos.toByteArray();
             String encodedImage = Base64.encodeToString(imageBytes, Base64.URL_SAFE);
 
@@ -177,6 +187,15 @@ public class WhiteboardFragment extends Fragment {
                 SizeDialogFragment sdf = new SizeDialogFragment();
                 sdf.show(getFragmentManager(), "sdf");
                 sdf.setParentWhiteboardFragment(thisFragment);
+            }
+        });
+    }
+
+    private void initializePushButton() {
+        btnPush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptSend();
             }
         });
     }

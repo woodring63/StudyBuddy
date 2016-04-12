@@ -124,14 +124,13 @@ public class WhiteboardFragment extends Fragment {
         mSocket.on("new bitmap", onNewBitmap);
         mSocket.connect();
 
-        final Context context = getContext();
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 attemptSend();
             }
-        },0,1000);//Update text every second
+        },0,3000);//Update text every second
     }
 
     private void attemptSend() {
@@ -147,9 +146,9 @@ public class WhiteboardFragment extends Fragment {
             mSocket.emit("new bitmap", obj);
 
         } catch (NullPointerException e) {
-
+            Log.d("Null Pointer Exception", "Got a null pointer within attemptSend");
         } catch (JSONException e) {
-
+            Log.d("JSONException", "Got a JSON Exception within attemptSend");
         }
     }
 

@@ -41,6 +41,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -122,15 +124,14 @@ public class WhiteboardFragment extends Fragment {
         mSocket.on("new bitmap", onNewBitmap);
         mSocket.connect();
 
-        ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
-        // This schedule a runnable task every 2 minutes
-        scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+        final Context context = getContext();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
             public void run() {
-                Toast.makeText(thisFragment.getContext(),
-                        "Test time:" + Long.toString(System.currentTimeMillis()),
-                        Toast.LENGTH_SHORT).show();
+                attemptSend();
             }
-        }, 0, 2, TimeUnit.SECONDS);
+        },0,1000);//Update text every second
     }
 
     private void attemptSend() {

@@ -26,8 +26,8 @@ public class ServerConnection {
      */
 
 
-
-    private static final String URL = "http://10.26.52.185:3000";
+    public static final String IP = "http://10.26.52.185";
+    private static final String URL = IP + ":3000";
     private static String charset = "UTF-8";  // Or in Java 7 and later, use the constant: java.nio.charset.StandardCharsets.UTF_8.name()
     private boolean get;
     private boolean post;

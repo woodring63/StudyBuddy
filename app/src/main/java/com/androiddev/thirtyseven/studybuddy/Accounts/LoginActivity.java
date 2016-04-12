@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +143,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             email = acct.getEmail();
             editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString("email", email);
+
             editor.commit();
 
             exists = false;

@@ -101,6 +101,7 @@ public class WhiteboardView extends View {
     public void setCanvasBitMap(Bitmap bitmap) {
         this.canvasBitmap = bitmap;
         // might need to do something like canvas.drawBitmap
+        drawCanvas = new Canvas(canvasBitmap);
     }
 
     public void setPaintColor(String newColor) {

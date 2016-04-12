@@ -41,6 +41,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Joseph Elliott on 2/28/2016.
@@ -64,9 +69,10 @@ public class WhiteboardFragment extends Fragment {
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket("http://10.26.1.25:8000");
+            mSocket = IO.socket("http://10.26.52.185:8000");
         } catch (URISyntaxException e) {}
     }
+
 
     private Emitter.Listener onNewBitmap = new Emitter.Listener() {
         @Override
@@ -117,6 +123,15 @@ public class WhiteboardFragment extends Fragment {
         super.onCreate(savedInstances);
         mSocket.on("new bitmap", onNewBitmap);
         mSocket.connect();
+
+        final Context context = getContext();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                attemptSend();
+            }
+        },0,1000);//Update text every second
     }
 
     private void attemptSend() {
@@ -125,7 +140,7 @@ public class WhiteboardFragment extends Fragment {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.URL_SAFE);
 
         try {
             JSONObject obj = new JSONObject("{image:" + encodedImage + "}");
@@ -136,7 +151,7 @@ public class WhiteboardFragment extends Fragment {
     }
 
     private void updateBitmap(String encodedBitmap) {
-        byte[] decodedString = Base64.decode(encodedBitmap, Base64.DEFAULT);
+        byte[] decodedString = Base64.decode(encodedBitmap, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         whiteboard.setCanvasBitMap(decodedByte);
     }
@@ -252,4 +267,6 @@ public class WhiteboardFragment extends Fragment {
             );
         }
     }
+
+
 }

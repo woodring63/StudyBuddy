@@ -135,18 +135,21 @@ public class WhiteboardFragment extends Fragment {
     }
 
     private void attemptSend() {
-        Bitmap image = whiteboard.getCanvasBitMap();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.URL_SAFE);
-
         try {
+            Bitmap image = whiteboard.getCanvasBitMap();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] imageBytes = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(imageBytes, Base64.URL_SAFE);
+
             JSONObject obj = new JSONObject("{image:" + encodedImage + "}");
             mSocket.emit("new bitmap", obj);
+
+        } catch (NullPointerException e) {
+
         } catch (JSONException e) {
-            e.printStackTrace();
+
         }
     }
 

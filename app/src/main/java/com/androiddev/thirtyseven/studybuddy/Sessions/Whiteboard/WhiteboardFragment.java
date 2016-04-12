@@ -130,7 +130,7 @@ public class WhiteboardFragment extends Fragment {
             public void run() {
                 attemptSend();
             }
-        },0,3000);//Update text every second
+        },0,3000);//Update text every 3 seconds
     }
 
     private void attemptSend() {
@@ -142,20 +142,21 @@ public class WhiteboardFragment extends Fragment {
             byte[] imageBytes = baos.toByteArray();
             String encodedImage = Base64.encodeToString(imageBytes, Base64.URL_SAFE);
 
-            JSONObject obj = new JSONObject("{image:" + encodedImage + "}");
+            JSONObject obj = new JSONObject("{image:" + "\"" + encodedImage + "\"" + "}");
             mSocket.emit("new bitmap", obj);
 
         } catch (NullPointerException e) {
             Log.d("Null Pointer Exception", "Got a null pointer within attemptSend");
         } catch (JSONException e) {
             Log.d("JSONException", "Got a JSON Exception within attemptSend");
+            e.printStackTrace();
         }
     }
 
     private void updateBitmap(String encodedBitmap) {
         byte[] decodedString = Base64.decode(encodedBitmap, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        whiteboard.setCanvasBitMap(decodedByte);
+        whiteboard.setCanvasBitMap(decodedByte.copy(Bitmap.Config.ARGB_8888, true));
     }
 
     private void initializeColorButton() {
@@ -204,14 +205,6 @@ public class WhiteboardFragment extends Fragment {
                 saveToExternalStorage();
             }
         });
-    }
-
-    private void saveToServer() {
-        Bitmap bitmap = whiteboard.getCanvasBitMap();
-        ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
-        bitmap.copyPixelsToBuffer(buffer);
-        byte[] array = buffer.array();
-        // TODO do a PostRequest
     }
 
     public void setColor(String color) {

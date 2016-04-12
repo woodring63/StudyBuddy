@@ -63,7 +63,9 @@ public class SessionInfo extends NavBase{
             course.setText(sessionInfo.getString("course"));
             desc.setText(sessionInfo.getString("bio"));
 
+
             JSONArray jArr = sessionInfo.getJSONObject("loc").getJSONArray("coordinates");
+            Toast.makeText(getApplicationContext(), jArr.toString(), Toast.LENGTH_LONG).show();
 
         } catch (JSONException e) {
             e.printStackTrace();

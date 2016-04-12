@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -14,25 +15,32 @@ import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+import com.github.nkzawa.emitter.Emitter;
+
 
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.ColorDialogFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.SizeDialogFragment;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
 
 /**
  * Created by Joseph Elliott on 2/28/2016.
@@ -53,6 +61,34 @@ public class WhiteboardFragment extends Fragment {
     private Button btnDownload;
 
     private WhiteboardFragment thisFragment;
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://10.26.1.25:8000");
+        } catch (URISyntaxException e) {}
+    }
+
+    private Emitter.Listener onNewBitmap = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String encodedBitmap;
+                    try {
+                        encodedBitmap = data.getString("image");
+                    } catch (JSONException e) {
+                        return;
+                    }
+
+                    // add the message to view
+                    updateBitmap(encodedBitmap);
+                }
+            });
+        }
+    };
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,8 +115,30 @@ public class WhiteboardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstances) {
         super.onCreate(savedInstances);
-        // TODO create an async task for saving to the server
-        // TODO call saveToServer
+        mSocket.on("new bitmap", onNewBitmap);
+        mSocket.connect();
+    }
+
+    private void attemptSend() {
+        Bitmap image = whiteboard.getCanvasBitMap();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+        try {
+            JSONObject obj = new JSONObject("{image:" + encodedImage + "}");
+            mSocket.emit("new bitmap", obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateBitmap(String encodedBitmap) {
+        byte[] decodedString = Base64.decode(encodedBitmap, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        whiteboard.setCanvasBitMap(decodedByte);
     }
 
     private void initializeColorButton() {

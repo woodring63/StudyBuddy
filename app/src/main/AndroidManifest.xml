@@ -21,7 +21,6 @@
         <meta-data android:name="com.google.android.geo.API_KEY"
             <android:value="AIzaSyBLSVKxR9cIfLloF6e2mr6SYWEGtAxFy24"/>
            <!-- Evan Laptop  android:value="AIzaSyBLSVKxR9cIfLloF6e2mr6SYWEGtAxFy24"/>-->
-
            <!-- Evan Desktop android:value="AIzaSyDsiMPuM_90T5XH-OO5RCOkqui9JDMBHXk"/>-->
 
         <activity

@@ -122,6 +122,8 @@ public class WhiteboardFragment extends Fragment {
             initializeEraserToggleButton();
             initializeDownloadButton();
 
+            // TODO make an asynctask to get the bitmap from the server when user starts
+
             rootView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -183,6 +185,10 @@ public class WhiteboardFragment extends Fragment {
         }
     }
 
+    /**
+     * Converts a string to a bitmap and sets the whiteboard's bitmap to the new one.
+     * @param encodedBitmap
+     */
     private void updateBitmap(String encodedBitmap) {
         byte[] decodedString = Base64.decode(encodedBitmap, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);

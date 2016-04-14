@@ -129,7 +129,7 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
         map.addMarker(new MarkerOptions().position(udcc).title("Union Drive Community Center").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(hooverHall).title("Hoover Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(howeHall).title("Howe Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
-        map.addMarker(new MarkerOptions().position(gerdinHall).title("Gerdin BusinessBuilding").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(gerdinHall).title("Gerdin Business Building").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(memorialUnion).title("Memorial Union").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(physicsHall).title("Physics Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(designHall).title("Design Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));

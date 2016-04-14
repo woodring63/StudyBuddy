@@ -49,13 +49,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="DOWNLOAD"/>
-
-            <Button
-                android:id="@+id/btn_push"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="PUSH"/>
         </LinearLayout>
 
 

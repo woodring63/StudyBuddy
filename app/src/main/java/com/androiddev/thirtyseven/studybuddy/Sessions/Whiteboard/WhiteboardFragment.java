@@ -67,7 +67,6 @@ public class WhiteboardFragment extends Fragment {
     private Button btnSize;
     private Button btnEraserToggle;
     private Button btnDownload;
-    private Button btnPush;
 
     private Boolean isBeingTouched = false;
 
@@ -117,13 +116,11 @@ public class WhiteboardFragment extends Fragment {
             btnSize = (Button) rootView.findViewById(R.id.btn_size);
             btnEraserToggle = (Button) rootView.findViewById(R.id.btn_eraser_toggle);
             btnDownload = (Button) rootView.findViewById(R.id.btn_download);
-            btnPush = (Button) rootView.findViewById(R.id.btn_push);
             thisFragment = this;
             initializeColorButton();
             initializeSizeButton();
             initializeEraserToggleButton();
             initializeDownloadButton();
-            initializePushButton();
 
             rootView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -162,7 +159,7 @@ public class WhiteboardFragment extends Fragment {
                     attemptSend();
                 }
             }
-        },0,5000);//Update text every 5 seconds
+        },0,1000);//Update text every 5 seconds
 
     }
 
@@ -210,15 +207,6 @@ public class WhiteboardFragment extends Fragment {
                 SizeDialogFragment sdf = new SizeDialogFragment();
                 sdf.show(getFragmentManager(), "sdf");
                 sdf.setParentWhiteboardFragment(thisFragment);
-            }
-        });
-    }
-
-    private void initializePushButton() {
-        btnPush.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptSend();
             }
         });
     }

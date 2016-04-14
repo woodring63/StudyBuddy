@@ -159,7 +159,7 @@ public class WhiteboardFragment extends Fragment {
                     attemptSend();
                 }
             }
-        },0,1000);//Update text every 5 seconds
+        },0,5000);//Update text every 5 seconds
 
     }
 

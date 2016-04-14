@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -67,6 +68,8 @@ public class WhiteboardFragment extends Fragment {
     private Button btnEraserToggle;
     private Button btnDownload;
     private Button btnPush;
+
+    private Boolean isBeingTouched = false;
 
     private WhiteboardFragment thisFragment;
     private Socket mSocket;
@@ -121,6 +124,22 @@ public class WhiteboardFragment extends Fragment {
             initializeEraserToggleButton();
             initializeDownloadButton();
             initializePushButton();
+
+            rootView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            isBeingTouched = true;
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            isBeingTouched = false;
+                            break;
+                    }
+
+                    return true;
+                }
+            });
         } catch (NullPointerException e) {
             // rip in pieces
         }
@@ -134,15 +153,17 @@ public class WhiteboardFragment extends Fragment {
         mSocket.on("new bitmap", onNewBitmap);
         mSocket.connect();
 
-        /*
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                attemptSend();
+                if (!isBeingTouched) {
+                    attemptSend();
+                }
             }
-        },0,3000);//Update text every 3 seconds
-        */
+        },0,5000);//Update text every 5 seconds
+
     }
 
     private void attemptSend() {
@@ -283,6 +304,5 @@ public class WhiteboardFragment extends Fragment {
             );
         }
     }
-
 
 }

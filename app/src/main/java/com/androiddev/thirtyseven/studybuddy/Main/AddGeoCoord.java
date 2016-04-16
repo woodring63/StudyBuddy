@@ -107,7 +107,8 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
         }
         map.moveCamera(CameraUpdateFactory.newLatLng(ISU));
         map.animateCamera(CameraUpdateFactory.zoomTo(16));
-        userMarker = new MarkerOptions().position(ISU).title("Drag this pin to where you want your Study Session to be!").draggable(true);
+        userMarker = new MarkerOptions().position(ISU).title("Put this at the location of your study session!").draggable(true);
+        userPosition = userMarker.getPosition();
         map.addMarker(userMarker);
         map.addMarker(new MarkerOptions().position(curtissHall).title("Curtiss Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(jischkeHall).title("Jischke Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));

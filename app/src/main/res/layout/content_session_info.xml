@@ -155,22 +155,22 @@
                     android:weightSum="1"
                     android:gravity="center">
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Leave Session"
-                        android:id="@+id/leaveBtn" />
+
 
                     <RelativeLayout
                         android:layout_width="134dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.58"></RelativeLayout>
+                        android:layout_weight="0.58">
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Join Session"
-                        android:id="@+id/joinBtn" />
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Join Session"
+                            android:id="@+id/joinBtn"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true" />
+                    </RelativeLayout>
+
                 </LinearLayout>
             </RelativeLayout>
 

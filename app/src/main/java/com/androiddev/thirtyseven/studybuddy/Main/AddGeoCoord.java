@@ -40,10 +40,9 @@ import android.widget.Toast;
 
 public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
 
-    private double longitude;
-    private double latitude;
     private boolean permission;
     private MarkerOptions userMarker;
+    private LatLng userPosition;
 
 
     @Override
@@ -57,28 +56,17 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
 
 
 
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         permission = true;
-        if(Build.VERSION.SDK_INT >= 23) {
-            permission = checkSelfPermission((Manifest.permission.ACCESS_FINE_LOCATION)) == PackageManager.PERMISSION_GRANTED;
 
-        }
-        if(permission) {
-            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
-        }
 
         Button button = (Button) findViewById(R.id.buddyButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LatLng position = userMarker.getPosition();
-
 
                 Intent i = new Intent(getApplicationContext(), CreateSessionActivity.class);
-                i.putExtra("latitude", position.latitude);
-                i.putExtra("longitude", position.longitude);
+                i.putExtra("latitude", userPosition.latitude);
+                i.putExtra("longitude", userPosition.longitude);
 
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
@@ -93,10 +81,9 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
     }
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng l = new LatLng(latitude, longitude);
         LatLng ISU = new LatLng(42.026334, -93.646361);
-        LatLng curtissHall = new LatLng(42.026208, -93.645023);
-        LatLng jischkeHall = new LatLng(42.027223, -93.644535);
+        LatLng curtissHall = new LatLng(42.026201, -93.644804);
+        LatLng jischkeHall = new LatLng(42.027170, -93.644537);
         LatLng pearsonHall = new LatLng(42.025935, -93.649923);
         LatLng atanasoffHall = new LatLng(42.028135, -93.649730);
         LatLng cooverHall = new LatLng(42.028334, -93.650953);
@@ -105,10 +92,13 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
         LatLng udcc = new LatLng(42.024772, -93.651500);
         LatLng hooverHall = new LatLng(42.026668, -93.651350);
         LatLng howeHall = new LatLng(42.026828, -93.652627);
-        LatLng gerdinHall = new LatLng(42.025274, -93.644612);
-        LatLng memorialUnion = new LatLng(42.024134, -93.645964);
+        LatLng gerdinHall = new LatLng(42.025471, -93.644410);
+        LatLng memorialUnion = new LatLng(42.023886, -93.645897);
         LatLng physicsHall = new LatLng(42.029139, -93.647370);
-        LatLng designHall = new LatLng(42.028342, -93.652981);
+        LatLng designHall = new LatLng(42.028631, -93.653086);
+        LatLng carverHall = new LatLng(42.025225, -93.648345);
+        LatLng library = new LatLng(42.028015, -93.648958);
+        LatLng musicHall = new LatLng(42.024634, -93.648202);
 
         if(Build.VERSION.SDK_INT >= 23) {
             permission = checkSelfPermission((Manifest.permission.ACCESS_FINE_LOCATION)) == PackageManager.PERMISSION_GRANTED;
@@ -133,6 +123,29 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
         map.addMarker(new MarkerOptions().position(memorialUnion).title("Memorial Union").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(physicsHall).title("Physics Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(designHall).title("Design Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(carverHall).title("Carver Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(musicHall).title("Music Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(library).title("Parks Library").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                userPosition = marker.getPosition();
+
+                Log.v("DID I MOVE", marker.getPosition() + "");
+
+            }
+        });
+
 
 
 

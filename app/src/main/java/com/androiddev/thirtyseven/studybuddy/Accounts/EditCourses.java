@@ -23,6 +23,7 @@ import com.androiddev.thirtyseven.studybuddy.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EditCourses extends AppCompatActivity {
@@ -32,6 +33,8 @@ public class EditCourses extends AppCompatActivity {
     private JSONObject j;
     private JSONObject jObj;
     private String[] allCourses;
+    private ArrayList<String> userCourses;
+    private JSONObject user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,59 +46,83 @@ public class EditCourses extends AppCompatActivity {
         id = prefs.getString("id", "None");
         textView = (AutoCompleteTextView) findViewById(R.id.editText);
         createAutoComplete();
+        userCourses = new ArrayList<String>();
+        final String my_params = "/users/id/" + id;
+        AsyncTask a = new AsyncTask<Object, Void, Void>() {
+
+
+            @Override
+            protected Void doInBackground(Object... params) {
+                ServerConnection s = new ServerConnection(my_params);
+                j = s.run();
+                try {
+                    for (int i = 0; i < j.getJSONObject("user").getJSONArray("courses").length(); i++) {
+                        userCourses.add(j.getJSONObject("user").getJSONArray("courses").get(i).toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+
+            }
+        };
+        a.execute();
+
+
         createButtons();
 
 
     }
 
     //Creates the autocompletetextview
-    protected void createAutoComplete(){
+    protected void createAutoComplete() {
         allCourses = getResources().getStringArray(R.array.course_list);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, allCourses);
         textView.setAdapter(adapter);
     }
 
-    protected void createButtons(){
+    protected void createButtons() {
 
         //Button for adding a course
         Button addButton = (Button) findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 String course = textView.getText().toString();
-                if(Arrays.asList(allCourses).contains(course)) {
-                    String[] courses = {course};
-                    jObj = new JSONObject();
-                    try {
-                        jObj.put("courses", new JSONArray(courses));
-                    } catch (Exception e) {
-
-                    }
-
-                    final String my_params = "/users/addcourses/" + id;
-
-                    AsyncTask a = new AsyncTask<Object, Void, Void>() {
-
-
-                        @Override
-                        protected Void doInBackground(Object... params) {
-
-                            ServerConnection s = new ServerConnection(jObj, "PUT", my_params);
-                            j = s.run();
-                            return null;
+                if (userCourses.contains(course)) {
+                    Toast.makeText(getApplicationContext(), "You are enrolled in that course.", Toast.LENGTH_LONG).show();
+                } else {
+                    if (Arrays.asList(allCourses).contains(course)) {
+                        String[] courses = {course};
+                        jObj = new JSONObject();
+                        try {
+                            jObj.put("courses", new JSONArray(courses));
+                        } catch (Exception e) {
 
                         }
 
-                    };
-                    a.execute();
-                    Intent i = new Intent(getApplicationContext(), UserCourses.class);
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "That is not a course offered at ISU", Toast.LENGTH_LONG).show();
-                }
+                        final String my_params = "/users/addcourses/" + id;
+
+                        AsyncTask a = new AsyncTask<Object, Void, Void>() {
 
 
+                            @Override
+                            protected Void doInBackground(Object... params) {
+
+                                ServerConnection s = new ServerConnection(jObj, "PUT", my_params);
+                                j = s.run();
+                                return null;
+
+                            }
+
+                        };
+                        a.execute();
+                        Intent i = new Intent(getApplicationContext(), UserCourses.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "That is not a course offered at ISU", Toast.LENGTH_LONG).show();
+                    }
+                }
 
 
             }
@@ -107,37 +134,41 @@ public class EditCourses extends AppCompatActivity {
         removeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 String course = textView.getText().toString();
-                if (Arrays.asList(allCourses).contains(course)) {
-                    String[] courses = {course};
-                    jObj = new JSONObject();
-                    try {
-                        jObj.put("courses", new JSONArray(courses));
-                    } catch (Exception e) {
-
-                    }
-
-                    final String my_params = "/users/deletecourses/" + id;
-                    Log.v("MYTEST", id);
-
-                    AsyncTask a = new AsyncTask<Object, Void, Void>() {
-
-
-                        @Override
-                        protected Void doInBackground(Object... params) {
-
-                            ServerConnection s = new ServerConnection(jObj, "PUT", my_params);
-                            j = s.run();
-                            return null;
+                if (!userCourses.contains(course)) {
+                    Toast.makeText(getApplicationContext(), "You are not enrolled in that course.", Toast.LENGTH_LONG).show();
+                } else {
+                    if (Arrays.asList(allCourses).contains(course)) {
+                        String[] courses = {course};
+                        jObj = new JSONObject();
+                        try {
+                            jObj.put("courses", new JSONArray(courses));
+                        } catch (Exception e) {
 
                         }
 
-                    };
-                    a.execute();
-                    Intent i = new Intent(getApplicationContext(), UserCourses.class);
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                } else {
-                    Toast.makeText(getApplicationContext(), "That is not a course offered at ISU", Toast.LENGTH_LONG).show();
+                        final String my_params = "/users/deletecourses/" + id;
+                        Log.v("MYTEST", id);
+
+                        AsyncTask a = new AsyncTask<Object, Void, Void>() {
+
+
+                            @Override
+                            protected Void doInBackground(Object... params) {
+
+                                ServerConnection s = new ServerConnection(jObj, "PUT", my_params);
+                                j = s.run();
+                                return null;
+
+                            }
+
+                        };
+                        a.execute();
+                        Intent i = new Intent(getApplicationContext(), UserCourses.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "That is not a course offered at ISU", Toast.LENGTH_LONG).show();
+                    }
                 }
 
 
@@ -145,8 +176,9 @@ public class EditCourses extends AppCompatActivity {
         });
 
     }
+
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         Intent main = new Intent(getApplicationContext(), UserProfile.class);
         main.addCategory(Intent.CATEGORY_HOME);
         main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

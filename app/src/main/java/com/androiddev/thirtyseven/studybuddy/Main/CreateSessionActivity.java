@@ -214,6 +214,16 @@ public class CreateSessionActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed(){
+        Intent main = new Intent(getApplicationContext(), AddGeoCoord.class);
+        main.addCategory(Intent.CATEGORY_HOME);
+        main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(main);
+        finish();
+
+
+    }
 }
 
 

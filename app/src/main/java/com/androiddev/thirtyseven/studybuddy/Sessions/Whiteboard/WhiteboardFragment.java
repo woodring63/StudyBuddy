@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -66,7 +67,8 @@ public class WhiteboardFragment extends Fragment {
     private Button btnSize;
     private Button btnEraserToggle;
     private Button btnDownload;
-    private Button btnPush;
+
+    private Boolean isBeingTouched = false;
 
     private WhiteboardFragment thisFragment;
     private Socket mSocket;
@@ -114,13 +116,29 @@ public class WhiteboardFragment extends Fragment {
             btnSize = (Button) rootView.findViewById(R.id.btn_size);
             btnEraserToggle = (Button) rootView.findViewById(R.id.btn_eraser_toggle);
             btnDownload = (Button) rootView.findViewById(R.id.btn_download);
-            btnPush = (Button) rootView.findViewById(R.id.btn_push);
             thisFragment = this;
             initializeColorButton();
             initializeSizeButton();
             initializeEraserToggleButton();
             initializeDownloadButton();
-            initializePushButton();
+
+            // TODO make an asynctask to get the bitmap from the server when user starts
+
+            rootView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            isBeingTouched = true;
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            isBeingTouched = false;
+                            break;
+                    }
+
+                    return true;
+                }
+            });
         } catch (NullPointerException e) {
             // rip in pieces
         }
@@ -134,15 +152,17 @@ public class WhiteboardFragment extends Fragment {
         mSocket.on("new bitmap", onNewBitmap);
         mSocket.connect();
 
-        /*
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                attemptSend();
+                if (!isBeingTouched) {
+                    attemptSend();
+                }
             }
-        },0,3000);//Update text every 3 seconds
-        */
+        },0,5000);//Update text every 5 seconds
+
     }
 
     private void attemptSend() {
@@ -165,6 +185,10 @@ public class WhiteboardFragment extends Fragment {
         }
     }
 
+    /**
+     * Converts a string to a bitmap and sets the whiteboard's bitmap to the new one.
+     * @param encodedBitmap
+     */
     private void updateBitmap(String encodedBitmap) {
         byte[] decodedString = Base64.decode(encodedBitmap, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -189,15 +213,6 @@ public class WhiteboardFragment extends Fragment {
                 SizeDialogFragment sdf = new SizeDialogFragment();
                 sdf.show(getFragmentManager(), "sdf");
                 sdf.setParentWhiteboardFragment(thisFragment);
-            }
-        });
-    }
-
-    private void initializePushButton() {
-        btnPush.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptSend();
             }
         });
     }
@@ -283,6 +298,5 @@ public class WhiteboardFragment extends Fragment {
             );
         }
     }
-
 
 }

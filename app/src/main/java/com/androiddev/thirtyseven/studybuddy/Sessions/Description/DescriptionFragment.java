@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,7 @@ public class DescriptionFragment extends Fragment {
 
             course.setText(sessionInfo.getString("course"));
             desc.setText(sessionInfo.getString("bio"));
+            Log.v("My Test", sessionInfo.getString("_id"));
 
             final String my_params = "/users/leavesession/" + id + "/" + sessionInfo.getString("_id");
 

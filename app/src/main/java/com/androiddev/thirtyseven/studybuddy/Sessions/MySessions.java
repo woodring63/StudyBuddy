@@ -72,7 +72,6 @@ public class MySessions extends NavBase {
 
         }
         joinedSessions = null;
-        JSONArray createdSessions = null;
         JArray = new JSONArray();
 
         try {
@@ -83,13 +82,7 @@ public class MySessions extends NavBase {
 
 
 
-            /*for (int j = 0; j < createdSessions.length(); j++) {
-                Date date = new Date(Long.parseLong(createdSessions.getJSONObject(j).getString("startTime")));
 
-                mySessions.add(createdSessions.getJSONObject(j).getString("course") + " " + format.format(date));
-                JArray.put(createdSessions.getJSONObject(j));
-
-            }*/
             for (int i = 0; i < joinedSessions.length(); i++) {
                 Date date = new Date(Long.parseLong(joinedSessions.getJSONObject(i).getString("startTime")));
 

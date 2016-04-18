@@ -33,6 +33,9 @@ public class WhiteboardView extends View {
     private Bitmap canvasBitmap;
     // eraser
     private boolean eraser = false;
+    // keep last pen color
+    private String lastPaintColor;
+    private float lastPenSize;
 
     public WhiteboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -51,7 +54,9 @@ public class WhiteboardView extends View {
 
         // Initialize the size and color
         setStrokeWidth(5f);
+        lastPenSize = 5f;
         setPaintColor("black");
+        lastPaintColor = "black";
     }
 
     @Override
@@ -101,6 +106,8 @@ public class WhiteboardView extends View {
     public void setCanvasBitMap(Bitmap bitmap) {
         this.canvasBitmap = bitmap;
         drawCanvas = new Canvas(canvasBitmap);
+        drawPath.reset(); // maybe this will help?
+        invalidate(); // maybe this will help?
     }
 
     public void setPaintColor(String newColor) {
@@ -134,6 +141,11 @@ public class WhiteboardView extends View {
                 paintColor = ContextCompat.getColor(getContext(), R.color.white);
                 break;
         }
+        if (eraser) {
+            paintColor = ContextCompat.getColor(getContext(), R.color.white);
+        } else {
+            lastPaintColor = newColor;
+        }
         drawPaint.setColor(paintColor);
         canvasPaint.setColor(paintColor);
     }
@@ -146,6 +158,7 @@ public class WhiteboardView extends View {
         } else {
             drawPaint.setStrokeWidth(f * 2f);
             canvasPaint.setStrokeWidth(f * 2f);
+            lastPenSize = f * 2f;
         }
     }
 
@@ -153,10 +166,13 @@ public class WhiteboardView extends View {
         eraser = !eraser;
         if (eraser) {
             setStrokeWidth(10f);
-            drawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+            setPaintColor("white");
+            //drawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         } else {
             setStrokeWidth(5f);
-            drawPaint.setXfermode(null);
+            setPaintColor(lastPaintColor); // set it to the last used color
+            setStrokeWidth(lastPenSize);
+            //drawPaint.setXfermode(null);
         }
     }
 

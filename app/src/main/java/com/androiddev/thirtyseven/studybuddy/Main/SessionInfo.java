@@ -42,7 +42,6 @@ public class SessionInfo extends NavBase{
         TextView endTime = (TextView) findViewById(R.id.endTime);
         TextView desc = (TextView) findViewById(R.id.desc);
         Button join = (Button) findViewById(R.id.joinBtn);
-        Button leave = (Button) findViewById(R.id.leaveBtn);
 
 
 
@@ -65,7 +64,6 @@ public class SessionInfo extends NavBase{
 
 
             JSONArray jArr = sessionInfo.getJSONObject("loc").getJSONArray("coordinates");
-            Toast.makeText(getApplicationContext(), jArr.toString(), Toast.LENGTH_LONG).show();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -77,7 +75,7 @@ public class SessionInfo extends NavBase{
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 JoinSessionAsyncTask async = null;
                 try {
-                    async = new JoinSessionAsyncTask(true,prefs.getString("id","None"),sessionInfo.getString("_id"));
+                    async = new JoinSessionAsyncTask(prefs.getString("id","None"),sessionInfo.getString("_id"));
                     async.execute();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -90,42 +88,24 @@ public class SessionInfo extends NavBase{
         });
 
 
-        leave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                JoinSessionAsyncTask async = null;
-                try {
-                    async = new JoinSessionAsyncTask(false,prefs.getString("id","None"),sessionInfo.getString("_id"));
-                    async.execute();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Intent i = new Intent(getApplicationContext(), HubActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                Toast.makeText(getApplicationContext(), "You have left the study session", Toast.LENGTH_LONG).show();
-                startActivity(i);
-            }
-        });
+
     }
 }
 
 class JoinSessionAsyncTask extends AsyncTask<Void, Void, Boolean>
 {
-    private boolean join;
     private String id;
     private String sessionid;
 
-    public JoinSessionAsyncTask(boolean join, String id, String sessionid)
+    public JoinSessionAsyncTask(String id, String sessionid)
     {
-        this.join = join;
         this.id = id;
         this.sessionid = sessionid;
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        String url = join ? "/users/joinsession" : "/users/leavesession";
+        String url = "/users/joinsession";
 
         url += "/" + id + "/" + sessionid;
         ServerConnection server = new ServerConnection(null,"PUT",url);

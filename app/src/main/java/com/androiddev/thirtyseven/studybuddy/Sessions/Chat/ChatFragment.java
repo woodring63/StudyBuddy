@@ -125,14 +125,12 @@ public class ChatFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     private void addMessage(String username, String message) {
 
         Toast.makeText(getContext(), "Test", Toast.LENGTH_LONG);
         mView.setText(mView.getText().toString() + '\n' + username + message);
-
     }
 
 
@@ -140,7 +138,6 @@ public class ChatFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         mSocket.disconnect();
         mSocket.off("new message", onNewMessage);
     }

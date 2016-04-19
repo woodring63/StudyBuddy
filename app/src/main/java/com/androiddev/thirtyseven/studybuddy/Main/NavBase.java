@@ -77,7 +77,6 @@ public class NavBase extends AppCompatActivity {
         mNavItems.add(new NavItem("Profile", "View Your Profile", R.drawable.ic_dashboard_black_24dp));
         mNavItems.add(new NavItem("Sessions", "View Your Sessions", R.drawable.ic_assignment_black_24dp));
         mNavItems.add(new NavItem("Log Out", "Log Out of App", R.drawable.ic_trending_flat_black_24dp));
-        mNavItems.add(new NavItem("Test", "Map Test", R.drawable.ic_play_light));
 
 
         // DrawerLayout
@@ -187,11 +186,6 @@ public class NavBase extends AppCompatActivity {
 
             case 5:
                 i = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(i);
-                finish();
-                break;
-            case 6:
-                i = new Intent(getApplicationContext(), AddGeoCoord.class);
                 startActivity(i);
                 finish();
                 break;

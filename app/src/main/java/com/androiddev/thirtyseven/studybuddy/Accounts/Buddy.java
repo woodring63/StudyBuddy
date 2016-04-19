@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by Nathan on 2/28/2016.
  */
-public class Buddy implements Parcelable {
+public class Buddy implements Parcelable, Comparable<Buddy>{
 
     private String id;
     private String name;
@@ -29,6 +29,10 @@ public class Buddy implements Parcelable {
         buddies = null;
         bio = null;
     }
+    public int compareTo(Buddy o){
+        return this.name.compareTo(o.name);
+    }
+
 
     public String[] getBuddies() {
         return buddies;
@@ -130,5 +134,6 @@ public class Buddy implements Parcelable {
         this.setBuddies(source.createStringArray());
         this.setBio((source.readString()));
     }
+
 }
 

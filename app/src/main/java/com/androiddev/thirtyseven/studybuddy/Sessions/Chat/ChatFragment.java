@@ -125,6 +125,7 @@ public class ChatFragment extends Fragment {
         //mView.setText(mView.getText().toString() + '\n' + message);
         try {
             JSONObject json = new JSONObject("{msg:\" " + message +"\",name:\""+name+"\",session:\""+sessionId+"\"}");
+            Log.e("senddata",json.toString());
             mSocket.emit("new message", json);
         } catch (JSONException e) {
             e.printStackTrace();

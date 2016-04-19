@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
+import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.github.nkzawa.emitter.Emitter;
@@ -71,6 +72,7 @@ public class WhiteboardFragment extends Fragment {
     private Boolean isBeingTouched = false;
 
     private WhiteboardFragment thisFragment;
+    private String sessionId;
     private Socket mSocket;
     {
         try {
@@ -89,6 +91,10 @@ public class WhiteboardFragment extends Fragment {
                         JSONObject data = (JSONObject) args[0];
                         String encodedBitmap;
                         try {
+                            if(!data.getString("session").equals(sessionId))
+                            {
+                                return;
+                            }
                             encodedBitmap = data.getString("image");
                         } catch (JSONException e) {
                             return;
@@ -121,6 +127,7 @@ public class WhiteboardFragment extends Fragment {
             initializeSizeButton();
             initializeEraserToggleButton();
             initializeDownloadButton();
+            sessionId = ((SessionActivity) getActivity()).getSessionId();
 
             // TODO make an asynctask to get the bitmap from the server when user starts
 
@@ -174,7 +181,7 @@ public class WhiteboardFragment extends Fragment {
             byte[] imageBytes = baos.toByteArray();
             String encodedImage = Base64.encodeToString(imageBytes, Base64.URL_SAFE);
 
-            JSONObject obj = new JSONObject("{image:" + "\"" + encodedImage + "\"" + "}");
+            JSONObject obj = new JSONObject("{image:" + "\"" + encodedImage + "\",session:" + sessionId + "\"}");
             mSocket.emit("new bitmap", obj);
 
         } catch (NullPointerException e) {

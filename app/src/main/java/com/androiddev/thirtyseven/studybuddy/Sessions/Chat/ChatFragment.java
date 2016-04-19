@@ -140,7 +140,7 @@ public class ChatFragment extends Fragment {
 
     private void addMessage(String username, String message) {
         Toast.makeText(getContext(), "Test", Toast.LENGTH_LONG);
-        mView.setText(mView.getText().toString() + '\n' + username + message);
+        mView.setText(mView.getText().toString() + '\n' + username + ":" + message);
     }
 
 

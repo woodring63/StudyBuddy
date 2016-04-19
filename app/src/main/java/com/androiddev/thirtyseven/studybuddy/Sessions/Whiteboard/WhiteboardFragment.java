@@ -205,7 +205,8 @@ public class WhiteboardFragment extends Fragment {
     private void updateBitmap(String encodedBitmap) {
         byte[] decodedString = Base64.decode(encodedBitmap, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        whiteboard.setCanvasBitMap(decodedByte.copy(Bitmap.Config.ARGB_8888, true));
+        //whiteboard.setCanvasBitMap(decodedByte.copy(Bitmap.Config.ARGB_8888, true));
+        whiteboard.setCanvasBitMap(Bitmap.createScaledBitmap(decodedByte, whiteboard.getWidth(), whiteboard.getHeight(), true));
     }
 
     private void initializeColorButton() {

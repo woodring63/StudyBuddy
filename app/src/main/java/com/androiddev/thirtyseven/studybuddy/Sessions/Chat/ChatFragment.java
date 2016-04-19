@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,6 +97,7 @@ public class ChatFragment extends Fragment {
 
         mInput = (EditText) rootView.findViewById(R.id.chat_edit_text);
         mView = (TextView) rootView.findViewById(R.id.chat_text_view);
+        mView.setMovementMethod(new ScrollingMovementMethod());
         Button sendBtn = (Button) rootView.findViewById(R.id.chat_send_btn);
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +139,6 @@ public class ChatFragment extends Fragment {
     }
 
     private void addMessage(String username, String message) {
-
         Toast.makeText(getContext(), "Test", Toast.LENGTH_LONG);
         mView.setText(mView.getText().toString() + '\n' + username + message);
     }

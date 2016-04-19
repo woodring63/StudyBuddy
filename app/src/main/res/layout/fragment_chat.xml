@@ -17,8 +17,7 @@
             <TextView
                 android:id="@+id/chat_text_view"
                 android:layout_width="match_parent"
-                android:layout_height="458dp"
-                android:text="TEST TEXT"/>
+                android:layout_height="458dp" />
 
             <LinearLayout
                 android:orientation="horizontal"

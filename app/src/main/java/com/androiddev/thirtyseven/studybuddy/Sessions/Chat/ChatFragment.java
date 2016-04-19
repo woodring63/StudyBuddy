@@ -55,31 +55,35 @@ public class ChatFragment extends Fragment {
         //For when an the android recieves a message from
         @Override
         public void call(final Object... args) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                    JSONObject data = (JSONObject) args[0];
-                    String username;
-                    String message;
-                    Log.e("data",data.toString());
-                    try {
-                        if(!data.getString("session").equals(sessionId))
-                        {
+                        JSONObject data = (JSONObject) args[0];
+                        String username;
+                        String message;
+                        Log.e("data", data.toString());
+                        try {
+                            if (!data.getString("session").equals(sessionId)) {
+                                return;
+                            }
+                            username = data.getString("name");
+                            message = data.getString("msg");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                             return;
                         }
-                        username = data.getString("name");
-                        message = data.getString("msg");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        return;
-                    }
 
-                    // add the message to view
-                    Log.e("Message", message);
-                    addMessage(username, message);
-                }
-            });
+                        // add the message to view
+                        Log.e("Message", message);
+                        addMessage(username, message);
+                    }
+                });
+            }catch(NullPointerException e)
+            {
+                Log.d("onNewBitmap", "Null pointer exception (Chat) getActivity.runOnUiThread.");
+            }
         }
     };
 

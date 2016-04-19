@@ -68,6 +68,7 @@ public class WhiteboardFragment extends Fragment {
     private Button btnSize;
     private Button btnEraserToggle;
     private Button btnDownload;
+    private Button btnPush;
 
     private Boolean isBeingTouched = false;
 
@@ -122,11 +123,13 @@ public class WhiteboardFragment extends Fragment {
             btnSize = (Button) rootView.findViewById(R.id.btn_size);
             btnEraserToggle = (Button) rootView.findViewById(R.id.btn_eraser_toggle);
             btnDownload = (Button) rootView.findViewById(R.id.btn_download);
+            btnPush = (Button) rootView.findViewById(R.id.btn_push);
             thisFragment = this;
             initializeColorButton();
             initializeSizeButton();
             initializeEraserToggleButton();
             initializeDownloadButton();
+            initializePushButton();
             sessionId = ((SessionActivity) getActivity()).getSessionId();
 
             // TODO make an asynctask to get the bitmap from the server when user starts
@@ -160,6 +163,7 @@ public class WhiteboardFragment extends Fragment {
         mSocket.connect();
 
 
+        /*
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -169,6 +173,7 @@ public class WhiteboardFragment extends Fragment {
                 }
             }
         },0,5000);//Update text every 5 seconds
+        */
 
     }
 
@@ -246,6 +251,17 @@ public class WhiteboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 saveToExternalStorage();
+            }
+        });
+    }
+
+    private void initializePushButton() {
+        btnPush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isBeingTouched) {
+                    attemptSend();
+                }
             }
         });
     }

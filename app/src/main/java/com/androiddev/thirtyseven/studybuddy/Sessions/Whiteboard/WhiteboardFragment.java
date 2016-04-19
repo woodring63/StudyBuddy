@@ -130,7 +130,7 @@ public class WhiteboardFragment extends Fragment {
             initializeEraserToggleButton();
             initializeDownloadButton();
             initializePushButton();
-            sessionId = ((SessionActivity) getActivity()).getSessionId();
+
 
             // TODO make an asynctask to get the bitmap from the server when user starts
 
@@ -159,6 +159,7 @@ public class WhiteboardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstances) {
         super.onCreate(savedInstances);
+        sessionId = ((SessionActivity) getActivity()).getSessionId();
         mSocket.on("new bitmap", onNewBitmap);
         mSocket.connect();
 
@@ -186,7 +187,7 @@ public class WhiteboardFragment extends Fragment {
             byte[] imageBytes = baos.toByteArray();
             String encodedImage = Base64.encodeToString(imageBytes, Base64.URL_SAFE);
 
-            JSONObject obj = new JSONObject("{image:" + "\"" + encodedImage + "\",session:" + sessionId + "\"}");
+            JSONObject obj = new JSONObject("{image:" + "\"" + encodedImage + "\",session:" + sessionId + "}");
             mSocket.emit("new bitmap", obj);
 
         } catch (NullPointerException e) {

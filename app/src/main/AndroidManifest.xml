@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBLSVKxR9cIfLloF6e2mr6SYWEGtAxFy24"/>
+            android:value="AIzaSyDXOMcBgTU3SYLIse6o10dF5PmnMzVqWJo"/>
         <!-- Evan Laptop  android:value="AIzaSyBLSVKxR9cIfLloF6e2mr6SYWEGtAxFy24"/>-->
         <!-- Evan Desktop android:value="AIzaSyDsiMPuM_90T5XH-OO5RCOkqui9JDMBHXk"/>-->
         <!-- Nathan Laptop android:value="AIzaSyCGNv_l1iBhgPc5Q8a4hUuwE8XCDL8A3bQ"/>-->

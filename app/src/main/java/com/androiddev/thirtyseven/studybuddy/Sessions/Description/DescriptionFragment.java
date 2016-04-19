@@ -21,6 +21,7 @@ import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.MySessions;
+import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardView;
 
 import org.json.JSONException;
@@ -56,7 +57,7 @@ public class DescriptionFragment extends Fragment {
 
 
         try {
-            sessionInfo = new JSONObject((String)getActivity().getIntent().getSerializableExtra("session"));
+            sessionInfo = ((SessionActivity)getActivity()).getSessionInfo();
 
             String datePattern = "MM/dd/yyyy";
             String timePattern = "hh:mm";

@@ -17,12 +17,16 @@ import android.view.View;
 import com.androiddev.thirtyseven.studybuddy.Main.NavBase;
 import com.androiddev.thirtyseven.studybuddy.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Joseph Elliott on 2/2/2016.
  */
 public class SessionActivity extends NavBase {
 
     SessionPagerAdapter adapter;
+    JSONObject sessionInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,13 @@ public class SessionActivity extends NavBase {
         final NonSwipeViewPager viewPager = (NonSwipeViewPager) findViewById(R.id.session_pager);
         adapter = new SessionPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+
+        //Initialize Session info
+        try {
+            sessionInfo = new JSONObject((String)this.getIntent().getSerializableExtra("session"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         // Initialize tab stuff
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -99,5 +110,20 @@ public class SessionActivity extends NavBase {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("DocumentFragment", "onActivityResult Activity");
         adapter.getItem(0).onActivityResult(requestCode, resultCode, data);
+    }
+
+    public JSONObject getSessionInfo()
+    {
+        return sessionInfo;
+    }
+
+    public String getSessionId()
+    {
+        try {
+            return sessionInfo.getString("_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

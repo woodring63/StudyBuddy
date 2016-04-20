@@ -1,5 +1,14 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Document;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Created by Nathan on 4/18/2016.
  */
@@ -11,15 +20,37 @@ public abstract class Mutation {
 
     protected int type; // MUTATION_INSERT or MUTATION_DELETE
     protected int index; // the index that the mutation begins at
+    protected String senderID; // The ID of the user who created this Mutation
+    protected HashMap<String, Integer> version; // Integers representing how many mutations the user has
+                                        // seen from each of the other users
+
 
     /**
      * Constructs a new Mutation
      * @param type - MUTATION_INSERT or MUTATION_DELETE
      * @param index - the index that the mutation begins at
+     * @param senderID - The ID of the user who created this Mutation
      */
-    public Mutation(int type, int index) {
+    public Mutation(int type, int index, String senderID) {
         this.type = type;
         this.index = index;
+        this.senderID = senderID;
+    }
+
+    /**
+     * Parses the given JSONObject to construct the Mutation
+     * @param json - the JSONObject representing the Mutation
+     */
+    public Mutation(JSONObject json) {
+        JSONObject jMap;
+        Iterator<?> ids;
+        try {
+            type = json.getInt("type");
+            index = json.getInt("index");
+            senderID = json.getString("senderID");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -28,4 +59,22 @@ public abstract class Mutation {
      * @param mutation
      */
     public abstract void transform(Mutation mutation);
+
+    /**
+     * Returns the number of characters inserted / deleted by this mutation
+     * @return - the number of characters inserted / deleted by this mutation
+     */
+    public abstract int length();
+
+    /**
+     * Returns the first index not affected by this mutation
+     * @return - the first index not affected by this mutation
+     */
+    public abstract int end();
+
+    /**
+     * Writes the mutation as a JSON object.
+     * @return - the JSON object representing this Mutation
+     */
+    public abstract JSONObject getJSON();
 }

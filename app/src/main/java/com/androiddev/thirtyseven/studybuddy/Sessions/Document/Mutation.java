@@ -21,8 +21,6 @@ public abstract class Mutation {
     protected int type; // MUTATION_INSERT or MUTATION_DELETE
     protected int index; // the index that the mutation begins at
     protected String senderID; // The ID of the user who created this Mutation
-    protected HashMap<String, Integer> version; // Integers representing how many mutations the user has
-                                        // seen from each of the other users
 
 
     /**
@@ -50,6 +48,21 @@ public abstract class Mutation {
             senderID = json.getString("senderID");
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Returns a shallow copy of this Mutation
+     * @return - a shallow copy of this Mutation
+     */
+    public Mutation copy() {
+        switch(type) {
+            case MUTATION_INSERT:
+                return new Insert(index, ((Insert) this).toInsert, senderID);
+            case MUTATION_DELETE:
+                return new Delete(index, ((Delete) this).numChars, senderID);
+            default:
+                return null;
         }
     }
 

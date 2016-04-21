@@ -56,13 +56,6 @@ import java.util.Scanner;
 public class DocumentFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
-    private Socket mSocket;
-    {
-        try {
-            mSocket = IO.socket(ServerConnection.IP + ":8300");
-        } catch (URISyntaxException e) {}
-    }
-
     private Emitter.Listener onNewMutation = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -103,13 +96,6 @@ public class DocumentFragment extends Fragment
     private static final int REQUEST_CODE_RESOLUTION = 3;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mSocket.on("new mutation", onNewMutation);
-        mSocket.connect();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
 
@@ -120,7 +106,7 @@ public class DocumentFragment extends Fragment
         Button clearButton = (Button) view.findViewById(R.id.clear_button);
         Button saveButton = (Button) view.findViewById(R.id.save_button);
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        collaborator = new Collaborator(text, prefs.getString("id", "None"));
+        collaborator = new Collaborator(text, prefs.getString("id", "None"), onNewMutation);
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Drive.API)
@@ -534,15 +520,9 @@ public class DocumentFragment extends Fragment
         }
     }
 
-    private void attemptSend(JSONObject toSend) {
-        mSocket.emit("new mutation", toSend);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        mSocket.disconnect();
-        mSocket.off("new mutation", onNewMutation);
+        collaborator.onDestroy();
     }
 }

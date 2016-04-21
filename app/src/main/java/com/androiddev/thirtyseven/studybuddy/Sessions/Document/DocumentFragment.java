@@ -106,7 +106,12 @@ public class DocumentFragment extends Fragment
         Button clearButton = (Button) view.findViewById(R.id.clear_button);
         Button saveButton = (Button) view.findViewById(R.id.save_button);
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        collaborator = new Collaborator(text, prefs.getString("id", "None"), onNewMutation);
+        collaborator = new Collaborator(
+                text,
+                prefs.getString("id", "None"),
+                ((SessionActivity) activity).getSessionId(),
+                onNewMutation
+        );
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Drive.API)

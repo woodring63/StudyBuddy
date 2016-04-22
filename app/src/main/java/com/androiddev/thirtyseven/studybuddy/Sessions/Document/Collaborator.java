@@ -32,6 +32,7 @@ public class Collaborator implements TextWatcher {
 
     private EditText textField;
     private String myID;
+    private String sessionID;
     private Emitter.Listener onNewMutation;
     private LinkedList<Mutation> mutations;
     private int disregard;
@@ -113,20 +114,30 @@ public class Collaborator implements TextWatcher {
                 // Create new mutation
                 if (before > 0) {
                     // Stuff was deleted
-                    mutation = new Delete(start, before, myID);
+                    mutation = new Delete(start, before, myID, sessionID);
                     cursorPosition = start;
                     if (count > 0) {
                         // Text was deleted, then inserted
                         mutations.add(mutation.copy());
                         attemptSendMutation(mutation.getJSON());
-                        mutation = new Insert(start, s.toString().substring(start, start + count), myID);
+                        mutation = new Insert(
+                                start,
+                                s.toString().substring(start, start + count),
+                                myID,
+                                sessionID
+                        );
                         cursorPosition += count;
                     }
                     // Otherwise nothing was added
                 }
                 else {
                     // before = 0, so something was inserted
-                    mutation = new Insert(start, s.toString().substring(start, start + count), myID);
+                    mutation = new Insert(
+                            start,
+                            s.toString().substring(start, start + count),
+                            myID,
+                            sessionID
+                    );
                     cursorPosition = start + count;
                 }
             }
@@ -139,13 +150,18 @@ public class Collaborator implements TextWatcher {
                             mutations.add(mutation.copy());
                             attemptSendMutation(mutation.getJSON());
 
-                            mutation = new Delete(start, before, myID);
+                            mutation = new Delete(start, before, myID, sessionID);
                             cursorPosition = start;
                             if (count > 0) {
                                 // Text was deleted, then inserted
                                 mutations.add(mutation.copy());
                                 attemptSendMutation(mutation.getJSON());
-                                mutation = new Insert(start, s.toString().substring(start, start + count), myID);
+                                mutation = new Insert(
+                                        start,
+                                        s.toString().substring(start, start + count),
+                                        myID,
+                                        sessionID
+                                );
                                 cursorPosition += count;
                             }
                             // Otherwise nothing was added
@@ -162,7 +178,11 @@ public class Collaborator implements TextWatcher {
                                 mutations.add(mutation.copy());
                                 attemptSendMutation(mutation.getJSON());
 
-                                mutation = new Insert(start, s.toString().substring(start, start + count), myID);
+                                mutation = new Insert(
+                                        start,
+                                        s.toString().substring(start, start + count),
+                                        myID,
+                                        sessionID);
                                 cursorPosition = start + count;
                             }
                         }
@@ -179,7 +199,11 @@ public class Collaborator implements TextWatcher {
                                     // Text was deleted, then inserted
                                     mutations.add(mutation.copy());
                                     attemptSendMutation(mutation.getJSON());
-                                    mutation = new Insert(start, s.toString().substring(start, start + count), myID);
+                                    mutation = new Insert(
+                                            start,
+                                            s.toString().substring(start, start + count),
+                                            myID,
+                                            sessionID);
                                     cursorPosition += count;
                                 }
                                 // Otherwise nothing was added
@@ -189,13 +213,18 @@ public class Collaborator implements TextWatcher {
                                 mutations.add(mutation.copy());
                                 attemptSendMutation(mutation.getJSON());
 
-                                mutation = new Delete(start, before, myID);
+                                mutation = new Delete(start, before, myID, sessionID);
                                 cursorPosition = start;
                                 if (count > 0) {
                                     // Text was deleted, then inserted
                                     mutations.add(mutation.copy());
                                     attemptSendMutation(mutation.getJSON());
-                                    mutation = new Insert(start, s.toString().substring(start, start + count), myID);
+                                    mutation = new Insert(
+                                            start,
+                                            s.toString().substring(start, start + count),
+                                            myID,
+                                            sessionID
+                                    );
                                     cursorPosition += count;
                                 }
                                 // Otherwise nothing was added
@@ -206,7 +235,7 @@ public class Collaborator implements TextWatcher {
                             mutations.add(mutation.copy());
                             attemptSendMutation(mutation.getJSON());
 
-                            mutation = new Insert(start, s.toString().substring(start, start + count), myID);
+                            mutation = new Insert(start, s.toString().substring(start, start + count), myID, sessionID);
                             cursorPosition = start + count;
                         }
                         break;
@@ -243,6 +272,7 @@ public class Collaborator implements TextWatcher {
         JSONObject json = new JSONObject();
         try {
             json.put("text", toSend);
+            json.put("sessionID", sessionID);
             mSocket.emit("new text", toSend);
         } catch (JSONException e) {
             e.printStackTrace();

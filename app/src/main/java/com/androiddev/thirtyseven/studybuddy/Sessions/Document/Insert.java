@@ -19,9 +19,10 @@ public class Insert extends Mutation {
      * @param index - the index that the mutation begins at
      * @param toInsert - the text to insert
      * @param senderID - The ID of the user who created this Mutation
+     * @param sessionID - The ID of the session that this Mutation is from
      */
-    public Insert(int index, String toInsert, String senderID) {
-        super(MUTATION_INSERT, index, senderID);
+    public Insert(int index, String toInsert, String senderID, String sessionID) {
+        super(MUTATION_INSERT, index, senderID, sessionID);
         this.toInsert = toInsert;
     }
 
@@ -82,7 +83,8 @@ public class Insert extends Mutation {
         try {
             json.put("type", type);
             json.put("index", index);
-            json.put("senderIndex", senderID);
+            json.put("senderID", senderID);
+            json.put("sessionID", sessionID);
             json.put("toInsert", toInsert);
         } catch (JSONException e) {
             e.printStackTrace();

@@ -21,6 +21,7 @@ public abstract class Mutation {
     protected int type; // MUTATION_INSERT or MUTATION_DELETE
     protected int index; // the index that the mutation begins at
     protected String senderID; // The ID of the user who created this Mutation
+    protected String sessionID; // The ID of the session that this Mutation is from
 
 
     /**
@@ -28,11 +29,13 @@ public abstract class Mutation {
      * @param type - MUTATION_INSERT or MUTATION_DELETE
      * @param index - the index that the mutation begins at
      * @param senderID - The ID of the user who created this Mutation
+     * @param sessionID - The ID of the session that this Mutation is from
      */
-    public Mutation(int type, int index, String senderID) {
+    public Mutation(int type, int index, String senderID, String sessionID) {
         this.type = type;
         this.index = index;
         this.senderID = senderID;
+        this.sessionID = sessionID;
     }
 
     /**

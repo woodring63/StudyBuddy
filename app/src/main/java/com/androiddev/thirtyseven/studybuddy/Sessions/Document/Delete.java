@@ -20,9 +20,10 @@ public class Delete extends Mutation {
      * @param index - the index that the mutation begins at
      * @param numChars - number of characters to delete
      * @param senderID - The ID of the user who created this Mutation
+     * @param sessionID - The ID of the session that this Mutation is from
      */
-    public Delete(int index, int numChars, String senderID) {
-        super(MUTATION_DELETE, index, senderID);
+    public Delete(int index, int numChars, String senderID, String sessionID) {
+        super(MUTATION_DELETE, index, senderID, sessionID);
         this.numChars = numChars;
         subDelete = null;
     }
@@ -61,7 +62,7 @@ public class Delete extends Mutation {
                     index += mutation.length();
                 }
                 else if (mutation.index - index < length()) { // mutation splits this
-                    subDelete = new Delete(mutation.end(), length() - (mutation.index - index), senderID);
+                    subDelete = new Delete(mutation.end(), length() - (mutation.index - index), senderID, sessionID);
                     numChars -= subDelete.length();
                 }
                 break;
@@ -108,7 +109,8 @@ public class Delete extends Mutation {
         try {
             json.put("type", type);
             json.put("index", index);
-            json.put("senderIndex", senderID);
+            json.put("senderID", senderID);
+            json.put("sessionID", sessionID);
             json.put("numChars", numChars);
         } catch (JSONException e) {
             e.printStackTrace();

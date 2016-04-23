@@ -45,7 +45,7 @@ public class TaskFragment extends Fragment {
     {
         try {
             //Connects to a socket on the server
-            mSocket = IO.socket(ServerConnection.IP + ":8000");
+            mSocket = IO.socket(ServerConnection.IP + ":8300");
         } catch (URISyntaxException e) {}
     }
 

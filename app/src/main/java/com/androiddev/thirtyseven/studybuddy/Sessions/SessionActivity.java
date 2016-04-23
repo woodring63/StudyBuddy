@@ -51,7 +51,7 @@ public class SessionActivity extends NavBase {
         // Initialize tab stuff
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        tabLayout.addTab(tabLayout.newTab().setText("Document"));
+        //tabLayout.addTab(tabLayout.newTab().setText("Document"));
         tabLayout.addTab(tabLayout.newTab().setText("Tasks"));
         tabLayout.addTab(tabLayout.newTab().setText("Whiteboard"));
         tabLayout.addTab(tabLayout.newTab().setText("Chat"));

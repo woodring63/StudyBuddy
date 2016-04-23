@@ -94,7 +94,7 @@ public class TaskFragment extends Fragment {
                         try {
                             JSONObject json = new JSONObject("{name:\" " +etText.getText().toString() +"\"," +
                                     "completed:\""+false+"\"," +
-                                    "session:\""+sessionId+"\"" +
+                                    "session:\""+sessionId+"\"," +
                                     "startTime:"+Calendar.getInstance().getTimeInMillis()+"}");
                             Log.e("senddata",json.toString());
                             mSocket.emit("new message", json);
@@ -134,11 +134,12 @@ public class TaskFragment extends Fragment {
         Task task = null;
         try {
             task = new Task(jTask.getString("name"), false
-                    , new Date(jTask.getLong("startTime")),jTask.getString("_id"));
+                    , new Date(jTask.getLong("startTime")),null);
+            tasks.add(task);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        tasks.add(task);
+
         adapter.notifyDataSetChanged();
     }
 
@@ -156,10 +157,11 @@ class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
 
     @Override
     protected JSONArray doInBackground(Void... params) {
-        ServerConnection server = new ServerConnection("/tasks/" + id);
+        ServerConnection server = new ServerConnection("/sessions/tasks/" + id);
         JSONObject json = server.run();
         JSONArray arr = null;
         try {
+            if(json!=null)
             arr = json.getJSONArray("tasks");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -170,6 +172,10 @@ class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
     @Override
     protected void onPostExecute(JSONArray params)
     {
+        if(params == null)
+        {
+            return;
+        }
         for(int i = 0; i < params.length(); i++)
         {
             try {
@@ -181,6 +187,7 @@ class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
                 e.printStackTrace();
             }
         }
+        Log.e("ArrayListSize",tasks.size() + "");
 
     }
 }

@@ -61,9 +61,11 @@ public abstract class Mutation {
     public Mutation copy() {
         switch(type) {
             case MUTATION_INSERT:
-                return new Insert(index, ((Insert) this).toInsert, senderID);
+                //change from null
+                return new Insert(index, ((Insert) this).toInsert, null,senderID);
             case MUTATION_DELETE:
-                return new Delete(index, ((Delete) this).numChars, senderID);
+                //change fromn ull
+                return new Delete(index, ((Delete) this).numChars, null, senderID);
             default:
                 return null;
         }

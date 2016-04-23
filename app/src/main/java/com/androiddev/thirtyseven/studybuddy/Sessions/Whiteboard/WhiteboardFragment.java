@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
@@ -47,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -135,7 +137,24 @@ public class WhiteboardFragment extends Fragment {
             initializePushButton();
 
 
-            // TODO make an asynctask to get the bitmap from the server when user starts
+            // make an asynctask to get the bitmap from the server when user starts
+            whiteboard.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
+                                           int oldTop, int oldRight, int oldBottom) {
+                    v.removeOnLayoutChangeListener(this);
+                    WhiteboardAsync async = new WhiteboardAsync(sessionId);
+                    try {
+                        String bits = async.execute().get();
+                        if(!Objects.equals(bits, ""))
+                        {
+                            updateBitmap(bits);
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
             rootView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -181,25 +200,6 @@ public class WhiteboardFragment extends Fragment {
 
     }
 
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-        //set bitmap the first time after the view has been initially created
-        WhiteboardAsync async = new WhiteboardAsync(sessionId);
-        try {
-            String bits = async.execute().get();
-            if(bits != "")
-            {
-                updateBitmap(bits);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void attemptSend() {
         try {
             Bitmap image = whiteboard.getCanvasBitMap();
@@ -224,7 +224,7 @@ public class WhiteboardFragment extends Fragment {
      * Converts a string to a bitmap and sets the whiteboard's bitmap to the new one.
      * @param encodedBitmap
      */
-    private void updateBitmap(String encodedBitmap) {
+    public void updateBitmap(String encodedBitmap) {
         byte[] decodedString = Base64.decode(encodedBitmap, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(decodedByte, whiteboard.getWidth(), whiteboard.getHeight(), true);

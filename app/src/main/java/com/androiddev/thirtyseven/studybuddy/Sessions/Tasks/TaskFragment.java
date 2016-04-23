@@ -1,5 +1,6 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Tasks;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -10,8 +11,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -71,4 +77,26 @@ public class TaskFragment extends Fragment {
         tasks = new ArrayList<>();
     }
 
+}
+
+class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
+
+    private String id;
+
+    public TaskAsync(String sessionid) {
+        this.id = sessionid;
+    }
+
+    @Override
+    protected JSONArray doInBackground(Void... params) {
+        ServerConnection server = new ServerConnection("/tasks/" + id);
+        JSONObject json = server.run();
+        JSONArray arr = null;
+        try {
+            arr = json.getJSONArray("tasks");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return arr;
+    }
 }

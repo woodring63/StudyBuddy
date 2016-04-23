@@ -14,6 +14,7 @@ public class Task implements Comparable<Task> {
     private Date createdDate;
     private Date terminationDate;
     private Date checkedDate;
+    private String id;
 
     public Task(String task, boolean done, Date createdDate) {
         this.task = task;
@@ -22,6 +23,8 @@ public class Task implements Comparable<Task> {
         this.terminationDate = null;
         this.checkedDate = null;
     }
+
+    public String getId(){return id;}
 
     public Date getCreatedDate() {
         return createdDate;

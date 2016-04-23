@@ -50,6 +50,8 @@ public class SessionSchema {
             arr.put(userId);
             json.put("attendees", arr);
             json.put("messages",new JSONArray());
+            json.put("whiteboard","");
+            json.put("document","");
         }catch(org.json.JSONException e)
         {
             e.printStackTrace();

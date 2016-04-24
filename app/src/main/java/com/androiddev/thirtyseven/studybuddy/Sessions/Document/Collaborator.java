@@ -25,7 +25,7 @@ public class Collaborator implements TextWatcher {
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket(ServerConnection.IP + ":8300");
+            mSocket = IO.socket(ServerConnection.IP + ":8000");
         } catch (URISyntaxException e) {}
     }
 
@@ -50,6 +50,7 @@ public class Collaborator implements TextWatcher {
         this.textField = textField;
         this.myID = myID;
         this.onNewMutation = onNewMutation;
+        this.sessionID = sessionID;
         mutations = new LinkedList<>();
         disregard = 0;
         mutation = null;

@@ -133,7 +133,7 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
         }
         map.moveCamera(CameraUpdateFactory.newLatLng(ISU));
         map.animateCamera(CameraUpdateFactory.zoomTo(16));
-        //map.addMarker(new MarkerOptions().position(ISU));
+        //map.addMarker(new MarkerOptionFjs().position(ISU));
 
         try {
             if (bundle != null) {
@@ -207,6 +207,9 @@ class FindSessionsAsync extends AsyncTask<Void, Void, JSONArray> {
             JArray = json.getJSONArray("newSessions");
         } catch (JSONException e) {
             e.printStackTrace();
+        }catch(NullPointerException e)
+        {
+            //do nothing
         }
         return JArray;
     }
@@ -214,6 +217,10 @@ class FindSessionsAsync extends AsyncTask<Void, Void, JSONArray> {
     @Override
     protected void onPostExecute(JSONArray params) {
         // callback.onCompleted(params);
+        if(JArray == null)
+        {
+            return;
+        }
         Log.v("Y", JArray.length() + "");
 
         for (int i = 0; i < JArray.length(); i++) {

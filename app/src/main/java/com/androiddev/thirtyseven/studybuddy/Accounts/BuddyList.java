@@ -115,10 +115,6 @@ public class BuddyList extends NavBase {
         public void onPostExecute(ArrayList buddies)
         {
             adapter.notifyDataSetChanged();
-
         }
-
     }
-
-
 }

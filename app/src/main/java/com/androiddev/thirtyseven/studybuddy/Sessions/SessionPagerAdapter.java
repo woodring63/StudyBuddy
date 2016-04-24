@@ -45,6 +45,14 @@ public class SessionPagerAdapter extends FragmentPagerAdapter {
                 return chatFragment;
             case 4:
                 return descriptionFragment;
+//            case 0:
+//                return taskFragment;
+//            case 1:
+//                return whiteboardFragment;
+//            case 2:
+//                return chatFragment;
+//            case 3:
+//                return descriptionFragment;
             default:
                 return null;
         }

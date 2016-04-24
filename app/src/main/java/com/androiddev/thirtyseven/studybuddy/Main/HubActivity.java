@@ -133,7 +133,7 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
         }
         map.moveCamera(CameraUpdateFactory.newLatLng(ISU));
         map.animateCamera(CameraUpdateFactory.zoomTo(16));
-        //map.addMarker(new MarkerOptions().position(ISU));
+        //map.addMarker(new MarkerOptionFjs().position(ISU));
 
         try {
             if (bundle != null) {
@@ -184,88 +184,6 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
         });
     }
 }
-       /* ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,sessions);
-        adapter.setNotifyOnChange(true);*/
-        /*sessionsList = (ListView) findViewById(R.id.sessionListView);
-        sessionsList.setAdapter(adapter);
-        //When a session is clicked on, send them to a new
-        sessionsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getApplicationContext(), SessionInfo.class);
-                Bundle bundle = new Bundle();
-                try {
-                    if(JArray != null) {
-                        bundle.putSerializable("session", JArray.getJSONObject(position).toString());
-                        i.putExtras(bundle);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                startActivity(i);
-            }
-        });
-    }*/
-
-    /*public void fillingTheArrayList()
-    {
-        for(int i = 0; i < JArray.length(); i ++)
-        {
-            try {
-                String pattern = "MM/dd/yyyy";
-                SimpleDateFormat format = new SimpleDateFormat(pattern);
-                Date date = new Date(Long.parseLong(JArray.getJSONObject(i).getString("startTime")));
-                sessions.add(JArray.getJSONObject(i).getString("course") + " " + format.format(date));
-            }catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
-/*
-class SessionObject{
-
-    public String id;
-    public String startTime;
-    public String endTime;
-    public String course;
-
-    public SessionObject(JSONObject json)
-    {
-        try {
-            id = json.getString("_id");
-            startTime = json.getString("startTime");
-            endTime = json.getString("endTime");
-            course = json.getString("course");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-}
-
-class MyAdapter extends ArrayAdapter<SessionObject> {
-    ArrayList<SessionObject> sessions;
-    Context context;
-    int layout;
-
-    public MyAdapter(Context context, int resource, ArrayList<SessionObject> objects) {
-        super(context, resource, objects);
-        context = context;
-        sessions = objects;
-        layout = resource;
-
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater= ((Activity) context).getLayoutInflater();
-        View row=inflater.inflate(layout,parent,false);
-        return super.getView(position, convertView, parent);
-
-    }
-}*/
 
 class FindSessionsAsync extends AsyncTask<Void, Void, JSONArray> {
 
@@ -289,6 +207,9 @@ class FindSessionsAsync extends AsyncTask<Void, Void, JSONArray> {
             JArray = json.getJSONArray("newSessions");
         } catch (JSONException e) {
             e.printStackTrace();
+        }catch(NullPointerException e)
+        {
+            //do nothing
         }
         return JArray;
     }
@@ -296,6 +217,10 @@ class FindSessionsAsync extends AsyncTask<Void, Void, JSONArray> {
     @Override
     protected void onPostExecute(JSONArray params) {
         // callback.onCompleted(params);
+        if(JArray == null)
+        {
+            return;
+        }
         Log.v("Y", JArray.length() + "");
 
         for (int i = 0; i < JArray.length(); i++) {
@@ -323,7 +248,3 @@ class FindSessionsAsync extends AsyncTask<Void, Void, JSONArray> {
     }
 }
 
-
-interface JArrayCallback {
-    public void onCompleted(JSONArray jArray);
-}

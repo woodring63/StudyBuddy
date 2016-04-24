@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
@@ -22,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
@@ -35,6 +37,7 @@ import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.ColorDialogFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.SizeDialogFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,8 +48,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -132,7 +137,24 @@ public class WhiteboardFragment extends Fragment {
             initializePushButton();
 
 
-            // TODO make an asynctask to get the bitmap from the server when user starts
+            // make an asynctask to get the bitmap from the server when user starts
+            whiteboard.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
+                                           int oldTop, int oldRight, int oldBottom) {
+                    v.removeOnLayoutChangeListener(this);
+                    WhiteboardAsync async = new WhiteboardAsync(sessionId);
+                    try {
+                        String bits = async.execute().get();
+                        if(!Objects.equals(bits, ""))
+                        {
+                            updateBitmap(bits);
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
             rootView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -202,10 +224,14 @@ public class WhiteboardFragment extends Fragment {
      * Converts a string to a bitmap and sets the whiteboard's bitmap to the new one.
      * @param encodedBitmap
      */
-    private void updateBitmap(String encodedBitmap) {
+    public void updateBitmap(String encodedBitmap) {
         byte[] decodedString = Base64.decode(encodedBitmap, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        whiteboard.setCanvasBitMap(decodedByte.copy(Bitmap.Config.ARGB_8888, true));
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(decodedByte, whiteboard.getWidth(), whiteboard.getHeight(), true);
+        //whiteboard.setCanvasBitMap(decodedByte.copy(Bitmap.Config.ARGB_8888, true));
+        whiteboard.setCanvasBitMap(scaledBitmap.copy(Bitmap.Config.ARGB_8888, true));
+        decodedByte.recycle();
+        scaledBitmap.recycle();
     }
 
     private void initializeColorButton() {
@@ -291,6 +317,7 @@ public class WhiteboardFragment extends Fragment {
             file.delete();
         }
 
+
         try {
             FileOutputStream out = new FileOutputStream(file);
             whiteboard.getCanvasBitMap().compress(Bitmap.CompressFormat.PNG, 100, out);
@@ -323,4 +350,35 @@ public class WhiteboardFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSocket.disconnect();
+        mSocket.off("new bitmap", onNewBitmap);
+    }
+
+}
+
+
+class WhiteboardAsync extends AsyncTask<Void, Void, String> {
+
+    private String id;
+    //private JArrayCallback callback;
+
+    public WhiteboardAsync(String sessionid) {
+        this.id = sessionid;
+    }
+
+    @Override
+    protected String doInBackground(Void... params) {
+        ServerConnection server = new ServerConnection("/sessions/whiteboard/" + id);
+        JSONObject json = server.run();
+        String bitmap = "";
+        try {
+            bitmap = json.getString("whiteboard");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
 }

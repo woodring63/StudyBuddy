@@ -43,6 +43,7 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
     private boolean permission;
     private MarkerOptions userMarker;
     private LatLng userPosition;
+    private Marker my_marker;
 
 
     @Override
@@ -80,7 +81,7 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
 
     }
     @Override
-    public void onMapReady(GoogleMap map) {
+    public void onMapReady(final GoogleMap map) {
         LatLng ISU = new LatLng(42.026334, -93.646361);
         LatLng curtissHall = new LatLng(42.026201, -93.644804);
         LatLng jischkeHall = new LatLng(42.027170, -93.644537);
@@ -107,9 +108,9 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
         }
         map.moveCamera(CameraUpdateFactory.newLatLng(ISU));
         map.animateCamera(CameraUpdateFactory.zoomTo(16));
-        userMarker = new MarkerOptions().position(ISU).title("Put this at the location of your study session!").draggable(true);
+        userMarker = new MarkerOptions().position(ISU).title("Put this at the location of your study session!");
         userPosition = userMarker.getPosition();
-        map.addMarker(userMarker);
+        my_marker = map.addMarker(userMarker);
         map.addMarker(new MarkerOptions().position(curtissHall).title("Curtiss Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(jischkeHall).title("Jischke Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(pearsonHall).title("Pearson Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
@@ -127,22 +128,13 @@ public class AddGeoCoord extends NavBase implements OnMapReadyCallback {
         map.addMarker(new MarkerOptions().position(carverHall).title("Carver Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(musicHall).title("Music Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         map.addMarker(new MarkerOptions().position(library).title("Parks Library").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
-        map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
-            public void onMarkerDragStart(Marker marker) {
-
-            }
-
-            @Override
-            public void onMarkerDrag(Marker marker) {
-
-            }
-
-            @Override
-            public void onMarkerDragEnd(Marker marker) {
-                userPosition = marker.getPosition();
-
-                Log.v("DID I MOVE", marker.getPosition() + "");
+            public void onMapClick(LatLng latLng) {
+                my_marker.remove();
+                userMarker = new MarkerOptions().position(latLng).title("Put this at the location of your study session!");
+                my_marker = map.addMarker(userMarker);
+                userPosition = my_marker.getPosition();
 
             }
         });

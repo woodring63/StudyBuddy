@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.R;
+import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -32,11 +37,17 @@ import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.OpenFileActivityBuilder;
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.Scanner;
 
 /**
@@ -45,11 +56,38 @@ import java.util.Scanner;
 public class DocumentFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
+    private Emitter.Listener onNewMutation = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject json = (JSONObject) args[0];
+                    try {
+                        switch (json.getInt("type")) {
+                            case Mutation.MUTATION_INSERT:
+                                collaborator.process(new Insert(json));
+                                break;
+                            case Mutation.MUTATION_DELETE:
+                                collaborator.process(new Delete(json));
+                                break;
+                            default:
+                                break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
+
     private EditText text = null;
     private GoogleApiClient mGoogleApiClient = null;
     private Activity activity = null; // Used to pass a context
     private Metadata openFile = null;
     private SharedPreferences prefs;
+    private Collaborator collaborator;
     private boolean notifiedFail = false;
 
     static final String TAG = "DocumentFragment";
@@ -68,6 +106,12 @@ public class DocumentFragment extends Fragment
         Button clearButton = (Button) view.findViewById(R.id.clear_button);
         Button saveButton = (Button) view.findViewById(R.id.save_button);
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        collaborator = new Collaborator(
+                text,
+                prefs.getString("id", "None"),
+                ((SessionActivity) activity).getSessionId(),
+                onNewMutation
+        );
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Drive.API)
@@ -479,5 +523,11 @@ public class DocumentFragment extends Fragment
                         }
                     });
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        collaborator.onDestroy();
     }
 }

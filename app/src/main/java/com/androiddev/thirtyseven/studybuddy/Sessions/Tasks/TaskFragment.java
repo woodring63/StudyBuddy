@@ -45,7 +45,7 @@ public class TaskFragment extends Fragment {
     {
         try {
             //Connects to a socket on the server
-            mSocket = IO.socket(ServerConnection.IP + ":8300");
+            mSocket = IO.socket(ServerConnection.IP + ":8000");
         } catch (URISyntaxException e) {}
     }
 
@@ -61,6 +61,14 @@ public class TaskFragment extends Fragment {
 
                         JSONObject data = (JSONObject) args[0];
                         Log.e("data", data.toString());
+                        try {
+                            if(!data.getString("session").equals(sessionId))
+                            {
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         // add the message to view
                         addTask(data);
                     }
@@ -82,6 +90,7 @@ public class TaskFragment extends Fragment {
             listView = (ListView) rootView.findViewById(R.id.tasks_list_view);
             adapter = new TaskListViewAdapter(getContext(), R.layout.item_task, tasks);
             listView.setAdapter(adapter);
+
             etText = (EditText) rootView.findViewById(R.id.tasks_add_edit_text);
             btnAdd = (Button) rootView.findViewById(R.id.tasks_add_button);
             btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +106,8 @@ public class TaskFragment extends Fragment {
                                     "session:\""+sessionId+"\"," +
                                     "startTime:"+Calendar.getInstance().getTimeInMillis()+"}");
                             Log.e("senddata",json.toString());
-                            mSocket.emit("new message", json);
+                            mSocket.emit("add task", json);
+                            Log.e("senddata",json.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -107,6 +117,7 @@ public class TaskFragment extends Fragment {
             });
         } catch (NullPointerException e) {
             // rip in pieces
+            e.printStackTrace();
         }
 
         return rootView;
@@ -119,7 +130,7 @@ public class TaskFragment extends Fragment {
         tasks = new ArrayList<>();
         // TODO load tasks from server for the session
         sessionId = ((SessionActivity) getActivity()).getSessionId();
-        mSocket.on("message", onNewTask);
+        mSocket.on("new task", onNewTask);
         mSocket.connect();
 
         TaskAsync async = new TaskAsync(sessionId,tasks);
@@ -142,7 +153,12 @@ public class TaskFragment extends Fragment {
 
         adapter.notifyDataSetChanged();
     }
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSocket.disconnect();
+        mSocket.off("new task", onNewTask);
+    }
 }
 
 class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
@@ -180,6 +196,7 @@ class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
         {
             try {
                 JSONObject obj = params.getJSONObject(i);
+                Log.e("TaskFragment",obj.toString());
                 Date start = new Date(obj.getLong("startTime"));
                 Task task = new Task(obj.getString("name"),obj.getBoolean("completed"),start,obj.getString("_id"));
                 tasks.add(task);
@@ -187,7 +204,6 @@ class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
                 e.printStackTrace();
             }
         }
-        Log.e("ArrayListSize",tasks.size() + "");
 
     }
 }

@@ -350,6 +350,13 @@ public class WhiteboardFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSocket.disconnect();
+        mSocket.off("new bitmap", onNewBitmap);
+    }
+
 }
 
 

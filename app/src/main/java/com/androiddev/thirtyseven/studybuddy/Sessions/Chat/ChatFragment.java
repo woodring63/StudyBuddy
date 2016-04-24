@@ -1,6 +1,7 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Chat;
 
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -20,17 +21,20 @@ import android.widget.Toast;
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
+import com.androiddev.thirtyseven.studybuddy.Sessions.Tasks.Task;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardView;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.github.nkzawa.emitter.Emitter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -108,6 +112,29 @@ public class ChatFragment extends Fragment {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         name = pref.getString("name", "None");
         sessionId = ((SessionActivity) getActivity()).getSessionId();
+
+        ChatAsync async = new ChatAsync(sessionId);
+        try {
+            JSONArray arr = null;
+            arr = async.execute().get();
+            if(arr != null)
+            {
+                for(int i =0; i < arr.length(); i++)
+                {
+                    try {
+                        JSONObject json = arr.getJSONObject(i);
+                        addMessage(json.getString("name"),json.getString("message"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
         return rootView;
     }
 
@@ -151,4 +178,31 @@ public class ChatFragment extends Fragment {
         mSocket.disconnect();
         mSocket.off("new message", onNewMessage);
     }
+}
+
+
+class ChatAsync extends AsyncTask<Void, Void, JSONArray> {
+
+    private String id;
+
+    public ChatAsync(String sessionid) {
+        this.id = sessionid;
+    }
+
+    @Override
+    protected JSONArray doInBackground(Void... params) {
+        ServerConnection server = new ServerConnection("/sessions/chat/" + id);
+        JSONObject json = server.run();
+        JSONArray arr = null;
+        try {
+            if(json!=null)
+            {
+                arr = json.getJSONArray("messages");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return arr;
+    }
+
 }

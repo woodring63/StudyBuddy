@@ -75,6 +75,11 @@ public class Task implements Comparable<Task> {
         done = !done;
     }
 
+    public void setDone(boolean completed)
+    {
+        done = completed;
+    }
+
     @Override
     public int compareTo(Task t) {
         if (done && !t.getDone()) {

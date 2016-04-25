@@ -2,6 +2,7 @@ package com.androiddev.thirtyseven.studybuddy.Sessions.Tasks;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.androiddev.thirtyseven.studybuddy.R;
+import com.github.nkzawa.socketio.client.Socket;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,11 +31,15 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
 
     private Context context;
     private ArrayList<Task> tasks = new ArrayList<>();
+    private Socket mSocket;
+    private String sessionId;
 
-    public TaskListViewAdapter(Context context, int layoutResourceId, ArrayList<Task> tasks) {
+    public TaskListViewAdapter(Context context, int layoutResourceId, ArrayList<Task> tasks, Socket mSocket, String sessionId) {
         super(context, layoutResourceId, tasks);
         this.context = context;
         this.tasks = tasks;
+        this.mSocket = mSocket;
+        this.sessionId = sessionId;
     }
 
     public View getView(int position, View convertView, ViewGroup parent){
@@ -48,6 +57,13 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
                     markTaskAsIncomplete(view, tasks.get(finalPosition));
                 }
                 tasks.get(finalPosition).toggleDone();
+                try {
+                    mSocket.emit("update task",new JSONObject("{session : " + sessionId +
+                            ", startTime :" + tasks.get(finalPosition).getCreatedDate().getTime() +
+                            ",completed:"+tasks.get(finalPosition).getDone()+"}"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 notifyDataSetChanged();
             }
         });
@@ -71,11 +87,12 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
         }
 
         return view;
-    }
+}
 
     public void clear() {
         tasks = new ArrayList<>();
     }
+
 
     private void markTaskAsComplete(View view, Task task) {
         view.setAlpha(0.05f);
@@ -110,6 +127,12 @@ public class TaskListViewAdapter extends ArrayAdapter<Task> {
             if (tasks.get(i).getTerminationDate() != null) {
                 if (tasks.get(i).getTerminationDate().getTime() < Calendar.getInstance().getTimeInMillis()
                         && tasks.get(i).getDone()) {
+                    try {
+
+                        mSocket.emit("remove task", new JSONObject("{startTime:" + tasks.get(i).getCreatedDate().getTime() + ",session:" + sessionId + "}"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     tasks.remove(i);
                 }
             }

@@ -1,5 +1,7 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Document;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,8 +45,6 @@ public abstract class Mutation {
      * @param json - the JSONObject representing the Mutation
      */
     public Mutation(JSONObject json) {
-        JSONObject jMap;
-        Iterator<?> ids;
         try {
             type = json.getInt("type");
             index = json.getInt("index");
@@ -62,10 +62,10 @@ public abstract class Mutation {
         switch(type) {
             case MUTATION_INSERT:
                 //change from null
-                return new Insert(index, ((Insert) this).toInsert, null,senderID);
+                return new Insert(index, ((Insert) this).toInsert, senderID, sessionID);
             case MUTATION_DELETE:
                 //change fromn ull
-                return new Delete(index, ((Delete) this).numChars, null, senderID);
+                return new Delete(index, ((Delete) this).numChars, senderID, sessionID);
             default:
                 return null;
         }

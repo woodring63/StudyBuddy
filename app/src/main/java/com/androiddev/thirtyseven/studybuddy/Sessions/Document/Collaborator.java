@@ -3,12 +3,14 @@ package com.androiddev.thirtyseven.studybuddy.Sessions.Document;
 import android.os.AsyncTask;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.github.nkzawa.socketio.parser.Packet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +40,11 @@ public class Collaborator implements TextWatcher {
     private int disregard;
     private int cursorPosition;
     private Mutation mutation;
-    private long lastEdit;
+    private TimerThread timerThread;
+    protected volatile boolean sent;
+    private String strBefore;
+    private String strAfter;
+    private String totalBefore;
 
 
     /**
@@ -51,6 +57,7 @@ public class Collaborator implements TextWatcher {
         this.myID = myID;
         this.onNewMutation = onNewMutation;
         this.sessionID = sessionID;
+        sent = false;
         mutations = new LinkedList<>();
         disregard = 0;
         mutation = null;
@@ -87,7 +94,12 @@ public class Collaborator implements TextWatcher {
                     if (((Delete) mutation).subDelete != null) {
                         process(((Delete) mutation).subDelete);
                     }
-                    text = text.substring(0, mutation.index) + text.substring(mutation.end());
+                    if (((Delete) mutation).numChars == text.length()) {
+                        text = "";
+                    }
+                    else {
+                        text = text.substring(0, mutation.index) + text.substring(mutation.end());
+                    }
                     break;
                 default:
                     break;
@@ -99,11 +111,131 @@ public class Collaborator implements TextWatcher {
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        // Nothing to do here
+        // Store the current word after change
+        strBefore = s.toString().substring(start, start + count);
+        totalBefore = s.toString();
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        if (totalBefore.equals(s.toString())) {
+            return;
+        }
+        // Store the current word after change
+        strAfter = s.toString().substring(start, start + count);
+
+        // Check if either is 0
+        if (totalBefore.length() == 0) {
+            charChange(s.toString(), start, before, count);
+            return;
+        }
+        if (s.toString().length() == 0) {
+            charChange(s.toString(), 0, totalBefore.length(), 0);
+            return;
+        }
+
+        // Compare strBefore and strAfter, calling charChange as necessary
+        if (!strBefore.equals(strAfter)) {
+            int startVal;
+
+            // Set startVal
+            if (strBefore.length() < strAfter.length()) {
+                for (startVal = 0; startVal < strBefore.length(); ++startVal) {
+                    if (strBefore.charAt(startVal) != strAfter.charAt(startVal)) {
+                        break;
+                    }
+                }
+            }
+            else {
+                for (startVal = 0; startVal < strAfter.length(); ++startVal) {
+                    if (strAfter.charAt(startVal) != strBefore.charAt(startVal)) {
+                        break;
+                    }
+                }
+            }
+
+            startVal += start;
+
+            // Trim the front of the strings
+            try {
+                while (strBefore.charAt(0) == strAfter.charAt(0)) {
+                    strBefore = strBefore.substring(1);
+                    strAfter = strAfter.substring(1);
+
+                    // Check if either is 0
+                    if (strBefore.length() == 0) {
+                        charChange(s.toString(), startVal, 0, strAfter.length());
+                        return;
+                    }
+                    if (strAfter.length() == 0) {
+                        charChange(s.toString(), startVal, strBefore.length(), 0);
+                        return;
+                    }
+                }
+            }
+            catch (StringIndexOutOfBoundsException e) {
+                e.printStackTrace();
+                // Check if either is 0
+                if (strBefore.length() == 0) {
+                    charChange(s.toString(), startVal, 0, strAfter.length());
+                    return;
+                }
+                if (strAfter.length() == 0) {
+                    charChange(s.toString(), startVal, strBefore.length(), 0);
+                    return;
+                }
+            }
+
+            // Trim the end of the strings
+            try {
+                while (strBefore.charAt(strBefore.length() - 1) == strAfter.charAt(strAfter.length() - 1)) {
+                    strBefore = strBefore.substring(0, strBefore.length() - 1);
+                    strAfter = strAfter.substring(0, strAfter.length() - 1);
+
+
+                    // Check if either is 0
+                    if (strBefore.length() == 0) {
+                        charChange(s.toString(), startVal, 0, strAfter.length());
+                        return;
+                    }
+                    if (strAfter.length() == 0) {
+                        charChange(s.toString(), startVal, strBefore.length(), 0);
+                        return;
+                    }
+                }
+            }
+            catch (StringIndexOutOfBoundsException e) {
+                e.printStackTrace();
+                // Check if either is 0
+                if (strBefore.length() == 0) {
+                    charChange(s.toString(), startVal, 0, strAfter.length());
+                    return;
+                }
+                if (strAfter.length() == 0) {
+                    charChange(s.toString(), startVal, strBefore.length(), 0);
+                    return;
+                }
+            }
+
+            charChange(s.toString(), startVal, strBefore.length(), strAfter.length());
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        // Nothing to do here
+    }
+
+    public void charChange(String s, int start, int before, int count) {
+        Log.d(Mutation.TAG, s + ", " + start + ", " + before + ", " + count);
+        if (timerThread != null && timerThread.isAlive()) {
+            timerThread.cancel();
+        }
+        if (sent) {
+            mutation = null;
+            sent = false;
+        }
         if (disregard != 0) {
             // Change is due to applying mutation
             disregard--;
@@ -123,7 +255,7 @@ public class Collaborator implements TextWatcher {
                         attemptSendMutation(mutation.getJSON());
                         mutation = new Insert(
                                 start,
-                                s.toString().substring(start, start + count),
+                                s.substring(start, start + count),
                                 myID,
                                 sessionID
                         );
@@ -135,7 +267,7 @@ public class Collaborator implements TextWatcher {
                     // before = 0, so something was inserted
                     mutation = new Insert(
                             start,
-                            s.toString().substring(start, start + count),
+                            s.substring(start, start + count),
                             myID,
                             sessionID
                     );
@@ -159,7 +291,7 @@ public class Collaborator implements TextWatcher {
                                 attemptSendMutation(mutation.getJSON());
                                 mutation = new Insert(
                                         start,
-                                        s.toString().substring(start, start + count),
+                                        s.substring(start, start + count),
                                         myID,
                                         sessionID
                                 );
@@ -171,7 +303,7 @@ public class Collaborator implements TextWatcher {
                             // Insert
                             if (start == cursorPosition) {
                                 // Continuing current insert
-                                ((Insert) mutation).toInsert += s.toString().substring(start, start + count);
+                                ((Insert) mutation).toInsert += s.substring(start, start + count);
                                 cursorPosition += count;
                             }
                             else {
@@ -181,7 +313,7 @@ public class Collaborator implements TextWatcher {
 
                                 mutation = new Insert(
                                         start,
-                                        s.toString().substring(start, start + count),
+                                        s.substring(start, start + count),
                                         myID,
                                         sessionID);
                                 cursorPosition = start + count;
@@ -202,7 +334,7 @@ public class Collaborator implements TextWatcher {
                                     attemptSendMutation(mutation.getJSON());
                                     mutation = new Insert(
                                             start,
-                                            s.toString().substring(start, start + count),
+                                            s.substring(start, start + count),
                                             myID,
                                             sessionID);
                                     cursorPosition += count;
@@ -222,7 +354,7 @@ public class Collaborator implements TextWatcher {
                                     attemptSendMutation(mutation.getJSON());
                                     mutation = new Insert(
                                             start,
-                                            s.toString().substring(start, start + count),
+                                            s.substring(start, start + count),
                                             myID,
                                             sessionID
                                     );
@@ -236,7 +368,7 @@ public class Collaborator implements TextWatcher {
                             mutations.add(mutation.copy());
                             attemptSendMutation(mutation.getJSON());
 
-                            mutation = new Insert(start, s.toString().substring(start, start + count), myID, sessionID);
+                            mutation = new Insert(start, s.substring(start, start + count), myID, sessionID);
                             cursorPosition = start + count;
                         }
                         break;
@@ -245,28 +377,15 @@ public class Collaborator implements TextWatcher {
                 }
             }
 
-            // If nothing else happens for 3 seconds, send the mutation
-            lastEdit = System.currentTimeMillis();
-            try {
-                Thread.sleep(3000);
-                if (lastEdit - System.currentTimeMillis() >= 3000) {
-                    mutations.add(mutation.copy());
-                    attemptSendMutation(mutation.getJSON());
-                    mutation = null;
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            // Create and run a timer thread
+            timerThread = new TimerThread(mutation.copy());
+            timerThread.start();
         }
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        // Nothing to do here
     }
 
     private void attemptSendMutation(JSONObject toSend) {
         mSocket.emit("new mutation", toSend);
+        sent = true;
     }
 
     private void attemptSendText(String toSend) {
@@ -307,6 +426,45 @@ public class Collaborator implements TextWatcher {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             textField.setText(s);
+        }
+    }
+
+    public class TimerThread extends Thread {
+        private long startTime;
+        private Mutation mutation;
+
+        public TimerThread(Mutation mutation) {
+            startTime = System.currentTimeMillis();
+            this.mutation = mutation;
+        }
+
+        public void run() {
+            // If no change is made within 3 seconds, send the mutation
+            while (System.currentTimeMillis() - startTime < 3000) {
+                if (Thread.currentThread().isInterrupted()) {
+                    break;
+                }
+            }
+            if (!Thread.currentThread().isInterrupted()) {
+                SenderThread senderThread = new SenderThread(mutation);
+                senderThread.start();
+            }
+        }
+
+        public void cancel() {
+            interrupt();
+        }
+    }
+
+    public class SenderThread extends Thread {
+        private Mutation mutation;
+
+        public SenderThread(Mutation mutation) {
+            this.mutation = mutation;
+        }
+
+        public void run() {
+            attemptSendMutation(mutation.getJSON());
         }
     }
 }

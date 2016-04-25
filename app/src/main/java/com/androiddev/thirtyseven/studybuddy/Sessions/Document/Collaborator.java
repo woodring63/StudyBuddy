@@ -33,6 +33,11 @@ public class Collaborator implements TextWatcher {
      * onTextChanged, but then I realized that onTextChanged doesn't work lik I thought it did. The process
      * method is what actually changes the display. It calls transform on some mutations to fix "merge conflicts".
      * Transform is explained in Insert
+     *
+     * attamptSendText is called whenever the user receives one of their own mutations, seving as a confirmation that
+     * the server has received it. According to Erica, this should store the string in the server/database. Then
+     * pollForText runs the DocumentAsync, which should retrieve this text. I call pollForText in the Collaborator
+     * constructor and in onResume in DocumentFragment.
      */
     private Socket mSocket;
     {
@@ -47,7 +52,7 @@ public class Collaborator implements TextWatcher {
     private String sessionID;
     private Emitter.Listener onNewMutation;
     private ArrayList<Mutation> mutations;
-    protected int disregard;
+    private int disregard;
     private int cursorPosition;
     private Mutation mutation;
     private TimerThread timerThread;
@@ -75,8 +80,7 @@ public class Collaborator implements TextWatcher {
         textField.addTextChangedListener(this);
         mSocket.on("new mutation", onNewMutation);
         mSocket.connect();
-        DocumentAsync async = new DocumentAsync("/sessions/document/" + sessionID);
-        async.execute();
+        pollForText();
         version = new HashMap<>();
         version.put(myID, 0);
     }
@@ -417,6 +421,12 @@ public class Collaborator implements TextWatcher {
             timerThread = new TimerThread(mutation.copy());
             timerThread.start();
         }
+    }
+
+    public void pollForText() {
+        disregard++;
+        DocumentAsync async = new DocumentAsync("/sessions/document/" + sessionID);
+        async.execute();
     }
 
     private void attemptSendMutation(JSONObject toSend) {

@@ -320,8 +320,7 @@ public class DocumentFragment extends Fragment
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        collaborator.disregard++;
-        text.setText(strText);
+        collaborator.pollForText();
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Drive.API)

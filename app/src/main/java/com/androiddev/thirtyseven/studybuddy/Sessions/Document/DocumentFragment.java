@@ -56,6 +56,9 @@ import java.util.Scanner;
 public class DocumentFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
+    /**
+     * Pretty much none of my collaborative code is here. The main part of it is in Collaborator.
+     */
     private Emitter.Listener onNewMutation = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -89,6 +92,7 @@ public class DocumentFragment extends Fragment
     private SharedPreferences prefs;
     private Collaborator collaborator;
     private boolean notifiedFail = false;
+    private String strText;
 
     static final String TAG = "DocumentFragment";
     private static final int REQUEST_CODE_LOAD = 1;
@@ -316,6 +320,8 @@ public class DocumentFragment extends Fragment
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
+        collaborator.disregard++;
+        text.setText(strText);
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Drive.API)
@@ -336,6 +342,7 @@ public class DocumentFragment extends Fragment
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
+        strText = text.getText().toString();
         super.onPause();
     }
 

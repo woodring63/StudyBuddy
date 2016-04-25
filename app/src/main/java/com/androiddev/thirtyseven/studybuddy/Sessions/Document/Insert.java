@@ -14,17 +14,22 @@ import java.util.HashMap;
  */
 public class Insert extends Mutation {
 
+    /**
+     * The transform method changes the index where a string is inserted or deleted and
+     * in the case of Delete, it can change how many characters to delete
+     */
     protected String toInsert; // text to insert
 
     /**
      * Constructs a new Insert
      * @param index - the index that the mutation begins at
      * @param toInsert - the text to insert
-     * @param senderID - The ID of the user who created this Mutation
-     * @param sessionID - The ID of the session that this Mutation is from
+     * @param version - the version when this Mutation was created
+     * @param senderID - the ID of the user who created this Mutation
+     * @param sessionID - the ID of the session that this Mutation is from
      */
-    public Insert(int index, String toInsert, String senderID, String sessionID) {
-        super(MUTATION_INSERT, index, senderID, sessionID);
+    public Insert(int index, String toInsert, HashMap<String, Integer> version, String senderID, String sessionID) {
+        super(MUTATION_INSERT, index, version, senderID, sessionID);
         this.toInsert = toInsert;
     }
 
@@ -52,7 +57,7 @@ public class Insert extends Mutation {
     }
 
     @Override
-    public void transform(Mutation mutation) {
+    public void transform(Mutation mutation, String receiverID) {
         switch (mutation.type) {
             case MUTATION_INSERT:
                 if (mutation.index < index) { // this needs to be modified
@@ -62,12 +67,12 @@ public class Insert extends Mutation {
             case MUTATION_DELETE:
                 Delete del = (Delete) mutation;
                 if (del.subDelete != null) {
-                    transform(del.subDelete);
+                    transform(del.subDelete, receiverID);
                 }
 
-                if (mutation.index < index) { // this needs to me modified
-                    if (index - mutation.index < del.length()) { // mutation is split
-                        index -= mutation.index - index;
+                if (del.index < index) { // this needs to me modified
+                    if (index - del.index < del.length()) { // mutation is split
+                        index = del.index;
                     }
                     else {
                         index -= del.length();
@@ -88,6 +93,7 @@ public class Insert extends Mutation {
             json.put("senderID", senderID);
             json.put("sessionID", sessionID);
             json.put("toInsert", toInsert);
+            json.put("version", new JSONObject(version));
         } catch (JSONException e) {
             e.printStackTrace();
         }

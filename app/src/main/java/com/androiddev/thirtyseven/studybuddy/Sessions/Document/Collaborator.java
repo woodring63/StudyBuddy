@@ -15,7 +15,10 @@ import com.github.nkzawa.socketio.parser.Packet;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -24,6 +27,13 @@ import java.util.ListIterator;
  */
 public class Collaborator implements TextWatcher {
 
+
+    /**
+     * The sending takes place in attemptSendMutation. This is called from charChange, which used to be
+     * onTextChanged, but then I realized that onTextChanged doesn't work lik I thought it did. The process
+     * method is what actually changes the display. It calls transform on some mutations to fix "merge conflicts".
+     * Transform is explained in Insert
+     */
     private Socket mSocket;
     {
         try {
@@ -36,8 +46,8 @@ public class Collaborator implements TextWatcher {
     private String myID;
     private String sessionID;
     private Emitter.Listener onNewMutation;
-    private LinkedList<Mutation> mutations;
-    private int disregard;
+    private ArrayList<Mutation> mutations;
+    protected int disregard;
     private int cursorPosition;
     private Mutation mutation;
     private TimerThread timerThread;
@@ -45,6 +55,7 @@ public class Collaborator implements TextWatcher {
     private String strBefore;
     private String strAfter;
     private String totalBefore;
+    private HashMap<String, Integer> version;
 
 
     /**
@@ -58,14 +69,16 @@ public class Collaborator implements TextWatcher {
         this.onNewMutation = onNewMutation;
         this.sessionID = sessionID;
         sent = false;
-        mutations = new LinkedList<>();
-        disregard = 0;
+        mutations = new ArrayList<>();
+        disregard = 1;
         mutation = null;
         textField.addTextChangedListener(this);
         mSocket.on("new mutation", onNewMutation);
         mSocket.connect();
         DocumentAsync async = new DocumentAsync("/sessions/document/" + sessionID);
         async.execute();
+        version = new HashMap<>();
+        version.put(myID, 0);
     }
 
     /**
@@ -75,15 +88,22 @@ public class Collaborator implements TextWatcher {
      */
     public void process(Mutation mutation){
         if (mutation.senderID.equals(myID)) {
-            mutations.poll();
             attemptSendText(textField.getText().toString());
         }
         else {
             disregard++;
+            // If either version misses the other user's ID, add that
+            if (!mutation.version.containsKey(myID)) {
+                mutation.version.put(myID, 0);
+            }
+            if (!version.containsKey(mutation.senderID)) {
+                version.put(mutation.senderID, 0);
+            }
+            // Add the sender to version
+            version.put(mutation.senderID, version.get(mutation.senderID) + 1);
             String text = textField.getText().toString();
-            ListIterator<Mutation> iter = mutations.listIterator();
-            while(iter.hasNext()) {
-                mutation.transform(iter.next());
+            for (int i = mutation.version.get(myID); i < mutations.size(); ++i) {
+                mutation.transform(mutations.get(i), myID);
             }
             switch (mutation.type) {
                 case Mutation.MUTATION_INSERT:
@@ -92,7 +112,9 @@ public class Collaborator implements TextWatcher {
                     break;
                 case Mutation.MUTATION_DELETE:
                     if (((Delete) mutation).subDelete != null) {
+                        version.put(mutation.senderID, ((Delete) mutation).subDelete.version.get(mutation.senderID) - 1);
                         process(((Delete) mutation).subDelete);
+                        text = textField.getText().toString();
                     }
                     if (((Delete) mutation).numChars == text.length()) {
                         text = "";
@@ -247,15 +269,17 @@ public class Collaborator implements TextWatcher {
                 // Create new mutation
                 if (before > 0) {
                     // Stuff was deleted
-                    mutation = new Delete(start, before, myID, sessionID);
+                    mutation = new Delete(start, before, version, myID, sessionID);
                     cursorPosition = start;
                     if (count > 0) {
                         // Text was deleted, then inserted
                         mutations.add(mutation.copy());
+                        version.put(myID, version.get(myID) + 1);
                         attemptSendMutation(mutation.getJSON());
                         mutation = new Insert(
                                 start,
                                 s.substring(start, start + count),
+                                version,
                                 myID,
                                 sessionID
                         );
@@ -268,6 +292,7 @@ public class Collaborator implements TextWatcher {
                     mutation = new Insert(
                             start,
                             s.substring(start, start + count),
+                            version,
                             myID,
                             sessionID
                     );
@@ -281,17 +306,20 @@ public class Collaborator implements TextWatcher {
                         if (before > 0) {
                             // Delete. Send mutation and make a new Delete
                             mutations.add(mutation.copy());
+                            version.put(myID, version.get(myID) + 1);
                             attemptSendMutation(mutation.getJSON());
 
-                            mutation = new Delete(start, before, myID, sessionID);
+                            mutation = new Delete(start, before, version, myID, sessionID);
                             cursorPosition = start;
                             if (count > 0) {
                                 // Text was deleted, then inserted
                                 mutations.add(mutation.copy());
+                                version.put(myID, version.get(myID) + 1);
                                 attemptSendMutation(mutation.getJSON());
                                 mutation = new Insert(
                                         start,
                                         s.substring(start, start + count),
+                                        version,
                                         myID,
                                         sessionID
                                 );
@@ -309,11 +337,13 @@ public class Collaborator implements TextWatcher {
                             else {
                                 // New insert. Send mutation and make a new Insert
                                 mutations.add(mutation.copy());
+                                version.put(myID, version.get(myID) + 1);
                                 attemptSendMutation(mutation.getJSON());
 
                                 mutation = new Insert(
                                         start,
                                         s.substring(start, start + count),
+                                        version,
                                         myID,
                                         sessionID);
                                 cursorPosition = start + count;
@@ -331,10 +361,12 @@ public class Collaborator implements TextWatcher {
                                 if (count > 0) {
                                     // Text was deleted, then inserted
                                     mutations.add(mutation.copy());
+                                    version.put(myID, version.get(myID) + 1);
                                     attemptSendMutation(mutation.getJSON());
                                     mutation = new Insert(
                                             start,
                                             s.substring(start, start + count),
+                                            version,
                                             myID,
                                             sessionID);
                                     cursorPosition += count;
@@ -344,17 +376,20 @@ public class Collaborator implements TextWatcher {
                             else {
                                 // New Delete. Send the current one and make a new one
                                 mutations.add(mutation.copy());
+                                version.put(myID, version.get(myID) + 1);
                                 attemptSendMutation(mutation.getJSON());
 
-                                mutation = new Delete(start, before, myID, sessionID);
+                                mutation = new Delete(start, before, version, myID, sessionID);
                                 cursorPosition = start;
                                 if (count > 0) {
                                     // Text was deleted, then inserted
                                     mutations.add(mutation.copy());
+                                    version.put(myID, version.get(myID) + 1);
                                     attemptSendMutation(mutation.getJSON());
                                     mutation = new Insert(
                                             start,
                                             s.substring(start, start + count),
+                                            version,
                                             myID,
                                             sessionID
                                     );
@@ -366,9 +401,10 @@ public class Collaborator implements TextWatcher {
                         else {
                             // Insert. Send mutation then create new Insert
                             mutations.add(mutation.copy());
+                            version.put(myID, version.get(myID) + 1);
                             attemptSendMutation(mutation.getJSON());
 
-                            mutation = new Insert(start, s.substring(start, start + count), myID, sessionID);
+                            mutation = new Insert(start, s.substring(start, start + count), version, myID, sessionID);
                             cursorPosition = start + count;
                         }
                         break;

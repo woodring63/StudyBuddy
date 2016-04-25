@@ -16,26 +16,36 @@ import java.util.Map;
  */
 public abstract class Mutation {
 
+    /**
+     * A note: version represent how many changes each user has made to the text
+     * For example:
+     *      Alice:   1 change
+     *      Bob:     2 changes
+     *      Charlie: 0 changes
+     * This is used to determine which mutations this one needs to be transformed against
+     */
     public static final String TAG = "Mutation";
     public static final int MUTATION_INSERT = 1;
     public static final int MUTATION_DELETE = 2;
 
     protected int type; // MUTATION_INSERT or MUTATION_DELETE
     protected int index; // the index that the mutation begins at
-    protected String senderID; // The ID of the user who created this Mutation
-    protected String sessionID; // The ID of the session that this Mutation is from
-
+    protected HashMap<String, Integer> version; // the version when this Mutation was created
+    protected String senderID; // the ID of the user who created this Mutation
+    protected String sessionID; // the ID of the session that this Mutation is from
 
     /**
      * Constructs a new Mutation
      * @param type - MUTATION_INSERT or MUTATION_DELETE
      * @param index - the index that the mutation begins at
-     * @param senderID - The ID of the user who created this Mutation
-     * @param sessionID - The ID of the session that this Mutation is from
+     * @param version - the version when this Mutation was created
+     * @param senderID - the ID of the user who created this Mutation
+     * @param sessionID - the ID of the session that this Mutation is from
      */
-    public Mutation(int type, int index, String senderID, String sessionID) {
+    public Mutation(int type, int index, HashMap<String, Integer> version, String senderID, String sessionID) {
         this.type = type;
         this.index = index;
+        this.version = (HashMap<String, Integer>) version.clone();
         this.senderID = senderID;
         this.sessionID = sessionID;
     }
@@ -45,10 +55,18 @@ public abstract class Mutation {
      * @param json - the JSONObject representing the Mutation
      */
     public Mutation(JSONObject json) {
+        version = new HashMap<>();
         try {
             type = json.getInt("type");
             index = json.getInt("index");
             senderID = json.getString("senderID");
+            JSONObject map = json.getJSONObject("version");
+            Iterator<String> keys = map.keys();
+            while(keys.hasNext()) {
+                String key = keys.next();
+                int value = map.getInt(key);
+                version.put(key, value);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -61,11 +79,9 @@ public abstract class Mutation {
     public Mutation copy() {
         switch(type) {
             case MUTATION_INSERT:
-                //change from null
-                return new Insert(index, ((Insert) this).toInsert, senderID, sessionID);
+                return new Insert(index, ((Insert) this).toInsert, version, senderID, sessionID);
             case MUTATION_DELETE:
-                //change fromn ull
-                return new Delete(index, ((Delete) this).numChars, senderID, sessionID);
+                return new Delete(index, ((Delete) this).numChars, version, senderID, sessionID);
             default:
                 return null;
         }
@@ -74,9 +90,10 @@ public abstract class Mutation {
     /**
      * Changes this Mutation as necessary to account for the
      * given Mutation
-     * @param mutation
+     * @param mutation - the Mutation to account for
+     * @param receiverID - the ID of this User
      */
-    public abstract void transform(Mutation mutation);
+    public abstract void transform(Mutation mutation, String receiverID);
 
     /**
      * Returns the number of characters inserted / deleted by this mutation

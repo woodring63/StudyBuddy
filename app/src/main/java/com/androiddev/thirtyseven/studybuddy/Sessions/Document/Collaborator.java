@@ -91,7 +91,9 @@ public class Collaborator implements TextWatcher {
      * @param mutation - the Mutation to process
      */
     public void process(Mutation mutation){
+        Log.e("Mut","process is run");
         if (mutation.senderID.equals(myID)) {
+            Log.e("Mut","this is run");
             attemptSendText(textField.getText().toString());
         }
         else {
@@ -439,7 +441,7 @@ public class Collaborator implements TextWatcher {
         try {
             json.put("text", toSend);
             json.put("sessionID", sessionID);
-            mSocket.emit("new text", toSend);
+            mSocket.emit("new text", json);//was toSend
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -461,7 +463,9 @@ public class Collaborator implements TextWatcher {
         @Override
         protected String doInBackground(String... params) {
             try {
-                return server.run().getString("text");
+                JSONObject json = server.run();
+                Log.e("Jsom",json.toString());
+                return json.getString("text");
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";

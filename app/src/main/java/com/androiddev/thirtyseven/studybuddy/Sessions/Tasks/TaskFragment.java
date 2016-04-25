@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -80,6 +81,67 @@ public class TaskFragment extends Fragment {
         }
     };
 
+    private Emitter.Listener onUpdateTask = new Emitter.Listener() {
+
+        //For when an the android recieves a message from
+        @Override
+        public void call(final Object... args) {
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        JSONObject data = (JSONObject) args[0];
+                        Log.e("data", data.toString());
+                        try {
+                            if(!data.getString("session").equals(sessionId))
+                            {
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        // add the message to view
+                        updateTask(data,true);
+                    }
+                });
+            }catch(NullPointerException e)
+            {
+                Log.d("onUpdateTask", "Null pointer exception (Task) getActivity.runOnUiThread.");
+            }
+        }
+    };
+
+    private Emitter.Listener onRemoveTask = new Emitter.Listener() {
+
+        //For when an the android recieves a message from
+        @Override
+        public void call(final Object... args) {
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        JSONObject data = (JSONObject) args[0];
+                        try {
+                            if(!data.getString("session").equals(sessionId))
+                            {
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        // add the message to view
+                        updateTask(data,false);
+                    }
+                });
+            }catch(NullPointerException e)
+            {
+                Log.d("onUpdateTask", "Null pointer exception (Task) getActivity.runOnUiThread.");
+            }
+        }
+    };
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +150,6 @@ public class TaskFragment extends Fragment {
         try {
             thisTaskFragment = this;
             listView = (ListView) rootView.findViewById(R.id.tasks_list_view);
-            adapter = new TaskListViewAdapter(getContext(), R.layout.item_task, tasks);
             listView.setAdapter(adapter);
 
             etText = (EditText) rootView.findViewById(R.id.tasks_add_edit_text);
@@ -105,9 +166,7 @@ public class TaskFragment extends Fragment {
                                     "completed:\""+false+"\"," +
                                     "session:\""+sessionId+"\"," +
                                     "startTime:"+Calendar.getInstance().getTimeInMillis()+"}");
-                            Log.e("senddata",json.toString());
                             mSocket.emit("add task", json);
-                            Log.e("senddata",json.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -119,7 +178,6 @@ public class TaskFragment extends Fragment {
             // rip in pieces
             e.printStackTrace();
         }
-
         return rootView;
     }
 
@@ -131,9 +189,13 @@ public class TaskFragment extends Fragment {
         // TODO load tasks from server for the session
         sessionId = ((SessionActivity) getActivity()).getSessionId();
         mSocket.on("new task", onNewTask);
+        mSocket.on("update task", onUpdateTask);
+        mSocket.on("remove task", onRemoveTask);
         mSocket.connect();
 
-        TaskAsync async = new TaskAsync(sessionId,tasks);
+
+        adapter = new TaskListViewAdapter(getContext(), R.layout.item_task, tasks, mSocket,sessionId);
+        TaskAsync async = new TaskAsync(sessionId,tasks,adapter);
         async.execute();
     }
 
@@ -153,6 +215,39 @@ public class TaskFragment extends Fragment {
 
         adapter.notifyDataSetChanged();
     }
+
+    private synchronized void updateTask(JSONObject json, boolean update)
+    {
+        if(update) {
+            try {
+                long startTime = json.getLong("startTime");
+                for (int i = 0; i < tasks.size(); i++) {
+                    Task task = tasks.get(i);
+                    if (task.getCreatedDate().getTime() == startTime) {
+                        task.setDone(json.getBoolean("completed"));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }else
+        {
+            try {
+                long startTime = json.getLong("startTime");
+                for(Task task : tasks)
+                {
+                    if(task.getCreatedDate().getTime() == startTime)
+                    {
+                        adapter.remove(task);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -165,10 +260,12 @@ class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
 
     private String id;
     private ArrayList<Task> tasks;
+    private ArrayAdapter adapter;
 
-    public TaskAsync(String sessionid, ArrayList<Task> tasks) {
+    public TaskAsync(String sessionid, ArrayList<Task> tasks,ArrayAdapter adapter) {
         this.id = sessionid;
         this.tasks = tasks;
+        this.adapter = adapter;
     }
 
     @Override
@@ -196,7 +293,6 @@ class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
         {
             try {
                 JSONObject obj = params.getJSONObject(i);
-                Log.e("TaskFragment",obj.toString());
                 Date start = new Date(obj.getLong("startTime"));
                 Task task = new Task(obj.getString("name"),obj.getBoolean("completed"),start,obj.getString("_id"));
                 tasks.add(task);
@@ -204,6 +300,7 @@ class TaskAsync extends AsyncTask<Void, Void, JSONArray> {
                 e.printStackTrace();
             }
         }
+        adapter.notifyDataSetChanged();
 
     }
 }

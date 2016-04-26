@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.Main.HubActivity;
 import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.MySessions;
+import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardView;
 
 import org.json.JSONException;
@@ -55,7 +57,7 @@ public class DescriptionFragment extends Fragment {
 
 
         try {
-            sessionInfo = new JSONObject((String)getActivity().getIntent().getSerializableExtra("session"));
+            sessionInfo = ((SessionActivity)getActivity()).getSessionInfo();
 
             String datePattern = "MM/dd/yyyy";
             String timePattern = "hh:mm";
@@ -70,6 +72,7 @@ public class DescriptionFragment extends Fragment {
 
             course.setText(sessionInfo.getString("course"));
             desc.setText(sessionInfo.getString("bio"));
+            Log.v("My Test", sessionInfo.getString("_id"));
 
             final String my_params = "/users/leavesession/" + id + "/" + sessionInfo.getString("_id");
 

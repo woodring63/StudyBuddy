@@ -14,14 +14,18 @@ public class Task implements Comparable<Task> {
     private Date createdDate;
     private Date terminationDate;
     private Date checkedDate;
+    private String id;
 
-    public Task(String task, boolean done, Date createdDate) {
+    public Task(String task, boolean done, Date createdDate, String id) {
         this.task = task;
+        this.id = id;
         this.done = done;
         this.createdDate = new Date(createdDate.getTime());
         this.terminationDate = null;
         this.checkedDate = null;
     }
+
+    public String getId(){return id;}
 
     public Date getCreatedDate() {
         return createdDate;
@@ -69,6 +73,11 @@ public class Task implements Comparable<Task> {
 
     public void toggleDone() {
         done = !done;
+    }
+
+    public void setDone(boolean completed)
+    {
+        done = completed;
     }
 
     @Override

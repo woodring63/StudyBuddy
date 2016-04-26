@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.R;
+import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -32,11 +37,17 @@ import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.OpenFileActivityBuilder;
+import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.Scanner;
 
 /**
@@ -45,12 +56,43 @@ import java.util.Scanner;
 public class DocumentFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
+    /**
+     * Pretty much none of my collaborative code is here. The main part of it is in Collaborator.
+     */
+    private Emitter.Listener onNewMutation = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject json = (JSONObject) args[0];
+                    try {
+                        switch (json.getInt("type")) {
+                            case Mutation.MUTATION_INSERT:
+                                collaborator.process(new Insert(json));
+                                break;
+                            case Mutation.MUTATION_DELETE:
+                                collaborator.process(new Delete(json));
+                                break;
+                            default:
+                                break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
+
     private EditText text = null;
     private GoogleApiClient mGoogleApiClient = null;
     private Activity activity = null; // Used to pass a context
     private Metadata openFile = null;
     private SharedPreferences prefs;
+    private Collaborator collaborator;
     private boolean notifiedFail = false;
+    private String strText;
 
     static final String TAG = "DocumentFragment";
     private static final int REQUEST_CODE_LOAD = 1;
@@ -65,9 +107,15 @@ public class DocumentFragment extends Fragment
         activity = getActivity();
         text = (EditText) view.findViewById(R.id.drive_file_text_display);
         Button loadButton = (Button) view.findViewById(R.id.load_button);
-        Button clearButton = (Button) view.findViewById(R.id.clear_button);
+        Button refreshButton = (Button) view.findViewById(R.id.refresh_button);
         Button saveButton = (Button) view.findViewById(R.id.save_button);
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        collaborator = new Collaborator(
+                text,
+                prefs.getString("id", "None"),
+                ((SessionActivity) activity).getSessionId(),
+                onNewMutation
+        );
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Drive.API)
@@ -123,10 +171,10 @@ public class DocumentFragment extends Fragment
         });
 
         // Sets the text on the screen to "" after verifying that is is what the user wants to do
-        clearButton.setOnClickListener(new View.OnClickListener() {
+        refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clear();
+                refresh();
             }
         });
 
@@ -180,6 +228,7 @@ public class DocumentFragment extends Fragment
                                                             fileText += in.nextLine() + "\n";
                                                         }
                                                         fileText = fileText.substring(0, fileText.length() - 1);
+                                                        collaborator.load(fileText);
                                                         text.setText(fileText);
                                                         in.close();
                                                     }
@@ -272,6 +321,7 @@ public class DocumentFragment extends Fragment
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
+        collaborator.onResume();
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Drive.API)
@@ -292,6 +342,8 @@ public class DocumentFragment extends Fragment
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
+        strText = text.getText().toString();
+        collaborator.onPause();
         super.onPause();
     }
 
@@ -311,35 +363,8 @@ public class DocumentFragment extends Fragment
         }
     }
 
-    private void clear() {
-        Log.d(TAG, "clear");
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-
-        // Set the title
-        alertDialogBuilder.setTitle("Clear text?");
-
-        // Set the message and buttons
-        alertDialogBuilder
-                .setMessage("Are you sure you want to erase everything?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        text.setText("");
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-        // Create the actual AlertDialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // And show it
-        alertDialog.show();
+    private void refresh() {
+        collaborator.refresh();
     }
 
     private void save() {
@@ -479,5 +504,11 @@ public class DocumentFragment extends Fragment
                         }
                     });
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        collaborator.onDestroy();
     }
 }

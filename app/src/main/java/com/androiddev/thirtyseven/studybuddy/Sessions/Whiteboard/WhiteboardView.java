@@ -36,6 +36,8 @@ public class WhiteboardView extends View {
     // keep last pen color
     private String lastPaintColor;
     private float lastPenSize;
+    // whiteboard width and height
+    /*private int width, height;*/
 
     public WhiteboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -63,6 +65,8 @@ public class WhiteboardView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         //view given size
         super.onSizeChanged(w, h, oldw, oldh);
+        /*width = w;
+        height = h;*/
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         drawCanvas = new Canvas(canvasBitmap);
         drawCanvas.drawColor(0xffffffff);
@@ -106,8 +110,19 @@ public class WhiteboardView extends View {
     public void setCanvasBitMap(Bitmap bitmap) {
         this.canvasBitmap = bitmap;
         drawCanvas = new Canvas(canvasBitmap);
+        drawPath.reset(); // maybe this will help?
+        invalidate(); // maybe this will help?
     }
 
+    /*
+    public int getWhiteboardWidth() {
+        return width;
+    }
+
+    public int getWhiteboardHeight() {
+        return height;
+    }
+*/
     public void setPaintColor(String newColor) {
         invalidate();
         switch (newColor) {

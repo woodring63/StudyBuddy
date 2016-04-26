@@ -4,48 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+
+    <TextView
+        android:id="@+id/chat_text_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/scrollView2" >
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:scrollbars="vertical"
+        android:gravity="bottom"
+        android:paddingStart="10dp"
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-            <TextView
-                android:id="@+id/chat_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="458dp"
-                android:text="TEST TEXT"/>
+        <EditText
+            android:id="@+id/chat_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:isScrollContainer="true"
+            android:inputType="text"
+            android:nestedScrollingEnabled="true" />
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:weightSum="1"
-                android:layout_gravity="bottom">
+        <Button
+            android:id="@+id/chat_send_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:text="Send"/>
 
-                <EditText
-                    android:layout_width="255dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/chat_edit_text"
-                    android:layout_weight="0.94"
-                    android:editable="false"
-                    android:isScrollContainer="true"
-                    android:inputType="text"
-                    android:nestedScrollingEnabled="true" />
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Send"
-                    android:id="@+id/chat_send_btn"
-                    android:layout_gravity="right" />
-
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 
 </LinearLayout>

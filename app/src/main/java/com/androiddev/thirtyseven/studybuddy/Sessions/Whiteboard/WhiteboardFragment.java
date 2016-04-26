@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
@@ -22,9 +23,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
+import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.github.nkzawa.emitter.Emitter;
@@ -34,6 +37,7 @@ import com.androiddev.thirtyseven.studybuddy.R;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.ColorDialogFragment;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Dialogs.SizeDialogFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,8 +48,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -67,10 +73,12 @@ public class WhiteboardFragment extends Fragment {
     private Button btnSize;
     private Button btnEraserToggle;
     private Button btnDownload;
+    private Button btnPush;
 
     private Boolean isBeingTouched = false;
 
     private WhiteboardFragment thisFragment;
+    private String sessionId;
     private Socket mSocket;
     {
         try {
@@ -89,6 +97,10 @@ public class WhiteboardFragment extends Fragment {
                         JSONObject data = (JSONObject) args[0];
                         String encodedBitmap;
                         try {
+                            if(!data.getString("session").equals(sessionId))
+                            {
+                                return;
+                            }
                             encodedBitmap = data.getString("image");
                         } catch (JSONException e) {
                             return;
@@ -116,13 +128,33 @@ public class WhiteboardFragment extends Fragment {
             btnSize = (Button) rootView.findViewById(R.id.btn_size);
             btnEraserToggle = (Button) rootView.findViewById(R.id.btn_eraser_toggle);
             btnDownload = (Button) rootView.findViewById(R.id.btn_download);
+            btnPush = (Button) rootView.findViewById(R.id.btn_push);
             thisFragment = this;
             initializeColorButton();
             initializeSizeButton();
             initializeEraserToggleButton();
             initializeDownloadButton();
+            initializePushButton();
 
-            // TODO make an asynctask to get the bitmap from the server when user starts
+
+            // make an asynctask to get the bitmap from the server when user starts
+            whiteboard.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
+                                           int oldTop, int oldRight, int oldBottom) {
+                    v.removeOnLayoutChangeListener(this);
+                    WhiteboardAsync async = new WhiteboardAsync(sessionId);
+                    try {
+                        String bits = async.execute().get();
+                        if(!Objects.equals(bits, ""))
+                        {
+                            updateBitmap(bits);
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
             rootView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -149,10 +181,12 @@ public class WhiteboardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstances) {
         super.onCreate(savedInstances);
+        sessionId = ((SessionActivity) getActivity()).getSessionId();
         mSocket.on("new bitmap", onNewBitmap);
         mSocket.connect();
 
 
+        /*
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -162,6 +196,7 @@ public class WhiteboardFragment extends Fragment {
                 }
             }
         },0,5000);//Update text every 5 seconds
+        */
 
     }
 
@@ -174,7 +209,7 @@ public class WhiteboardFragment extends Fragment {
             byte[] imageBytes = baos.toByteArray();
             String encodedImage = Base64.encodeToString(imageBytes, Base64.URL_SAFE);
 
-            JSONObject obj = new JSONObject("{image:" + "\"" + encodedImage + "\"" + "}");
+            JSONObject obj = new JSONObject("{image:" + "\"" + encodedImage + "\",session:" + sessionId + "}");
             mSocket.emit("new bitmap", obj);
 
         } catch (NullPointerException e) {
@@ -189,10 +224,14 @@ public class WhiteboardFragment extends Fragment {
      * Converts a string to a bitmap and sets the whiteboard's bitmap to the new one.
      * @param encodedBitmap
      */
-    private void updateBitmap(String encodedBitmap) {
+    public void updateBitmap(String encodedBitmap) {
         byte[] decodedString = Base64.decode(encodedBitmap, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        whiteboard.setCanvasBitMap(decodedByte.copy(Bitmap.Config.ARGB_8888, true));
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(decodedByte, whiteboard.getWidth(), whiteboard.getHeight(), true);
+        //whiteboard.setCanvasBitMap(decodedByte.copy(Bitmap.Config.ARGB_8888, true));
+        whiteboard.setCanvasBitMap(scaledBitmap.copy(Bitmap.Config.ARGB_8888, true));
+        decodedByte.recycle();
+        scaledBitmap.recycle();
     }
 
     private void initializeColorButton() {
@@ -243,6 +282,17 @@ public class WhiteboardFragment extends Fragment {
         });
     }
 
+    private void initializePushButton() {
+        btnPush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isBeingTouched) {
+                    attemptSend();
+                }
+            }
+        });
+    }
+
     public void setColor(String color) {
         whiteboard.setPaintColor(color);
         Toast.makeText(getContext(), "color set to " + color, Toast.LENGTH_SHORT).show();
@@ -266,6 +316,7 @@ public class WhiteboardFragment extends Fragment {
         if (file.exists()) {
             file.delete();
         }
+
 
         try {
             FileOutputStream out = new FileOutputStream(file);
@@ -299,4 +350,35 @@ public class WhiteboardFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSocket.disconnect();
+        mSocket.off("new bitmap", onNewBitmap);
+    }
+
+}
+
+
+class WhiteboardAsync extends AsyncTask<Void, Void, String> {
+
+    private String id;
+    //private JArrayCallback callback;
+
+    public WhiteboardAsync(String sessionid) {
+        this.id = sessionid;
+    }
+
+    @Override
+    protected String doInBackground(Void... params) {
+        ServerConnection server = new ServerConnection("/sessions/whiteboard/" + id);
+        JSONObject json = server.run();
+        String bitmap = "";
+        try {
+            bitmap = json.getString("whiteboard");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
 }

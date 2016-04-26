@@ -1,11 +1,13 @@
 package com.androiddev.thirtyseven.studybuddy.Sessions.Chat;
 
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,17 +20,21 @@ import android.widget.Toast;
 
 import com.androiddev.thirtyseven.studybuddy.Backend.ServerConnection;
 import com.androiddev.thirtyseven.studybuddy.R;
+import com.androiddev.thirtyseven.studybuddy.Sessions.SessionActivity;
+import com.androiddev.thirtyseven.studybuddy.Sessions.Tasks.Task;
 import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardView;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.github.nkzawa.emitter.Emitter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,6 +47,7 @@ public class ChatFragment extends Fragment {
     private String name;
     private EditText mInput;
     private Socket mSocket;
+    private String sessionId;
     {
         try {
             //Connects to a socket on the server
@@ -53,30 +60,35 @@ public class ChatFragment extends Fragment {
         //For when an the android recieves a message from
         @Override
         public void call(final Object... args) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                    JSONObject data = (JSONObject) args[0];
-                    String username;
-                    String message;
-                    try {
-//                        if(!data.getString("session").equals(session))
-//                        {
-//                            return;
-//                        }
-                        username = data.getString("name");
-                        message = data.getString("msg");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        return;
+                        JSONObject data = (JSONObject) args[0];
+                        String username;
+                        String message;
+                        Log.e("data", data.toString());
+                        try {
+                            if (!data.getString("session").equals(sessionId)) {
+                                return;
+                            }
+                            username = data.getString("name");
+                            message = data.getString("msg");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+
+                        // add the message to view
+                        Log.e("Message", message);
+                        addMessage(username, message);
                     }
-
-                    // add the message to view
-                    Log.e("Message", message);
-                    addMessage(username, message);
-                }
-            });
+                });
+            }catch(NullPointerException e)
+            {
+                Log.d("onNewBitmap", "Null pointer exception (Chat) getActivity.runOnUiThread.");
+            }
         }
     };
 
@@ -89,6 +101,7 @@ public class ChatFragment extends Fragment {
 
         mInput = (EditText) rootView.findViewById(R.id.chat_edit_text);
         mView = (TextView) rootView.findViewById(R.id.chat_text_view);
+        mView.setMovementMethod(new ScrollingMovementMethod());
         Button sendBtn = (Button) rootView.findViewById(R.id.chat_send_btn);
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +111,30 @@ public class ChatFragment extends Fragment {
         });
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         name = pref.getString("name", "None");
+        sessionId = ((SessionActivity) getActivity()).getSessionId();
+
+        ChatAsync async = new ChatAsync(sessionId);
+        try {
+            JSONArray arr = null;
+            arr = async.execute().get();
+            if(arr != null)
+            {
+                for(int i =0; i < arr.length(); i++)
+                {
+                    try {
+                        JSONObject json = arr.getJSONObject(i);
+                        addMessage(json.getString("name"),json.getString("message"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
         return rootView;
     }
 
@@ -105,7 +142,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstances) {
         super.onCreate(savedInstances);
-        mSocket.on("new message", onNewMessage);
+        mSocket.on("message", onNewMessage);
         mSocket.connect();
 
     }
@@ -120,19 +157,17 @@ public class ChatFragment extends Fragment {
 
         //mView.setText(mView.getText().toString() + '\n' + message);
         try {
-            JSONObject json = new JSONObject("{msg:\" " + message +"\",name:\""+name+"\"}");//,session:\""+sessionID+"\",}");
+            JSONObject json = new JSONObject("{msg:\" " + message +"\",name:\""+name+"\",session:\""+sessionId+"\"}");
+            Log.e("senddata",json.toString());
             mSocket.emit("new message", json);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     private void addMessage(String username, String message) {
-
         Toast.makeText(getContext(), "Test", Toast.LENGTH_LONG);
-        mView.setText(mView.getText().toString() + '\n' + username + message);
-
+        mView.setText(mView.getText().toString() + '\n' + username + ":" + message);
     }
 
 
@@ -140,8 +175,34 @@ public class ChatFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         mSocket.disconnect();
         mSocket.off("new message", onNewMessage);
     }
+}
+
+
+class ChatAsync extends AsyncTask<Void, Void, JSONArray> {
+
+    private String id;
+
+    public ChatAsync(String sessionid) {
+        this.id = sessionid;
+    }
+
+    @Override
+    protected JSONArray doInBackground(Void... params) {
+        ServerConnection server = new ServerConnection("/sessions/chat/" + id);
+        JSONObject json = server.run();
+        JSONArray arr = null;
+        try {
+            if(json!=null)
+            {
+                arr = json.getJSONArray("messages");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return arr;
+    }
+
 }

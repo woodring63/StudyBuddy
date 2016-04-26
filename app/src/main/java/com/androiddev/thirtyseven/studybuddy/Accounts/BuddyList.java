@@ -21,6 +21,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class BuddyList extends NavBase {
     private ArrayList<Buddy> buddies;
@@ -41,6 +43,7 @@ public class BuddyList extends NavBase {
         BuddieAsync async = new BuddieAsync(null, "/users/buddies/"+id, buddies);
 
         async.execute();
+        Collections.sort(buddies);
 
         adapter = new BuddyListAdapter(this, buddies);
         adapter.setNotifyOnChange(true);
@@ -112,10 +115,6 @@ public class BuddyList extends NavBase {
         public void onPostExecute(ArrayList buddies)
         {
             adapter.notifyDataSetChanged();
-
         }
-
     }
-
-
 }

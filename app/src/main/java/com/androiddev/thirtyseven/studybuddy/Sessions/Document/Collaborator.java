@@ -394,12 +394,6 @@ public class Collaborator implements TextWatcher {
         if (mutation != null && !sent) {
             sendMut();
         }
-        mutation = new Delete(0, textField.getText().toString().length(), version, myID, sessionID);
-        sent = false;
-        sendMut();
-        mutation = new Insert(0, newText, version, myID, sessionID);
-        sent = false;
-        sendMut();
     }
 
     public void onDestroy() {

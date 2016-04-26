@@ -32,6 +32,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -59,6 +60,7 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
     private boolean permission;
     private String bundle;
     JSONArray JArray;
+    public ArrayList<Marker> markers;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         bundle = (String) getIntent().getSerializableExtra("sessions");
         //setupSessions(bundle);
-
+        markers = new ArrayList<Marker>();
         setContentView(R.layout.activity_hub);
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -126,6 +128,23 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
 
     public void onMapReady(GoogleMap map) {
         LatLng ISU = new LatLng(42.026334, -93.646361);
+        LatLng curtissHall = new LatLng(42.026201, -93.644804);
+        LatLng jischkeHall = new LatLng(42.027170, -93.644537);
+        LatLng pearsonHall = new LatLng(42.025935, -93.649923);
+        LatLng atanasoffHall = new LatLng(42.028135, -93.649730);
+        LatLng cooverHall = new LatLng(42.028334, -93.650953);
+        LatLng gilmanHall = new LatLng(42.029027, -93.648604);
+        LatLng leBaronHall = new LatLng(42.028533, -93.647574);
+        LatLng udcc = new LatLng(42.024772, -93.651500);
+        LatLng hooverHall = new LatLng(42.026668, -93.651350);
+        LatLng howeHall = new LatLng(42.026828, -93.652627);
+        LatLng gerdinHall = new LatLng(42.025471, -93.644410);
+        LatLng memorialUnion = new LatLng(42.023886, -93.645897);
+        LatLng physicsHall = new LatLng(42.029139, -93.647370);
+        LatLng designHall = new LatLng(42.028631, -93.653086);
+        LatLng carverHall = new LatLng(42.025225, -93.648345);
+        LatLng library = new LatLng(42.028015, -93.648958);
+        LatLng musicHall = new LatLng(42.024634, -93.648202);
         if (Build.VERSION.SDK_INT >= 23) {
             permission = checkSelfPermission((Manifest.permission.ACCESS_FINE_LOCATION)) == PackageManager.PERMISSION_GRANTED;
             map.setMyLocationEnabled(true);
@@ -133,8 +152,23 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
         }
         map.moveCamera(CameraUpdateFactory.newLatLng(ISU));
         map.animateCamera(CameraUpdateFactory.zoomTo(16));
-        //map.addMarker(new MarkerOptionFjs().position(ISU));
-
+        map.addMarker(new MarkerOptions().position(curtissHall).title("Curtiss Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(jischkeHall).title("Jischke Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(pearsonHall).title("Pearson Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(atanasoffHall).title("Atanasoff Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(cooverHall).title("Coover Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(gilmanHall).title("Gilman Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(leBaronHall).title("LeBaron Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(udcc).title("Union Drive Community Center").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(hooverHall).title("Hoover Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(howeHall).title("Howe Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(gerdinHall).title("Gerdin Business Building").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(memorialUnion).title("Memorial Union").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(physicsHall).title("Physics Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(designHall).title("Design Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(carverHall).title("Carver Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(musicHall).title("Music Hall").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
+        map.addMarker(new MarkerOptions().position(library).title("Parks Library").icon(BitmapDescriptorFactory.fromResource(R.drawable.cramschool)));
         try {
             if (bundle != null) {
                 json = new JSONObject(bundle.toString());
@@ -150,13 +184,14 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
                         LatLng l = new LatLng(lat, lon);
 
                         Marker m = map.addMarker(new MarkerOptions().position(l).snippet(i + ""));
+                        markers.add(m);
 
                     }
                 }
             } else {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 String email = prefs.getString("email", "None");
-                FindSessionsAsync async = new FindSessionsAsync(email, map, JArray);
+                FindSessionsAsync async = new FindSessionsAsync(email, map, JArray, markers);
                 JArray = async.execute().get();
 
             }
@@ -167,19 +202,27 @@ public class HubActivity extends NavBase implements OnMapReadyCallback {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                int position = Integer.parseInt(marker.getSnippet());
-                Intent i = new Intent(getApplicationContext(), SessionInfo.class);
-                Bundle bundle = new Bundle();
-                try {
-                    if(JArray != null) {
-                        bundle.putSerializable("session", JArray.getJSONObject(position).toString());
-                        i.putExtras(bundle);
+                if (markers.contains(marker)) {
+                    int position = Integer.parseInt(marker.getSnippet());
+                    Intent i = new Intent(getApplicationContext(), SessionInfo.class);
+                    Bundle bundle = new Bundle();
+                    try {
+                        if (JArray != null) {
+                            bundle.putSerializable("session", JArray.getJSONObject(position).toString());
+                            i.putExtras(bundle);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+
+                    startActivity(i);
+                    return true;
                 }
-                startActivity(i);
-                return true;
+                else{
+                    marker.showInfoWindow();
+                    return true;
+                }
             }
         });
     }
@@ -190,13 +233,15 @@ class FindSessionsAsync extends AsyncTask<Void, Void, JSONArray> {
     private String username;
     private GoogleMap map;
     private JSONArray JArray;
+    private ArrayList<Marker> markers;
     //private JArrayCallback callback;
 
-    public FindSessionsAsync(String username, GoogleMap map, JSONArray JArray) {
+    public FindSessionsAsync(String username, GoogleMap map, JSONArray JArray, ArrayList<Marker> markers) {
         this.username = username;
         this.map = map;
         this.JArray = JArray;
-        // this.callback = callback;
+        this.markers = markers;
+        // this.callback
     }
 
     @Override
@@ -232,6 +277,8 @@ class FindSessionsAsync extends AsyncTask<Void, Void, JSONArray> {
                 LatLng l = new LatLng(lat, lon);
 
                 Marker m = map.addMarker(new MarkerOptions().position(l).snippet(i + ""));
+                markers.add(m);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

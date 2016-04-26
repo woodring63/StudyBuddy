@@ -228,6 +228,7 @@ public class DocumentFragment extends Fragment
                                                             fileText += in.nextLine() + "\n";
                                                         }
                                                         fileText = fileText.substring(0, fileText.length() - 1);
+                                                        collaborator.load(fileText);
                                                         text.setText(fileText);
                                                         in.close();
                                                     }

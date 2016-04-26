@@ -53,9 +53,9 @@ public class Collaborator implements TextWatcher {
     private String sessionID;
     private Emitter.Listener onNewMutation;
     private ArrayList<Mutation> mutations;
-    private int disregard;
     private int cursorPosition;
     private Mutation mutation;
+    private int disregard;
     private TimerThread timerThread;
     protected volatile boolean sent;
     private String strBefore;
@@ -77,8 +77,8 @@ public class Collaborator implements TextWatcher {
         this.sessionID = sessionID;
         sent = false;
         mutations = new ArrayList<>();
-        disregard = 0;
         mutation = null;
+        disregard = 0;
         textField.addTextChangedListener(this);
         mSocket.on("new mutation", onNewMutation);
         mSocket.connect();
@@ -100,8 +100,10 @@ public class Collaborator implements TextWatcher {
             attemptSendText(textField.getText().toString());
         }
         else {
+            if (this.mutation != null && !sent) {
+                sendMut();
+            }
             try {
-                disregard++;
                 // If either version misses the other user's ID, add that
                 if (!mutation.version.containsKey(myID)) {
                     mutation.version.put(myID, 0);
@@ -111,43 +113,27 @@ public class Collaborator implements TextWatcher {
                 }
                 // Add the sender to version
                 version.put(mutation.senderID, version.get(mutation.senderID) + 1);
-                String text = textField.getText().toString();
+                String text;
                 for (int i = mutation.version.get(myID); i < mutations.size(); ++i) {
                     mutation.transform(mutations.get(i), myID);
                 }
+                StringBuilder sBuilder = new StringBuilder(textField.getText().toString());
                 switch (mutation.type) {
                     case Mutation.MUTATION_INSERT:
-                        if (text.length() == 0) {
-                            text = ((Insert) mutation).toInsert;
-                        }
-                        else if (mutation.index == 0) {
-                            text = ((Insert) mutation).toInsert + text;
-                        } else if (mutation.index == text.length()) {
-                            text = text + ((Insert) mutation).toInsert;
-                        } else {
-                            text = text.substring(0, mutation.index) +
-                                    ((Insert) mutation).toInsert + text.substring(mutation.index);
-                        }
+                        Log.d(Mutation.TAG, "Inserting \"" + ((Insert) mutation).toInsert + "\" at index " + mutation.index);
+                        sBuilder.insert(mutation.index, ((Insert) mutation).toInsert).toString();
+                        text = sBuilder.toString();
                         break;
                     case Mutation.MUTATION_DELETE:
-                        if (((Delete) mutation).subDelete != null) {
-                            version.put(mutation.senderID, ((Delete) mutation).subDelete.version.get(mutation.senderID) - 1);
-                            process(((Delete) mutation).subDelete);
-                            text = textField.getText().toString();
-                        }
-                        if (((Delete) mutation).numChars == text.length()) {
-                            text = "";
-                        } else if (mutation.index == 0) {
-                            text = text.substring(((Delete) mutation).numChars);
-                        } else if (mutation.index + ((Delete) mutation).numChars == text.length()) {
-                            text = text.substring(0, mutation.index);
-                        } else {
-                            text = text.substring(0, mutation.index) + text.substring(mutation.end());
-                        }
+                        Log.d(Mutation.TAG, "Deleting " + ((Delete) mutation).numChars + " characters at index " + mutation.index);
+                        sBuilder.delete(mutation.index, mutation.index + ((Delete) mutation).numChars).toString();
+                        text = sBuilder.toString();
                         break;
                     default:
+                        text = "";
                         break;
                 }
+                disregard++;
                 textField.setText(text);
             }
             catch (StringIndexOutOfBoundsException e) {
@@ -166,43 +152,37 @@ public class Collaborator implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (disregard != 0) {
-            // Change is due to applying mutation
+        if (disregard > 0) {
+            // Disregard change
+            Log.d(Mutation.TAG, "Disregarding change to \"" + s.toString() + "\"");
             disregard--;
             return;
         }
         // Store the string after the change
         strAfter = s.toString();
-        if (strBefore == null || strAfter == null || strBefore.length() == 0
-                || strAfter.length() == 0 || strBefore.equals(strAfter)) {
+        if (strBefore == null || strAfter == null || strBefore.equals(strAfter)) {
             return;
         }
 
-        // Get startVal
-        int startVal;
-        if (strBefore.length() < strAfter.length()) {
-            for (startVal = 0; startVal < strBefore.length(); ++startVal) {
-                if (strBefore.charAt(startVal) != strAfter.charAt(startVal)) {
-                    break;
-                }
-            }
+        if (strBefore.length() == 0) {
+            charChange(s.toString(), 0, 0, strAfter.length());
+            return;
         }
-        else {
-            for (startVal = 0; startVal < strAfter.length(); ++startVal) {
-                if (strBefore.charAt(startVal) != strAfter.charAt(startVal)) {
-                    break;
-                }
-            }
+        else if (strAfter.length() == 0) {
+            charChange(s.toString(), 0, strBefore.length(), 0);
+            return;
         }
 
         // Use Google's diff-match-patch to analyze the strBefore and strAfter
         LinkedList<diff_match_patch.Diff> diffs = dmp.diff_main(strBefore, strAfter);
         Iterator<diff_match_patch.Diff> iter = diffs.listIterator();
         diff_match_patch.Diff diff;
+        int startVal = 0;
         while(iter.hasNext()) {
             diff = iter.next();
             switch (diff.operation) {
                 case EQUAL:
+                    startVal += diff.text.length();
                     break;
                 case DELETE:
                     charChange(s.toString(), startVal, diff.text.length(), 0);
@@ -230,33 +210,18 @@ public class Collaborator implements TextWatcher {
             mutation = null;
             sent = false;
         }
-        else {
-            // Change is due to the user typing
-            // Make / update mutation
-            if (mutation == null) {
-                // Create new mutation
-                if (before > 0) {
-                    // Stuff was deleted
-                    mutation = new Delete(start, before, version, myID, sessionID);
-                    cursorPosition = start;
-                    if (count > 0) {
-                        // Text was deleted, then inserted
-                        mutations.add(mutation.copy());
-                        version.put(myID, version.get(myID) + 1);
-                        attemptSendMutation(mutation.getJSON());
-                        mutation = new Insert(
-                                start,
-                                s.substring(start, start + count),
-                                version,
-                                myID,
-                                sessionID
-                        );
-                        cursorPosition += count;
-                    }
-                    // Otherwise nothing was added
-                }
-                else {
-                    // before = 0, so something was inserted
+
+        // Change is due to the user typing
+        // Make / update mutation
+        if (mutation == null || sent) {
+            // Create new mutation
+            if (before > 0) {
+                // Stuff was deleted
+                mutation = new Delete(start, before, version, myID, sessionID);
+                cursorPosition = start;
+                if (count > 0) {
+                    // Text was deleted, then inserted
+                    sendMut();
                     mutation = new Insert(
                             start,
                             s.substring(start, start + count),
@@ -264,26 +229,98 @@ public class Collaborator implements TextWatcher {
                             myID,
                             sessionID
                     );
-                    cursorPosition = start + count;
+                    cursorPosition += count;
                 }
+                // Otherwise nothing was added
             }
             else {
-                // Mutation already exists. Either updated it, or send it and create a new one
-                switch (mutation.type) {
-                    case Mutation.MUTATION_INSERT:
-                        if (before > 0) {
-                            // Delete. Send mutation and make a new Delete
-                            mutations.add(mutation.copy());
-                            version.put(myID, version.get(myID) + 1);
-                            attemptSendMutation(mutation.getJSON());
+                // before = 0, so something was inserted
+                mutation = new Insert(
+                        start,
+                        s.substring(start, start + count),
+                        version,
+                        myID,
+                        sessionID
+                );
+                cursorPosition = start + count;
+            }
+        }
+        else {
+            // Mutation already exists. Either updated it, or send it and create a new one
+            switch (mutation.type) {
+                case Mutation.MUTATION_INSERT:
+                    if (before > 0) {
+                        // Delete. Send mutation and make a new Delete
+                        sendMut();
+
+                        mutation = new Delete(start, before, version, myID, sessionID);
+                        cursorPosition = start;
+                        if (count > 0) {
+                            // Text was deleted, then inserted
+                            sendMut();
+                            mutation = new Insert(
+                                    start,
+                                    s.substring(start, start + count),
+                                    version,
+                                    myID,
+                                    sessionID
+                            );
+                            cursorPosition += count;
+                        }
+                        // Otherwise nothing was added
+                    }
+                    else {
+                        // Insert
+                        if (start == cursorPosition) {
+                            // Continuing current insert
+                            ((Insert) mutation).toInsert += s.substring(start, start + count);
+                            cursorPosition += count;
+                        }
+                        else {
+                            // New insert. Send mutation and make a new Insert
+                            sendMut();
+
+                            mutation = new Insert(
+                                    start,
+                                    s.substring(start, start + count),
+                                    version,
+                                    myID,
+                                    sessionID);
+                            cursorPosition = start + count;
+                        }
+                    }
+                    break;
+                case Mutation.MUTATION_DELETE:
+                    if (before > 0) {
+                        // Delete. Either update this one or create a new one
+                        if (start == cursorPosition - before) {
+                            // Continuing current delete
+                            ((Delete) mutation).numChars += before;
+                            mutation.index = start;
+                            cursorPosition = start;
+
+                            if (count > 0) {
+                                // Text was deleted, then inserted
+                                sendMut();
+                                mutation = new Insert(
+                                        start,
+                                        s.substring(start, start + count),
+                                        version,
+                                        myID,
+                                        sessionID);
+                                cursorPosition += count;
+                            }
+                            // Otherwise nothing was added
+                        }
+                        else {
+                            // New Delete. Send the current one and make a new one
+                            sendMut();
 
                             mutation = new Delete(start, before, version, myID, sessionID);
                             cursorPosition = start;
                             if (count > 0) {
                                 // Text was deleted, then inserted
-                                mutations.add(mutation.copy());
-                                version.put(myID, version.get(myID) + 1);
-                                attemptSendMutation(mutation.getJSON());
+                                sendMut();
                                 mutation = new Insert(
                                         start,
                                         s.substring(start, start + count),
@@ -295,92 +332,20 @@ public class Collaborator implements TextWatcher {
                             }
                             // Otherwise nothing was added
                         }
-                        else {
-                            // Insert
-                            if (start == cursorPosition) {
-                                // Continuing current insert
-                                ((Insert) mutation).toInsert += s.substring(start, start + count);
-                                cursorPosition += count;
-                            }
-                            else {
-                                // New insert. Send mutation and make a new Insert
-                                mutations.add(mutation.copy());
-                                version.put(myID, version.get(myID) + 1);
-                                attemptSendMutation(mutation.getJSON());
+                    }
+                    else {
+                        // Insert. Send mutation then create new Insert
+                        sendMut();
 
-                                mutation = new Insert(
-                                        start,
-                                        s.substring(start, start + count),
-                                        version,
-                                        myID,
-                                        sessionID);
-                                cursorPosition = start + count;
-                            }
-                        }
-                        break;
-                    case Mutation.MUTATION_DELETE:
-                        if (before > 0) {
-                            // Delete. Either update this one or create a new one
-                            if (start == cursorPosition - before) {
-                                // Continuing current delete
-                                ((Delete) mutation).numChars += before;
-                                cursorPosition = start;
-
-                                if (count > 0) {
-                                    // Text was deleted, then inserted
-                                    mutations.add(mutation.copy());
-                                    version.put(myID, version.get(myID) + 1);
-                                    attemptSendMutation(mutation.getJSON());
-                                    mutation = new Insert(
-                                            start,
-                                            s.substring(start, start + count),
-                                            version,
-                                            myID,
-                                            sessionID);
-                                    cursorPosition += count;
-                                }
-                                // Otherwise nothing was added
-                            }
-                            else {
-                                // New Delete. Send the current one and make a new one
-                                mutations.add(mutation.copy());
-                                version.put(myID, version.get(myID) + 1);
-                                attemptSendMutation(mutation.getJSON());
-
-                                mutation = new Delete(start, before, version, myID, sessionID);
-                                cursorPosition = start;
-                                if (count > 0) {
-                                    // Text was deleted, then inserted
-                                    mutations.add(mutation.copy());
-                                    version.put(myID, version.get(myID) + 1);
-                                    attemptSendMutation(mutation.getJSON());
-                                    mutation = new Insert(
-                                            start,
-                                            s.substring(start, start + count),
-                                            version,
-                                            myID,
-                                            sessionID
-                                    );
-                                    cursorPosition += count;
-                                }
-                                // Otherwise nothing was added
-                            }
-                        }
-                        else {
-                            // Insert. Send mutation then create new Insert
-                            mutations.add(mutation.copy());
-                            version.put(myID, version.get(myID) + 1);
-                            attemptSendMutation(mutation.getJSON());
-
-                            mutation = new Insert(start, s.substring(start, start + count), version, myID, sessionID);
-                            cursorPosition = start + count;
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                        mutation = new Insert(start, s.substring(start, start + count), version, myID, sessionID);
+                        cursorPosition = start + count;
+                    }
+                    break;
+                default:
+                    break;
             }
 
+            sent = false;
             // Create and run a timer thread
             timerThread = new TimerThread(mutation.copy());
             timerThread.start();
@@ -388,7 +353,6 @@ public class Collaborator implements TextWatcher {
     }
 
     public void pollForText() {
-        disregard++;
         DocumentAsync async = new DocumentAsync("/sessions/document/" + sessionID);
         async.execute();
     }
@@ -410,11 +374,8 @@ public class Collaborator implements TextWatcher {
     }
 
     public void onPause() {
-        if (mutation != null) {
-            mutations.add(mutation.copy());
-            version.put(myID, version.get(myID) + 1);
-            attemptSendMutation(mutation.getJSON());
-            mutation = null;
+        if (mutation != null && !sent) {
+            sendMut();
         }
     }
 
@@ -423,19 +384,34 @@ public class Collaborator implements TextWatcher {
     }
 
     public void refresh() {
-
-        if (mutation != null) {
-            mutations.add(mutation.copy());
-            version.put(myID, version.get(myID) + 1);
-            attemptSendMutation(mutation.getJSON());
-            mutation = null;
+        if (mutation != null && !sent) {
+            sendMut();
         }
         pollForText();
+    }
+
+    public void load(String newText) {
+        if (mutation != null && !sent) {
+            sendMut();
+        }
+        mutation = new Delete(0, textField.getText().toString().length(), version, myID, sessionID);
+        sent = false;
+        sendMut();
+        mutation = new Insert(0, newText, version, myID, sessionID);
+        sent = false;
+        sendMut();
     }
 
     public void onDestroy() {
         mSocket.disconnect();
         mSocket.off("new mutation", onNewMutation);
+    }
+
+    private void sendMut() {
+        mutations.add(mutation.copy());
+        version.put(myID, version.get(myID) + 1);
+        attemptSendMutation(mutation.getJSON());
+        mutation = null;
     }
 
     class DocumentAsync extends AsyncTask<String, Void, String> {
@@ -461,6 +437,7 @@ public class Collaborator implements TextWatcher {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            disregard++;
             textField.setText(s);
         }
     }
@@ -476,12 +453,12 @@ public class Collaborator implements TextWatcher {
 
         public void run() {
             // If no change is made within 3 seconds, send the mutation
-            while (System.currentTimeMillis() - startTime < 3000) {
-                if (Thread.currentThread().isInterrupted()) {
+            while (System.currentTimeMillis() - startTime < 1500) {
+                if (Thread.currentThread().isInterrupted() || sent) {
                     break;
                 }
             }
-            if (!Thread.currentThread().isInterrupted()) {
+            if (!Thread.currentThread().isInterrupted() && !sent) {
                 SenderThread senderThread = new SenderThread(mutation);
                 senderThread.start();
             }
@@ -501,6 +478,7 @@ public class Collaborator implements TextWatcher {
 
         public void run() {
             attemptSendMutation(mutation.getJSON());
+            Log.d(Mutation.TAG, "sending");
         }
     }
 }

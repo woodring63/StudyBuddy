@@ -19,6 +19,7 @@ import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -59,8 +60,9 @@ public class Collaborator implements TextWatcher {
     protected volatile boolean sent;
     private String strBefore;
     private String strAfter;
-    private String totalBefore;
     private HashMap<String, Integer> version;
+    private diff_match_patch dmp;
+
 
 
     /**
@@ -75,7 +77,7 @@ public class Collaborator implements TextWatcher {
         this.sessionID = sessionID;
         sent = false;
         mutations = new ArrayList<>();
-        disregard = 1;
+        disregard = 0;
         mutation = null;
         textField.addTextChangedListener(this);
         mSocket.on("new mutation", onNewMutation);
@@ -83,6 +85,7 @@ public class Collaborator implements TextWatcher {
         pollForText();
         version = new HashMap<>();
         version.put(myID, 0);
+        dmp = new diff_match_patch();
     }
 
     /**
@@ -97,156 +100,119 @@ public class Collaborator implements TextWatcher {
             attemptSendText(textField.getText().toString());
         }
         else {
-            disregard++;
-            // If either version misses the other user's ID, add that
-            if (!mutation.version.containsKey(myID)) {
-                mutation.version.put(myID, 0);
+            try {
+                disregard++;
+                // If either version misses the other user's ID, add that
+                if (!mutation.version.containsKey(myID)) {
+                    mutation.version.put(myID, 0);
+                }
+                if (!version.containsKey(mutation.senderID)) {
+                    version.put(mutation.senderID, 0);
+                }
+                // Add the sender to version
+                version.put(mutation.senderID, version.get(mutation.senderID) + 1);
+                String text = textField.getText().toString();
+                for (int i = mutation.version.get(myID); i < mutations.size(); ++i) {
+                    mutation.transform(mutations.get(i), myID);
+                }
+                switch (mutation.type) {
+                    case Mutation.MUTATION_INSERT:
+                        if (text.length() == 0) {
+                            text = ((Insert) mutation).toInsert;
+                        }
+                        else if (mutation.index == 0) {
+                            text = ((Insert) mutation).toInsert + text;
+                        } else if (mutation.index == text.length()) {
+                            text = text + ((Insert) mutation).toInsert;
+                        } else {
+                            text = text.substring(0, mutation.index) +
+                                    ((Insert) mutation).toInsert + text.substring(mutation.index);
+                        }
+                        break;
+                    case Mutation.MUTATION_DELETE:
+                        if (((Delete) mutation).subDelete != null) {
+                            version.put(mutation.senderID, ((Delete) mutation).subDelete.version.get(mutation.senderID) - 1);
+                            process(((Delete) mutation).subDelete);
+                            text = textField.getText().toString();
+                        }
+                        if (((Delete) mutation).numChars == text.length()) {
+                            text = "";
+                        } else if (mutation.index == 0) {
+                            text = text.substring(((Delete) mutation).numChars);
+                        } else if (mutation.index + ((Delete) mutation).numChars == text.length()) {
+                            text = text.substring(0, mutation.index);
+                        } else {
+                            text = text.substring(0, mutation.index) + text.substring(mutation.end());
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                textField.setText(text);
             }
-            if (!version.containsKey(mutation.senderID)) {
-                version.put(mutation.senderID, 0);
+            catch (StringIndexOutOfBoundsException e) {
+                refresh();
+                e.printStackTrace();
             }
-            // Add the sender to version
-            version.put(mutation.senderID, version.get(mutation.senderID) + 1);
-            String text = textField.getText().toString();
-            for (int i = mutation.version.get(myID); i < mutations.size(); ++i) {
-                mutation.transform(mutations.get(i), myID);
-            }
-            switch (mutation.type) {
-                case Mutation.MUTATION_INSERT:
-                    text = text.substring(0, mutation.index) +
-                            ((Insert) mutation).toInsert + text.substring(mutation.index);
-                    break;
-                case Mutation.MUTATION_DELETE:
-                    if (((Delete) mutation).subDelete != null) {
-                        version.put(mutation.senderID, ((Delete) mutation).subDelete.version.get(mutation.senderID) - 1);
-                        process(((Delete) mutation).subDelete);
-                        text = textField.getText().toString();
-                    }
-                    if (((Delete) mutation).numChars == text.length()) {
-                        text = "";
-                    }
-                    else {
-                        text = text.substring(0, mutation.index) + text.substring(mutation.end());
-                    }
-                    break;
-                default:
-                    break;
-            }
-            textField.setText(text);
         }
     }
 
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        // Store the current word after change
-        strBefore = s.toString().substring(start, start + count);
-        totalBefore = s.toString();
+        // Store the string before the change
+        strBefore = s.toString();
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        if (totalBefore.equals(s.toString())) {
+        if (disregard != 0) {
+            // Change is due to applying mutation
+            disregard--;
             return;
         }
-        // Store the current word after change
-        strAfter = s.toString().substring(start, start + count);
-
-        // Check if either is 0
-        if (totalBefore.length() == 0) {
-            charChange(s.toString(), start, before, count);
-            return;
-        }
-        if (s.toString().length() == 0) {
-            charChange(s.toString(), 0, totalBefore.length(), 0);
+        // Store the string after the change
+        strAfter = s.toString();
+        if (strBefore == null || strAfter == null || strBefore.length() == 0
+                || strAfter.length() == 0 || strBefore.equals(strAfter)) {
             return;
         }
 
-        // Compare strBefore and strAfter, calling charChange as necessary
-        if (!strBefore.equals(strAfter)) {
-            int startVal;
-
-            // Set startVal
-            if (strBefore.length() < strAfter.length()) {
-                for (startVal = 0; startVal < strBefore.length(); ++startVal) {
-                    if (strBefore.charAt(startVal) != strAfter.charAt(startVal)) {
-                        break;
-                    }
+        // Get startVal
+        int startVal;
+        if (strBefore.length() < strAfter.length()) {
+            for (startVal = 0; startVal < strBefore.length(); ++startVal) {
+                if (strBefore.charAt(startVal) != strAfter.charAt(startVal)) {
+                    break;
                 }
             }
-            else {
-                for (startVal = 0; startVal < strAfter.length(); ++startVal) {
-                    if (strAfter.charAt(startVal) != strBefore.charAt(startVal)) {
-                        break;
-                    }
+        }
+        else {
+            for (startVal = 0; startVal < strAfter.length(); ++startVal) {
+                if (strBefore.charAt(startVal) != strAfter.charAt(startVal)) {
+                    break;
                 }
             }
+        }
 
-            startVal += start;
-
-            // Trim the front of the strings
-            try {
-                while (strBefore.charAt(0) == strAfter.charAt(0)) {
-                    strBefore = strBefore.substring(1);
-                    strAfter = strAfter.substring(1);
-
-                    // Check if either is 0
-                    if (strBefore.length() == 0) {
-                        charChange(s.toString(), startVal, 0, strAfter.length());
-                        return;
-                    }
-                    if (strAfter.length() == 0) {
-                        charChange(s.toString(), startVal, strBefore.length(), 0);
-                        return;
-                    }
-                }
+        // Use Google's diff-match-patch to analyze the strBefore and strAfter
+        LinkedList<diff_match_patch.Diff> diffs = dmp.diff_main(strBefore, strAfter);
+        Iterator<diff_match_patch.Diff> iter = diffs.listIterator();
+        diff_match_patch.Diff diff;
+        while(iter.hasNext()) {
+            diff = iter.next();
+            switch (diff.operation) {
+                case EQUAL:
+                    break;
+                case DELETE:
+                    charChange(s.toString(), startVal, diff.text.length(), 0);
+                    break;
+                case INSERT:
+                    charChange(s.toString(), startVal, 0, diff.text.length());
+                    break;
+                default:
+                    break;
             }
-            catch (StringIndexOutOfBoundsException e) {
-                e.printStackTrace();
-                // Check if either is 0
-                if (strBefore.length() == 0) {
-                    charChange(s.toString(), startVal, 0, strAfter.length());
-                    return;
-                }
-                if (strAfter.length() == 0) {
-                    charChange(s.toString(), startVal, strBefore.length(), 0);
-                    return;
-                }
-            }
-
-            // Trim the end of the strings
-            try {
-                while (strBefore.charAt(strBefore.length() - 1) == strAfter.charAt(strAfter.length() - 1)) {
-                    strBefore = strBefore.substring(0, strBefore.length() - 1);
-                    strAfter = strAfter.substring(0, strAfter.length() - 1);
-
-
-                    // Check if either is 0
-                    if (strBefore.length() == 0) {
-                        charChange(s.toString(), startVal, 0, strAfter.length());
-                        return;
-                    }
-                    if (strAfter.length() == 0) {
-                        charChange(s.toString(), startVal, strBefore.length(), 0);
-                        return;
-                    }
-                }
-            }
-            catch (StringIndexOutOfBoundsException e) {
-                e.printStackTrace();
-                // Check if either is 0
-                if (strBefore.length() == 0) {
-                    charChange(s.toString(), startVal, 0, strAfter.length());
-                    return;
-                }
-                if (strAfter.length() == 0) {
-                    charChange(s.toString(), startVal, strBefore.length(), 0);
-                    return;
-                }
-            }
-
-            charChange(s.toString(), startVal, strBefore.length(), strAfter.length());
         }
     }
 
@@ -263,10 +229,6 @@ public class Collaborator implements TextWatcher {
         if (sent) {
             mutation = null;
             sent = false;
-        }
-        if (disregard != 0) {
-            // Change is due to applying mutation
-            disregard--;
         }
         else {
             // Change is due to the user typing
@@ -445,6 +407,30 @@ public class Collaborator implements TextWatcher {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void onPause() {
+        if (mutation != null) {
+            mutations.add(mutation.copy());
+            version.put(myID, version.get(myID) + 1);
+            attemptSendMutation(mutation.getJSON());
+            mutation = null;
+        }
+    }
+
+    public void onResume() {
+        pollForText();
+    }
+
+    public void refresh() {
+
+        if (mutation != null) {
+            mutations.add(mutation.copy());
+            version.put(myID, version.get(myID) + 1);
+            attemptSendMutation(mutation.getJSON());
+            mutation = null;
+        }
+        pollForText();
     }
 
     public void onDestroy() {

@@ -107,7 +107,7 @@ public class DocumentFragment extends Fragment
         activity = getActivity();
         text = (EditText) view.findViewById(R.id.drive_file_text_display);
         Button loadButton = (Button) view.findViewById(R.id.load_button);
-        Button clearButton = (Button) view.findViewById(R.id.clear_button);
+        Button refreshButton = (Button) view.findViewById(R.id.refresh_button);
         Button saveButton = (Button) view.findViewById(R.id.save_button);
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         collaborator = new Collaborator(
@@ -171,10 +171,10 @@ public class DocumentFragment extends Fragment
         });
 
         // Sets the text on the screen to "" after verifying that is is what the user wants to do
-        clearButton.setOnClickListener(new View.OnClickListener() {
+        refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clear();
+                refresh();
             }
         });
 
@@ -320,7 +320,7 @@ public class DocumentFragment extends Fragment
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        collaborator.pollForText();
+        collaborator.onResume();
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Drive.API)
@@ -342,6 +342,7 @@ public class DocumentFragment extends Fragment
             mGoogleApiClient.disconnect();
         }
         strText = text.getText().toString();
+        collaborator.onPause();
         super.onPause();
     }
 
@@ -361,35 +362,8 @@ public class DocumentFragment extends Fragment
         }
     }
 
-    private void clear() {
-        Log.d(TAG, "clear");
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-
-        // Set the title
-        alertDialogBuilder.setTitle("Clear text?");
-
-        // Set the message and buttons
-        alertDialogBuilder
-                .setMessage("Are you sure you want to erase everything?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        text.setText("");
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-        // Create the actual AlertDialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // And show it
-        alertDialog.show();
+    private void refresh() {
+        collaborator.refresh();
     }
 
     private void save() {

@@ -28,8 +28,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/clear_button_text"
-            android:id="@+id/clear_button"
+            android:text="@string/refresh_button_text"
+            android:id="@+id/refresh_button"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1" />
 

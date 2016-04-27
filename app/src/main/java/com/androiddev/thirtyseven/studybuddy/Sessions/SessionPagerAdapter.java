@@ -15,7 +15,7 @@ import com.androiddev.thirtyseven.studybuddy.Sessions.Whiteboard.WhiteboardFragm
  */
 public class SessionPagerAdapter extends FragmentPagerAdapter {
 
-    private static final int numOfTabs = 5;
+    private static final int numOfTabs = 4;
 
     private DocumentFragment documentFragment;
     private TaskFragment taskFragment;
@@ -25,7 +25,7 @@ public class SessionPagerAdapter extends FragmentPagerAdapter {
 
     public SessionPagerAdapter(FragmentManager fm) {
         super(fm);
-        documentFragment = new DocumentFragment();
+        //documentFragment = new DocumentFragment();
         taskFragment = new TaskFragment();
         whiteboardFragment = new WhiteboardFragment();
         descriptionFragment = new DescriptionFragment();
@@ -35,24 +35,24 @@ public class SessionPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0:
-                return documentFragment;
-            case 1:
-                return taskFragment;
-            case 2:
-                return whiteboardFragment;
-            case 3:
-                return chatFragment;
-            case 4:
-                return descriptionFragment;
 //            case 0:
-//                return taskFragment;
+//                return documentFragment;
 //            case 1:
-//                return whiteboardFragment;
+//                return taskFragment;
 //            case 2:
-//                return chatFragment;
+//                return whiteboardFragment;
 //            case 3:
+//                return chatFragment;
+//            case 4:
 //                return descriptionFragment;
+            case 0:
+                return taskFragment;
+            case 1:
+                return whiteboardFragment;
+            case 2:
+                return chatFragment;
+            case 3:
+                return descriptionFragment;
             default:
                 return null;
         }

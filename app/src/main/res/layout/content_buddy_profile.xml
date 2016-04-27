@@ -41,7 +41,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_below="@id/userNameView"
                 android:text="@string/default_major_text"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:textColor="@android:color/white"/>
 
             <Button
@@ -51,7 +51,7 @@
                 android:layout_below="@id/userMajorView"
                 android:text="@string/courses_button_text"
                 android:textColor="@android:color/white"
-                android:layout_gravity="end"
+                android:layout_marginLeft="12dp"
                 android:background="@android:color/transparent"
                 style="?android:attr/borderlessButtonStyle"/>
         </RelativeLayout>

@@ -1,171 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/courseName"
+        android:gravity="center"
+        android:textSize="48sp"
+        android:text="courseName"
+        android:layout_weight="2"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/date"
+            android:textSize="24sp"
+            android:layout_margin="4dp"
+            android:text="date" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/startTime"
+            android:textSize="16sp"
+            android:layout_margin="4dp"
+            android:text="startTime" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_margin="4dp"
+            android:text="-"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/endTime"
+            android:textSize="16sp"
+            android:layout_margin="4dp"
+            android:text="endTime"/>
+    </LinearLayout>
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/scrollView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:fillViewport="false">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="68dp">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="left|center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="Course:   "
-                        android:id="@+id/textView6"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentStart="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/courseName"
-                        android:text="courseName"
-                        android:layout_alignTop="@+id/textView6"
-                        android:layout_toEndOf="@+id/textView6" />
-                </LinearLayout>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="49dp"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="left|center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="Date:   "
-                        android:id="@+id/textView5"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentStart="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="date"
-                        android:id="@+id/date" />
-                </LinearLayout>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="81dp">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="left|center"
-                    android:weightSum="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="Time:   "
-                        android:id="@+id/textView4" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/startTime"
-                        android:text="startTime" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text=" - "
-                        android:id="@+id/textDash" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="endTime"
-                        android:id="@+id/endTime"
-                        android:gravity="right" />
-
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="185dp"
-                android:gravity="left">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="desc"
-                    android:id="@+id/desc"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="1"
-                    android:gravity="center">
-
-                    <RelativeLayout
-                        android:layout_width="134dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.58">
-
-                        <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Leave Session"
-                            android:id="@+id/leaveBtn"
-                            android:layout_alignParentTop="true"
-                            android:layout_centerHorizontal="true" />
-                    </RelativeLayout>
-
-                </LinearLayout>
-            </RelativeLayout>
-
-        </LinearLayout>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="20">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/desc"
+            android:layout_margin="8dp"
+            android:text="desc"/>
     </ScrollView>
 
-</RelativeLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/leaveBtn"
+        android:background="@android:color/transparent"
+        android:layout_weight="2"
+        android:text="Leave Session"/>
+
+
+
+</LinearLayout>

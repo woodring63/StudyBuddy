@@ -15,7 +15,7 @@
     <string name="default_about_me_text_edit">About Me</string>
     <string name="default_about_me_text_profile">This user has not provided any additional information.</string>
     <string name="buddy_up_button_text">Buddy Up</string>
-    <string name="courses_button_text">Courses</string>
+    <string name="courses_button_text">View Courses</string>
     <string name="buddies_button_text">Buddies</string>
     <string name="title_activity_user_classes">UserClasses</string>
     <string name="courses_header_text">Study Buddy User\'s Courses</string>

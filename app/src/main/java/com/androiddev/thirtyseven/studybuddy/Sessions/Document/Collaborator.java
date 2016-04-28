@@ -181,14 +181,13 @@ public class Collaborator implements TextWatcher {
         while(iter.hasNext()) {
             diff = iter.next();
             switch (diff.operation) {
-                case EQUAL:
-                    startVal += diff.text.length();
-                    break;
                 case DELETE:
                     charChange(s.toString(), startVal, diff.text.length(), 0);
                     break;
                 case INSERT:
                     charChange(s.toString(), startVal, 0, diff.text.length());
+                case EQUAL:
+                    startVal += diff.text.length();
                     break;
                 default:
                     break;
